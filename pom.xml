@@ -61,7 +61,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                uk.bradleyjones.worldgenerator.worldgenerator/uk.bradleyjones.worldgenerator.worldgenerator.HelloApplication
+                                uk.bradleyjones.worldgenerator/uk.bradleyjones.worldgenerator.WorldGeneratorApp
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
