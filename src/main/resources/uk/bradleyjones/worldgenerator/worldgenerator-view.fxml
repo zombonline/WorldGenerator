@@ -4,6 +4,8 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Label?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="uk.bradleyjones.worldgenerator.WorldGeneratorController">
     <center>
         <Pane fx:id="canvasPane" prefWidth="Infinity">
@@ -12,8 +14,19 @@
     </center>
     <bottom>
         <HBox>
+            <Label text="Seed:"/>
+            <TextField fx:id="seedInput" promptText="Enter seed" />
+            <Label text="Terrain noise"/>
+            <TextField fx:id="noiseScaleAInput" promptText="Noise Scale A"/>
+            <TextField fx:id="noiseScaleBInput" promptText="Noise Scale B"/>
+            <TextField fx:id="noiseScaleCInput" promptText="Noise Scale C"/>
+
+            <TextField fx:id="noiseAmplitudeAInput" promptText="Noise Amplitude A"/>
+            <TextField fx:id="noiseAmplitudeBInput" promptText="Noise Amplitude B"/>
+            <TextField fx:id="noiseAmplitudeCInput" promptText="Noise Amplitude C"/>
             <Button fx:id="regenButton" text="Regenerate"/>
         </HBox>
+
     </bottom>
 </BorderPane>
 

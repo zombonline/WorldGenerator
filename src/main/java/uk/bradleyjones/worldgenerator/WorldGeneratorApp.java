@@ -11,7 +11,9 @@ public class WorldGeneratorApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(WorldGeneratorApp.class.getResource("worldgenerator-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1200, 900);
+        Scene scene = new Scene(fxmlLoader.load(), 1820, 980);
+        //maximize the window
+
         WorldGeneratorController controller = fxmlLoader.getController();
         scene.setOnKeyPressed(controller::handleKeyPressed);
         scene.setOnScroll(controller::handleScroll);
