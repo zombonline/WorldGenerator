@@ -2,15 +2,16 @@ package uk.bradleyjones.worldgenerator.world;
 
 public class World {
 
-    /**
-     * Returns the tile at world coordinates (x, y)
-     * Rule: (x + y) % 2 == 0 → BLUE, otherwise → GREEN
-     */
+    // Parameters to be controlled by the user
+    private int seed = 3432433;
+    private int groundHeight = 3;
+
     public TileType getTile(int x, int y) {
-        if ((x + y) % 2 == 0) {
-            return TileType.SAND;
+        var random = new java.util.Random(seed + x * 31L + y * 17L);
+        if(y < groundHeight) {
+            return TileType.AIR;
         } else {
-            return TileType.GRASS;
+            return random.nextDouble() < 0.5 ? TileType.SAND : TileType.GRASS;
         }
     }
 }

@@ -12,7 +12,9 @@ public class WorldGeneratorApp extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(WorldGeneratorApp.class.getResource("worldgenerator-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 900);
-        stage.setTitle("Hello!");
+        WorldGeneratorController controller = fxmlLoader.getController();
+        scene.setOnKeyPressed(controller::handleKeyPressed);
+        scene.setOnScroll(controller::handleScroll);
         stage.setScene(scene);
         stage.show();
     }

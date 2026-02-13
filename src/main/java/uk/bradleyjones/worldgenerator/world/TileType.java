@@ -5,4 +5,5 @@ public enum TileType {
     WATER,
     SAND,
     STONE,
+    AIR
 }
