@@ -9,10 +9,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import uk.bradleyjones.worldgenerator.render.Camera;
+import uk.bradleyjones.worldgenerator.render.CameraListener;
 import uk.bradleyjones.worldgenerator.render.WorldRenderer;
 import uk.bradleyjones.worldgenerator.world.World;
 
-public class WorldGeneratorController {
+public class WorldGeneratorController implements CameraListener {
     @FXML
     public TextField noiseScaleAInput;
     @FXML
@@ -34,15 +35,16 @@ public class WorldGeneratorController {
     @FXML
     private Button regenButton;
 
-    private World world;
-    private WorldRenderer renderer;
-    private Camera camera;
+    public static World world;
+    public static WorldRenderer renderer;
+    public static Camera camera;
 
     @FXML
     public void initialize() {
         world = new World();
         renderer = new WorldRenderer();
         camera = new Camera();
+        camera.addListener(this);
 
         // Bind canvas size to the parent Pane
         worldCanvas.widthProperty().bind(canvasPane.widthProperty());
@@ -51,6 +53,7 @@ public class WorldGeneratorController {
         // Redraw whenever the canvas resizes
         worldCanvas.widthProperty().addListener((obs, oldVal, newVal) -> draw());
         worldCanvas.heightProperty().addListener((obs, oldVal, newVal) -> draw());
+
 
         // Set text fields to current world parameters
         seedInput.setText(String.valueOf(world.getSeed()));
@@ -79,27 +82,6 @@ public class WorldGeneratorController {
         renderer.render(gc, world, camera, worldCanvas.getWidth(), worldCanvas.getHeight());
     }
 
-    public void handleKeyPressed(KeyEvent keyEvent) {
-        double speed = 15f;
-
-        switch (keyEvent.getCode()) {
-            case A -> camera.move(-speed, 0);
-            case D -> camera.move(speed, 0);
-            case W -> camera.move(0, -speed);
-            case S -> camera.move(0, speed);
-        }
-        draw();
-    }
-
-    public void handleScroll(ScrollEvent e) {
-        double zoomSpeed = 0.1;
-        float newZoom = (float) (camera.getZoom() + (e.getDeltaY() > 0 ? zoomSpeed : -zoomSpeed));
-        //clamp zoom
-        newZoom = Math.max(0.5f, Math.min(5f, newZoom));
-        camera.setZoom(newZoom);
-        System.out.println(camera.getZoom());
-        draw();
-    }
 
     public void handleInitializeWorld() {
         try {
@@ -117,5 +99,10 @@ public class WorldGeneratorController {
             // If the input is not a valid integer, reset it to the current seed
             seedInput.setText(String.valueOf(world.getSeed()));
         }
+    }
+
+    @Override
+    public void onCameraUpdated(Camera camera) {
+        draw();
     }
 }
