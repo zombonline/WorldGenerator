@@ -12,6 +12,7 @@ public class InputHandler {
     private double moveY = 0;
     private final double moveSpeed = 5;
 
+
     private final Camera camera;
 
     public InputHandler() {
@@ -22,7 +23,8 @@ public class InputHandler {
             @Override
             public void handle(long now) {
                 if (moveX != 0 || moveY != 0) {
-                    camera.move(moveX, moveY);
+                    double adjustedSpeed = moveSpeed / camera.getZoom();
+                    camera.move(moveX * adjustedSpeed, moveY * adjustedSpeed);
                 }
             }
         };
@@ -31,10 +33,10 @@ public class InputHandler {
 
     public void handleKeyPressed(KeyEvent event) {
         switch (event.getCode()) {
-            case A -> moveX = -moveSpeed;
-            case D -> moveX = moveSpeed;
-            case W -> moveY = -moveSpeed;
-            case S -> moveY = moveSpeed;
+            case A -> moveX = -1;
+            case D -> moveX = 1;
+            case W -> moveY = -1;
+            case S -> moveY = 1;
         }
     }
 
