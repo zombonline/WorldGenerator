@@ -6,20 +6,20 @@ public class World {
     private int seed = 3432433;
     public TerrainHeightGenerator terrainHeightGenerator = new TerrainHeightGenerator(seed);
 
-    private int groundHeight = 3;
+    private int waterLevel = 15;
 
     public TileType getTile(int x, int y) {
-        if(y < terrainHeightGenerator.getHeight(x)) {
-            return TileType.AIR;
-        } else {
-            return pseudoRandom(x,y) < 0.5 ? TileType.SAND : TileType.GRASS;
-        }
-    }
+        int surfaceY = terrainHeightGenerator.getHeight(x);
 
-    private double pseudoRandom(int x, int y) {
-        long hash = x * 31L + y * 17L + seed;
-        hash = (hash ^ (hash >> 13)) * 0x5DEECE66DL;
-        return ((hash & 0xFFFFFFFFL) / (double) 0x100000000L);
+        if (y < surfaceY) {
+            return y > waterLevel ? TileType.WATER : TileType.AIR;
+        }
+
+        int depth = y - surfaceY;
+
+        if (depth == 0) return surfaceY > waterLevel ? TileType.SAND : TileType.GRASS;
+        if (depth <= 4) return surfaceY > waterLevel ? TileType.SAND : TileType.DIRT;
+        return TileType.STONE;
     }
 
     //Getters

@@ -17,7 +17,7 @@ public class TerrainHeightGenerator {
 
     private double ampA = 64;
     private double ampB = 32;
-    private double ampC = 1280;
+    private double ampC = 3000;
 
     public TerrainHeightGenerator(long seed) {
         noiseA = new OpenSimplexNoise(seed);
@@ -30,13 +30,18 @@ public class TerrainHeightGenerator {
         double h2 = noiseB.getNoise2D(x * scaleB, 0).getValue();
         double h3 = noiseC.getNoise2D(x * scaleC, 0).getValue();
 
-        // Shape extremes so they're rare
-        double extreme = Math.pow(Math.max(0, h3), 3);
+        // h1 drives broad gentle terrain (-1 to 1, low frequency)
+        double base = h1 * ampA;
 
-        return baseHeight
-                + (int)(h1 * ampA)
-                + (int)(h2 * ampB)
-                + (int)(extreme * -ampC);
+        // h2 adds small surface detail, scaled down so it doesn't dominate
+        double detail = h2 * ampB * 0.3;
+
+        // h3 acts as a multiplier - only amplifies terrain where it's positive
+        // this means mountains only appear where h3 "permits" them
+        double mountainMask = Math.max(0, h3);
+        double mountains = Math.pow(mountainMask, 4) * -ampC;
+
+        return baseHeight + (int)(base + detail + mountains);
     }
 
     // ---- setters for UI later ----

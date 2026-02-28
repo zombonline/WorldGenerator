@@ -50,6 +50,8 @@ public class WorldRenderer {
             case WATER -> Color.DEEPSKYBLUE;
             case STONE -> Color.GRAY;
             case AIR -> Color.LIGHTBLUE;
+            case DIRT -> Color.BROWN;
+            case GRAVEL -> Color.LIGHTGRAY;
         };
     }
 }

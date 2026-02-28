@@ -1,9 +1,11 @@
 package uk.bradleyjones.worldgenerator.world;
 
 public enum TileType {
+    AIR,
     GRASS,
-    WATER,
-    SAND,
+    DIRT,
     STONE,
-    AIR
+    SAND,
+    WATER,
+    GRAVEL
 }
