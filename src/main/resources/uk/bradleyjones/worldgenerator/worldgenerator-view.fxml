@@ -24,6 +24,11 @@
             <TextField fx:id="noiseAmplitudeAInput" promptText="Noise Amplitude A"/>
             <TextField fx:id="noiseAmplitudeBInput" promptText="Noise Amplitude B"/>
             <TextField fx:id="noiseAmplitudeCInput" promptText="Noise Amplitude C"/>
+            <Label text="World"/>
+            <TextField fx:id="worldWidthInput" promptText="Width"/>
+            <TextField fx:id="worldHeightInput" promptText="Height"/>
+            <TextField fx:id="waterLevelInput" promptText="Water Level"/>
+            <TextField fx:id="baseHeightInput" promptText="Base Height"/>
             <Button fx:id="regenButton" text="Regenerate"/>
         </HBox>
 
