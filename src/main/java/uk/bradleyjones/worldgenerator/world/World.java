@@ -1,21 +1,29 @@
 package uk.bradleyjones.worldgenerator.world;
 
+import uk.bradleyjones.worldgenerator.world.caves.CACaveConfig;
+import uk.bradleyjones.worldgenerator.world.caves.CACaveGenerator;
+import uk.bradleyjones.worldgenerator.world.caves.CaveGenerator;
+
 public class World {
 
-    private int width = 1000;
-    private int height = 400;
-    private int seed = 3432433;
-    private int waterLevel = 80;
+    public WorldConfig worldConfig = new WorldConfig();
+    public TerrainConfig terrainConfig = new TerrainConfig();
+    public CACaveConfig caveConfig = new CACaveConfig();
 
-    public TerrainHeightGenerator terrainHeightGenerator = new TerrainHeightGenerator(seed, height);
+    private TerrainHeightGenerator terrainHeightGenerator;
+    private CaveGenerator caveGenerator;
+
+    public World() {
+        regenerate();
+    }
 
     public TileType getTile(int x, int y) {
-        if (x < 0 || x >= width || y < 0 || y >= height) {
+        if (x < 0 || x >= worldConfig.width || y < 0 || y >= worldConfig.height) {
             return TileType.AIR;
         }
 
         int surfaceY = terrainHeightGenerator.getHeight(x);
-        int clampedWaterLevel = Math.min(waterLevel, height - 1);
+        int clampedWaterLevel = worldConfig.height - Math.min(worldConfig.waterLevel, worldConfig.height - 1);
 
         if (y < surfaceY) {
             return y > clampedWaterLevel ? TileType.WATER : TileType.AIR;
@@ -23,27 +31,21 @@ public class World {
 
         int depth = y - surfaceY;
 
+        if (depth > 4 && caveConfig.enabled && caveGenerator != null && caveGenerator.isCave(x, y)) {
+            return surfaceY >= clampedWaterLevel ? TileType.WATER : TileType.AIR;
+        }
+
         if (depth == 0) return surfaceY > clampedWaterLevel ? TileType.SAND : TileType.GRASS;
         if (depth <= 4) return surfaceY > clampedWaterLevel ? TileType.SAND : TileType.DIRT;
         return TileType.STONE;
     }
 
-    public int getWidth() { return width; }
-    public int getHeight() { return height; }
-    public int getSeed() { return seed; }
-    public int getWaterLevel() { return waterLevel; }
-
-    public void setWidth(int width) { this.width = width; }
-
-    public void setHeight(int height) {
-        this.height = height;
-        terrainHeightGenerator.setWorldHeight(height);
-    }
-
-    public void setWaterLevel(int waterLevel) { this.waterLevel = waterLevel; }
-
-    public void setSeed(int seed) {
-        this.seed = seed;
-        this.terrainHeightGenerator = new TerrainHeightGenerator(seed, height);
+    public void regenerate() {
+        terrainHeightGenerator = new TerrainHeightGenerator(worldConfig.seed, worldConfig.height, terrainConfig);
+        if (caveConfig.enabled) {
+            caveGenerator = new CACaveGenerator(worldConfig.width, worldConfig.height, worldConfig.seed, caveConfig.fillPercent, caveConfig.iterations, caveConfig.neighbourThreshold);
+        } else {
+            caveGenerator = null;
+        }
     }
 }

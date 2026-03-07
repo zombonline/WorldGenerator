@@ -1,37 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Label?>
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="uk.bradleyjones.worldgenerator.WorldGeneratorController">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="uk.bradleyjones.worldgenerator.WorldGeneratorController">
+
+    <!-- Viewport -->
     <center>
-        <Pane fx:id="canvasPane" prefWidth="Infinity">
+        <Pane fx:id="canvasPane">
             <Canvas fx:id="worldCanvas"/>
         </Pane>
     </center>
-    <bottom>
-        <HBox>
-            <Label text="Seed:"/>
-            <TextField fx:id="seedInput" promptText="Enter seed" />
-            <Label text="Terrain noise"/>
-            <TextField fx:id="noiseScaleAInput" promptText="Noise Scale A"/>
-            <TextField fx:id="noiseScaleBInput" promptText="Noise Scale B"/>
-            <TextField fx:id="noiseScaleCInput" promptText="Noise Scale C"/>
 
-            <TextField fx:id="noiseAmplitudeAInput" promptText="Noise Amplitude A"/>
-            <TextField fx:id="noiseAmplitudeBInput" promptText="Noise Amplitude B"/>
-            <TextField fx:id="noiseAmplitudeCInput" promptText="Noise Amplitude C"/>
-            <Label text="World"/>
-            <TextField fx:id="worldWidthInput" promptText="Width"/>
-            <TextField fx:id="worldHeightInput" promptText="Height"/>
-            <TextField fx:id="waterLevelInput" promptText="Water Level"/>
-            <TextField fx:id="baseHeightInput" promptText="Base Height"/>
-            <Button fx:id="regenButton" text="Regenerate"/>
-        </HBox>
+    <!-- Left side panel -->
+    <left>
+        <ScrollPane fitToWidth="true" prefWidth="220" style="-fx-background-color: #1e1e1e;">
+            <VBox spacing="4" style="-fx-background-color: #1e1e1e; -fx-padding: 8;">
 
-    </bottom>
+                <!-- Regenerate button -->
+                <Button fx:id="regenButton" text="Regenerate" maxWidth="Infinity"/>
+
+                <!-- World section -->
+                <TitledPane text="World" animated="true">
+                    <VBox spacing="4" style="-fx-padding: 4;">
+                        <Label text="Seed"/>
+                        <TextField fx:id="seedInput" promptText="Seed"/>
+                        <Label text="Width"/>
+                        <TextField fx:id="worldWidthInput" promptText="Width"/>
+                        <Label text="Height"/>
+                        <TextField fx:id="worldHeightInput" promptText="Height"/>
+                        <Label text="Water Level"/>
+                        <TextField fx:id="waterLevelInput" promptText="Water Level"/>
+                    </VBox>
+                </TitledPane>
+
+                <!-- Terrain section -->
+                <TitledPane text="Terrain" animated="true">
+                    <VBox spacing="4" style="-fx-padding: 4;">
+                        <Label text="Base Height"/>
+                        <TextField fx:id="baseHeightInput" promptText="Base Height"/>
+                        <Label text="Scale A (broad)"/>
+                        <TextField fx:id="noiseScaleAInput" promptText="Scale A"/>
+                        <Label text="Scale B (detail)"/>
+                        <TextField fx:id="noiseScaleBInput" promptText="Scale B"/>
+                        <Label text="Scale C (mountain mask)"/>
+                        <TextField fx:id="noiseScaleCInput" promptText="Scale C"/>
+                        <Label text="Amplitude A"/>
+                        <TextField fx:id="noiseAmplitudeAInput" promptText="Amplitude A"/>
+                        <Label text="Amplitude B"/>
+                        <TextField fx:id="noiseAmplitudeBInput" promptText="Amplitude B"/>
+                        <Label text="Amplitude C (mountain)"/>
+                        <TextField fx:id="noiseAmplitudeCInput" promptText="Amplitude C"/>
+                    </VBox>
+                </TitledPane>
+
+                <!-- Caves section -->
+                <TitledPane text="Caves" animated="true">
+                    <VBox spacing="4" style="-fx-padding: 4;">
+                        <CheckBox fx:id="caCavesEnabledCheckbox" text="Enable CA Caves"/>
+                        <VBox fx:id="caParamsBox" spacing="4" disable="true">
+                            <Label text="Fill Percent"/>
+                            <TextField fx:id="caFillPercentInput" promptText="Fill %"/>
+                            <Label text="Iterations"/>
+                            <TextField fx:id="caIterationsInput" promptText="Iterations"/>
+                            <Label text="Neighbour Threshold"/>
+                            <TextField fx:id="caNeighbourThresholdInput" promptText="Threshold"/>
+                        </VBox>
+                    </VBox>
+                </TitledPane>
+
+            </VBox>
+        </ScrollPane>
+    </left>
+
 </BorderPane>
-

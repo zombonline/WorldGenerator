@@ -4,8 +4,10 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import uk.bradleyjones.worldgenerator.render.Camera;
 import uk.bradleyjones.worldgenerator.render.CameraListener;
 import uk.bradleyjones.worldgenerator.render.WorldRenderer;
@@ -27,6 +29,12 @@ public class WorldGeneratorController implements CameraListener {
     @FXML private TextField seedInput;
     @FXML private Button regenButton;
 
+    @FXML public VBox caParamsBox;
+    @FXML public CheckBox caCavesEnabledCheckbox;
+    @FXML public TextField caFillPercentInput;
+    @FXML public TextField caIterationsInput;
+    @FXML public TextField caNeighbourThresholdInput;
+
     public static World world;
     public static WorldRenderer renderer;
     public static Camera camera;
@@ -43,17 +51,29 @@ public class WorldGeneratorController implements CameraListener {
         worldCanvas.widthProperty().addListener((obs, oldVal, newVal) -> draw());
         worldCanvas.heightProperty().addListener((obs, oldVal, newVal) -> draw());
 
-        seedInput.setText(String.valueOf(world.getSeed()));
-        worldWidthInput.setText(String.valueOf(world.getWidth()));
-        worldHeightInput.setText(String.valueOf(world.getHeight()));
-        waterLevelInput.setText(String.valueOf(world.getWaterLevel()));
-        baseHeightInput.setText(String.valueOf(world.terrainHeightGenerator.getBaseHeight()));
-        noiseScaleAInput.setText(String.valueOf(world.terrainHeightGenerator.getScaleA()));
-        noiseScaleBInput.setText(String.valueOf(world.terrainHeightGenerator.getScaleB()));
-        noiseScaleCInput.setText(String.valueOf(world.terrainHeightGenerator.getScaleC()));
-        noiseAmplitudeAInput.setText(String.valueOf(world.terrainHeightGenerator.getAmpA()));
-        noiseAmplitudeBInput.setText(String.valueOf(world.terrainHeightGenerator.getAmpB()));
-        noiseAmplitudeCInput.setText(String.valueOf(world.terrainHeightGenerator.getAmpC()));
+        // Populate fields from config objects
+        seedInput.setText(String.valueOf(world.worldConfig.seed));
+        worldWidthInput.setText(String.valueOf(world.worldConfig.width));
+        worldHeightInput.setText(String.valueOf(world.worldConfig.height));
+        waterLevelInput.setText(String.valueOf(world.worldConfig.waterLevel));
+
+        baseHeightInput.setText(String.valueOf(world.terrainConfig.baseHeight));
+        noiseScaleAInput.setText(String.valueOf(world.terrainConfig.scaleA));
+        noiseScaleBInput.setText(String.valueOf(world.terrainConfig.scaleB));
+        noiseScaleCInput.setText(String.valueOf(world.terrainConfig.scaleC));
+        noiseAmplitudeAInput.setText(String.valueOf(world.terrainConfig.ampA));
+        noiseAmplitudeBInput.setText(String.valueOf(world.terrainConfig.ampB));
+        noiseAmplitudeCInput.setText(String.valueOf(world.terrainConfig.ampC));
+
+        caCavesEnabledCheckbox.setSelected(world.caveConfig.enabled);
+        caFillPercentInput.setText(String.valueOf(world.caveConfig.fillPercent));
+        caIterationsInput.setText(String.valueOf(world.caveConfig.iterations));
+        caNeighbourThresholdInput.setText(String.valueOf(world.caveConfig.neighbourThreshold));
+
+        caParamsBox.setDisable(!world.caveConfig.enabled);
+        caCavesEnabledCheckbox.selectedProperty().addListener((obs, oldVal, newVal) ->
+                caParamsBox.setDisable(!newVal)
+        );
 
         regenButton.setOnAction(e -> handleInitializeWorld());
         draw();
@@ -68,20 +88,28 @@ public class WorldGeneratorController implements CameraListener {
 
     public void handleInitializeWorld() {
         try {
-            world.setSeed(Integer.parseInt(seedInput.getText()));
-            world.setWidth(Integer.parseInt(worldWidthInput.getText()));
-            world.setHeight(Integer.parseInt(worldHeightInput.getText()));
-            world.setWaterLevel(Integer.parseInt(waterLevelInput.getText()));
-            world.terrainHeightGenerator.setBaseHeight(Integer.parseInt(baseHeightInput.getText()));
-            world.terrainHeightGenerator.setAmpA(Double.parseDouble(noiseAmplitudeAInput.getText()));
-            world.terrainHeightGenerator.setAmpB(Double.parseDouble(noiseAmplitudeBInput.getText()));
-            world.terrainHeightGenerator.setAmpC(Double.parseDouble(noiseAmplitudeCInput.getText()));
-            world.terrainHeightGenerator.setScaleA(Double.parseDouble(noiseScaleAInput.getText()));
-            world.terrainHeightGenerator.setScaleB(Integer.parseInt(noiseScaleBInput.getText()));
-            world.terrainHeightGenerator.setScaleC(Integer.parseInt(noiseScaleCInput.getText()));
+            world.worldConfig.seed = Integer.parseInt(seedInput.getText());
+            world.worldConfig.width = Integer.parseInt(worldWidthInput.getText());
+            world.worldConfig.height = Integer.parseInt(worldHeightInput.getText());
+            world.worldConfig.waterLevel = Integer.parseInt(waterLevelInput.getText());
+
+            world.terrainConfig.baseHeight = Integer.parseInt(baseHeightInput.getText());
+            world.terrainConfig.ampA = Double.parseDouble(noiseAmplitudeAInput.getText());
+            world.terrainConfig.ampB = Double.parseDouble(noiseAmplitudeBInput.getText());
+            world.terrainConfig.ampC = Double.parseDouble(noiseAmplitudeCInput.getText());
+            world.terrainConfig.scaleA = Double.parseDouble(noiseScaleAInput.getText());
+            world.terrainConfig.scaleB = Double.parseDouble(noiseScaleBInput.getText());
+            world.terrainConfig.scaleC = Double.parseDouble(noiseScaleCInput.getText());
+
+            world.caveConfig.enabled = caCavesEnabledCheckbox.isSelected();
+            world.caveConfig.fillPercent = Integer.parseInt(caFillPercentInput.getText());
+            world.caveConfig.iterations = Integer.parseInt(caIterationsInput.getText());
+            world.caveConfig.neighbourThreshold = Integer.parseInt(caNeighbourThresholdInput.getText());
+
+            world.regenerate();
             draw();
         } catch (NumberFormatException e) {
-            seedInput.setText(String.valueOf(world.getSeed()));
+            System.out.println("NumberFormatException: " + e.getMessage());
         }
     }
 

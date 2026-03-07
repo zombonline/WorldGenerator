@@ -50,7 +50,7 @@ public class InputHandler {
     public void handleScroll(ScrollEvent event) {
         double zoomSpeed = 0.1;
         double newZoom = camera.getZoom() + (event.getDeltaY() > 0 ? zoomSpeed : -zoomSpeed);
-        newZoom = Math.max(0.5, Math.min(5.0, newZoom));
+        newZoom = Math.max(0.1, Math.min(5.0, newZoom));
         camera.setZoom(newZoom);
     }
 }
