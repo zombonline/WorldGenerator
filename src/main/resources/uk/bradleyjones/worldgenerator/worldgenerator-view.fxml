@@ -57,15 +57,8 @@
                 <!-- Caves section -->
                 <TitledPane text="Caves" animated="true">
                     <VBox spacing="4" style="-fx-padding: 4;">
-                        <CheckBox fx:id="caCavesEnabledCheckbox" text="Enable CA Caves"/>
-                        <VBox fx:id="caParamsBox" spacing="4" disable="true">
-                            <Label text="Fill Percent"/>
-                            <TextField fx:id="caFillPercentInput" promptText="Fill %"/>
-                            <Label text="Iterations"/>
-                            <TextField fx:id="caIterationsInput" promptText="Iterations"/>
-                            <Label text="Neighbour Threshold"/>
-                            <TextField fx:id="caNeighbourThresholdInput" promptText="Threshold"/>
-                        </VBox>
+                        <Button fx:id="addCaveButton" text="+ Add Cave Generator" maxWidth="Infinity"/>
+                        <VBox fx:id="caveInstancesBox" spacing="4"/>
                     </VBox>
                 </TitledPane>
 

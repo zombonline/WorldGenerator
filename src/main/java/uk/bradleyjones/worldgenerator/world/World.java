@@ -1,17 +1,19 @@
 package uk.bradleyjones.worldgenerator.world;
 
-import uk.bradleyjones.worldgenerator.world.caves.CACaveConfig;
-import uk.bradleyjones.worldgenerator.world.caves.CACaveGenerator;
-import uk.bradleyjones.worldgenerator.world.caves.CaveGenerator;
+import uk.bradleyjones.worldgenerator.world.caves.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class World {
 
     public WorldConfig worldConfig = new WorldConfig();
     public TerrainConfig terrainConfig = new TerrainConfig();
-    public CACaveConfig caveConfig = new CACaveConfig();
+    public List<CaveGeneratorInstance> caveInstances = new ArrayList<>();
 
     private TerrainHeightGenerator terrainHeightGenerator;
-    private CaveGenerator caveGenerator;
+    private List<CaveGenerator> caveGenerators = new ArrayList<>();
+
 
     public World() {
         regenerate();
@@ -31,7 +33,7 @@ public class World {
 
         int depth = y - surfaceY;
 
-        if (depth > 4 && caveConfig.enabled && caveGenerator != null && caveGenerator.isCave(x, y)) {
+        if (depth > 4 && isCave(x,y)) {
             return surfaceY >= clampedWaterLevel ? TileType.WATER : TileType.AIR;
         }
 
@@ -40,12 +42,35 @@ public class World {
         return TileType.STONE;
     }
 
+    private boolean isCave(int x, int y) {
+        return caveGenerators.stream().anyMatch(g -> g.isCave(x, y));
+    }
+
+    public void addCaveInstance(CaveGeneratorType type) {
+        caveInstances.add(new CaveGeneratorInstance(type));
+    }
+
+    public void removeCaveInstance(CaveGeneratorInstance instance) {
+        caveInstances.remove(instance);
+    }
+
     public void regenerate() {
         terrainHeightGenerator = new TerrainHeightGenerator(worldConfig.seed, worldConfig.height, terrainConfig);
-        if (caveConfig.enabled) {
-            caveGenerator = new CACaveGenerator(worldConfig.width, worldConfig.height, worldConfig.seed, caveConfig.fillPercent, caveConfig.iterations, caveConfig.neighbourThreshold);
-        } else {
-            caveGenerator = null;
+
+        caveGenerators.clear();
+        for (CaveGeneratorInstance instance : caveInstances) {
+            if (!instance.enabled) continue;
+            switch (instance.type) {
+                case CA -> caveGenerators.add(new CACaveGenerator(
+                        worldConfig.width, worldConfig.height, worldConfig.seed,
+                        instance.caConfig
+                ));
+                case NOISE -> caveGenerators.add(new NoiseCaveGenerator(
+                        worldConfig.width, worldConfig.height, worldConfig.seed,
+                        instance.noiseConfig
+                        ));
+                // NOISE and DRUNKARD cases added later
+            }
         }
     }
 }

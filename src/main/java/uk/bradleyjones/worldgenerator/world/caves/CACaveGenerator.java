@@ -7,18 +7,12 @@ public class CACaveGenerator implements CaveGenerator {
     private final boolean[][] caveGrid;
     private final int width;
     private final int height;
+    private CACaveConfig config;
 
-    // Tunable parameters
-    private final int fillPercent;
-    private final int iterations;
-    private final int neighbourThreshold;
-
-    public CACaveGenerator(int width, int height, long seed, int fillPercent, int iterations, int neighbourThreshold) {
+    public CACaveGenerator(int width, int height, long seed, CACaveConfig config) {
         this.width = width;
         this.height = height;
-        this.fillPercent = fillPercent;
-        this.iterations = iterations;
-        this.neighbourThreshold = neighbourThreshold;
+        this.config = config;
         this.caveGrid = new boolean[width][height];
         generate(seed);
     }
@@ -29,12 +23,12 @@ public class CACaveGenerator implements CaveGenerator {
         // Step 1 - randomly fill grid
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                caveGrid[x][y] = random.nextInt(100) < fillPercent;
+                caveGrid[x][y] = random.nextInt(100) < config.fillPercent;
             }
         }
 
         // Step 2 - run CA iterations
-        for (int i = 0; i < iterations; i++) {
+        for (int i = 0; i < config.iterations; i++) {
             applyRule();
         }
     }
@@ -45,7 +39,7 @@ public class CACaveGenerator implements CaveGenerator {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int stoneNeighbours = countStoneNeighbours(x, y);
-                newGrid[x][y] = stoneNeighbours >= neighbourThreshold;
+                newGrid[x][y] = stoneNeighbours >= config.neighbourThreshold;
             }
         }
 
