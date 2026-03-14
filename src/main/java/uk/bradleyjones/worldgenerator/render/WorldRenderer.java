@@ -26,13 +26,17 @@ public class WorldRenderer {
         double offsetY = -(topLeftY - baseTileY) * scaledTileSize;
 
         for (int y = 0; y < tilesY + 1; y++) {
+
             for (int x = 0; x < tilesX + 1; x++) {
                 int worldX = baseTileX + x;
                 int worldY = baseTileY + y;
+                if (worldX < 0 || worldX >= world.worldConfig.width || worldY < 0 || worldY >= world.worldConfig.height) {
+                    continue;
+                }
 
                 TileType tile = world.getTile(worldX, worldY);
 
-                gc.setFill(colorFor(tile));
+                gc.setFill(colorFor(tile, world, worldX, worldY));
                 gc.fillRect(
                         x * scaledTileSize + offsetX,
                         y * scaledTileSize + offsetY,
@@ -43,15 +47,16 @@ public class WorldRenderer {
         }
     }
 
-    private Color colorFor(TileType tile) {
+    private Color colorFor(TileType tile, World world, int x, int y) {
         return switch (tile) {
             case GRASS -> Color.FORESTGREEN;
             case SAND -> Color.SANDYBROWN;
             case WATER -> Color.DEEPSKYBLUE;
             case STONE -> Color.GRAY;
-            case AIR -> Color.LIGHTBLUE;
+            case AIR -> Color.LIGHTBLUE.interpolate(Color.BLACK, world.getExposedLevel(x, y));
             case DIRT -> Color.BROWN;
             case GRAVEL -> Color.LIGHTGRAY;
         };
     }
+
 }

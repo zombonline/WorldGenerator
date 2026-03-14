@@ -78,4 +78,11 @@ public class World {
         }
         System.out.println(caveGenerators.size());
     }
+
+    public double getExposedLevel(int x, int y) {
+        if (getTile(x, y) != TileType.AIR) return 0;
+        int surfaceY = terrainHeightGenerator.getHeight(x);
+        return y > surfaceY ? 1.0 : 0.0;
+    }
+
 }
