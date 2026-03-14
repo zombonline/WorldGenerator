@@ -137,7 +137,7 @@ public class WorldGeneratorController implements CameraListener {
 
         // Type dropdown
         ComboBox<CaveGeneratorType> typeDropdown = new ComboBox<>();
-        typeDropdown.getItems().addAll(CaveGeneratorType.CA, CaveGeneratorType.NOISE);
+        typeDropdown.getItems().addAll(CaveGeneratorType.CA, CaveGeneratorType.NOISE, CaveGeneratorType.DRUNKARD);
         typeDropdown.setValue(instance.type);
         typeDropdown.setMaxWidth(Double.MAX_VALUE);
 
@@ -197,11 +197,29 @@ public class WorldGeneratorController implements CameraListener {
         noiseParamsSection.getChildren().addAll(scaleXLabel, scaleXField, scaleYLabel, scaleYField,
                 lowThreshLabel, lowThreshField, uppThreshLabel, uppThreshField);
 
+        //Drunkard Params
+        VBox drunkardParamsSection = new VBox(4);
+        Label walkerCountLabel = new Label("Walker Count");
+        TextField walkerCountField = new TextField(String.valueOf(instance.drunkardConfig.walkerCount));
+        walkerCountField.textProperty().addListener((obs, o, n) -> {
+            try { instance.drunkardConfig.walkerCount = Integer.parseInt(n); }
+            catch (NumberFormatException ignored) {}
+        });
+        Label stepsLabel = new Label("Walker Steps");
+        TextField stepsField = new TextField(String.valueOf(instance.drunkardConfig.steps));
+        stepsField.textProperty().addListener((obs, o, n) -> {
+            try { instance.drunkardConfig.steps = Integer.parseInt(n); }
+            catch (NumberFormatException ignored) {}
+        });
+        drunkardParamsSection.getChildren().addAll(walkerCountLabel,walkerCountField,stepsLabel,stepsField);
+
         // Set initial visibility
         caParamsSection.setVisible(instance.type == CaveGeneratorType.CA);
         caParamsSection.setManaged(instance.type == CaveGeneratorType.CA);
         noiseParamsSection.setVisible(instance.type == CaveGeneratorType.NOISE);
         noiseParamsSection.setManaged(instance.type == CaveGeneratorType.NOISE);
+        drunkardParamsSection.setVisible(instance.type == CaveGeneratorType.DRUNKARD);
+        drunkardParamsSection.setManaged(instance.type == CaveGeneratorType.DRUNKARD);
 
         // Type dropdown listener
         typeDropdown.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -210,6 +228,8 @@ public class WorldGeneratorController implements CameraListener {
             caParamsSection.setManaged(newVal == CaveGeneratorType.CA);
             noiseParamsSection.setVisible(newVal == CaveGeneratorType.NOISE);
             noiseParamsSection.setManaged(newVal == CaveGeneratorType.NOISE);
+            drunkardParamsSection.setVisible(newVal == CaveGeneratorType.DRUNKARD);
+            drunkardParamsSection.setManaged(newVal == CaveGeneratorType.DRUNKARD);
             pane.setText(switch (newVal) {
                 case CA -> "CA Cave Generator";
                 case NOISE -> "Noise Cave Generator";
@@ -225,7 +245,7 @@ public class WorldGeneratorController implements CameraListener {
             caveInstancesBox.getChildren().remove(pane);
         });
 
-        params.getChildren().addAll(enabledBox, typeDropdown, caParamsSection, noiseParamsSection, removeButton);
+        params.getChildren().addAll(enabledBox, typeDropdown, caParamsSection, noiseParamsSection, drunkardParamsSection, removeButton);
         caveInstancesBox.getChildren().add(pane);
     }
 

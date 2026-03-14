@@ -59,6 +59,7 @@ public class World {
 
         caveGenerators.clear();
         for (CaveGeneratorInstance instance : caveInstances) {
+            System.out.println("Instance: " + instance.type + " enabled: " + instance.enabled);
             if (!instance.enabled) continue;
             switch (instance.type) {
                 case CA -> caveGenerators.add(new CACaveGenerator(
@@ -68,9 +69,13 @@ public class World {
                 case NOISE -> caveGenerators.add(new NoiseCaveGenerator(
                         worldConfig.width, worldConfig.height, worldConfig.seed,
                         instance.noiseConfig
-                        ));
-                // NOISE and DRUNKARD cases added later
+                ));
+                case DRUNKARD -> caveGenerators.add(new DrunkardCaveGenerator(
+                        worldConfig.width, worldConfig.height, worldConfig.seed,
+                        instance.drunkardConfig
+                ));
             }
         }
+        System.out.println(caveGenerators.size());
     }
 }
