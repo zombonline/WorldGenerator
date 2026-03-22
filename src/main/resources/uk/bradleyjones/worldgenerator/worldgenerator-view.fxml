@@ -62,6 +62,31 @@
                     </VBox>
                 </TitledPane>
 
+                <!-- Biome Distribution section -->
+                <TitledPane text="Biome Distribution" animated="true">
+                    <VBox spacing="4" style="-fx-padding: 4;">
+                        <Label text="Noise Scale"/>
+                        <TextField fx:id="biomeNoiseScaleInput" promptText="Noise Scale"/>
+                        <VBox fx:id="biomeWeightsBox" spacing="4"/>
+                    </VBox>
+                </TitledPane>
+
+                <!-- Biome Overrides section -->
+                <TitledPane text="Biome Overrides" animated="true">
+                    <VBox spacing="4" style="-fx-padding: 4;">
+                        <Label text="Beach Width"/>
+                        <TextField fx:id="beachWidthInput" promptText="Beach Width"/>
+                        <Label text="Mountain Height"/>
+                        <TextField fx:id="mountainHeightInput" promptText="Mountain Height"/>
+                        <Label text="Peak Height"/>
+                        <TextField fx:id="peakHeightInput" promptText="Peak Height"/>
+                        <Label text="Lake Min Width"/>
+                        <TextField fx:id="lakeMinWidthInput" promptText="Lake Min Width"/>
+                        <Label text="Ocean Min Width"/>
+                        <TextField fx:id="oceanMinWidthInput" promptText="Ocean Min Width"/>
+                    </VBox>
+                </TitledPane>
+
             </VBox>
         </ScrollPane>
     </left>

@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -11,6 +12,7 @@ import uk.bradleyjones.worldgenerator.render.Camera;
 import uk.bradleyjones.worldgenerator.render.CameraListener;
 import uk.bradleyjones.worldgenerator.render.WorldRenderer;
 import uk.bradleyjones.worldgenerator.world.World;
+import uk.bradleyjones.worldgenerator.world.biomes.BiomeEntry;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorInstance;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorType;
 
@@ -35,11 +37,13 @@ public class WorldGeneratorController implements CameraListener {
     @FXML public VBox caveInstancesBox;
     @FXML public Button addCaveButton;
 
-//    @FXML public VBox caParamsBox;
-//    @FXML public CheckBox caCavesEnabledCheckbox;
-//    @FXML public TextField caFillPercentInput;
-//    @FXML public TextField caIterationsInput;
-//    @FXML public TextField caNeighbourThresholdInput;
+    @FXML public TextField biomeNoiseScaleInput;
+    @FXML public TextField beachWidthInput;
+    @FXML public TextField mountainHeightInput;
+    @FXML public TextField peakHeightInput;
+    @FXML public TextField lakeMinWidthInput;
+    @FXML public TextField oceanMinWidthInput;
+    @FXML public VBox biomeWeightsBox;
 
     public static World world;
     public static WorldRenderer renderer;
@@ -73,21 +77,25 @@ public class WorldGeneratorController implements CameraListener {
 
 
 
-//        caCavesEnabledCheckbox.setSelected(world.caveConfig.enabled);
-//        caFillPercentInput.setText(String.valueOf(world.caveConfig.fillPercent));
-//        caIterationsInput.setText(String.valueOf(world.caveConfig.iterations));
-//        caNeighbourThresholdInput.setText(String.valueOf(world.caveConfig.neighbourThreshold));
-//
-//        caParamsBox.setDisable(!world.caveConfig.enabled);
-//        caCavesEnabledCheckbox.selectedProperty().addListener((obs, oldVal, newVal) ->
-//                caParamsBox.setDisable(!newVal)
-//        );
-
         addCaveButton.setOnAction(e -> {
             world.addCaveInstance(CaveGeneratorType.CA);
             CaveGeneratorInstance instance = world.caveInstances.get(world.caveInstances.size() - 1);
             addCaveInstanceUI(instance);
         });
+
+// Populate biome distribution
+        biomeNoiseScaleInput.setText(String.valueOf(world.biomeGeneratorConfig.noiseScale));
+        for (BiomeEntry entry : world.biomeGeneratorConfig.biomes) {
+            addBiomeWeightUI(entry);
+        }
+
+// Populate biome overrides
+        beachWidthInput.setText(String.valueOf(world.biomeOverrideConfig.beachWidth));
+        mountainHeightInput.setText(String.valueOf(world.biomeOverrideConfig.mountainHeight));
+        peakHeightInput.setText(String.valueOf(world.biomeOverrideConfig.peakHeight));
+        lakeMinWidthInput.setText(String.valueOf(world.biomeOverrideConfig.lakeMinWidth));
+        oceanMinWidthInput.setText(String.valueOf(world.biomeOverrideConfig.oceanMinWidth));
+
 
         regenButton.setOnAction(e -> handleInitializeWorld());
         draw();
@@ -115,10 +123,12 @@ public class WorldGeneratorController implements CameraListener {
             world.terrainConfig.scaleB = Double.parseDouble(noiseScaleBInput.getText());
             world.terrainConfig.scaleC = Double.parseDouble(noiseScaleCInput.getText());
 
-//            world.caveConfig.enabled = caCavesEnabledCheckbox.isSelected();
-//            world.caveConfig.fillPercent = Integer.parseInt(caFillPercentInput.getText());
-//            world.caveConfig.iterations = Integer.parseInt(caIterationsInput.getText());
-//            world.caveConfig.neighbourThreshold = Integer.parseInt(caNeighbourThresholdInput.getText());
+            world.biomeGeneratorConfig.noiseScale = Float.parseFloat(biomeNoiseScaleInput.getText());
+            world.biomeOverrideConfig.beachWidth = Integer.parseInt(beachWidthInput.getText());
+            world.biomeOverrideConfig.mountainHeight = Integer.parseInt(mountainHeightInput.getText());
+            world.biomeOverrideConfig.peakHeight = Integer.parseInt(peakHeightInput.getText());
+            world.biomeOverrideConfig.lakeMinWidth = Integer.parseInt(lakeMinWidthInput.getText());
+            world.biomeOverrideConfig.oceanMinWidth = Integer.parseInt(oceanMinWidthInput.getText());
 
             world.regenerate();
             draw();
@@ -247,6 +257,23 @@ public class WorldGeneratorController implements CameraListener {
 
         params.getChildren().addAll(enabledBox, typeDropdown, caParamsSection, noiseParamsSection, drunkardParamsSection, removeButton);
         caveInstancesBox.getChildren().add(pane);
+    }
+
+    private void addBiomeWeightUI(BiomeEntry entry) {
+        HBox row = new HBox(4);
+        row.setStyle("-fx-padding: 2;");
+
+        Label nameLabel = new Label(entry.type.name);
+        nameLabel.setPrefWidth(80);
+
+        TextField weightField = new TextField(String.valueOf(entry.weight));
+        weightField.textProperty().addListener((obs, o, n) -> {
+            try { entry.weight = Float.parseFloat(n); }
+            catch (NumberFormatException ignored) {}
+        });
+
+        row.getChildren().addAll(nameLabel, weightField);
+        biomeWeightsBox.getChildren().add(row);
     }
 
     @Override

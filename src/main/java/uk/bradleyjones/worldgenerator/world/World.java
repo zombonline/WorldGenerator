@@ -1,5 +1,8 @@
 package uk.bradleyjones.worldgenerator.world;
 
+import uk.bradleyjones.worldgenerator.world.biomes.BiomeGenerator;
+import uk.bradleyjones.worldgenerator.world.biomes.BiomeGeneratorConfig;
+import uk.bradleyjones.worldgenerator.world.biomes.BiomeOverrideConfig;
 import uk.bradleyjones.worldgenerator.world.caves.*;
 
 import java.util.ArrayList;
@@ -9,9 +12,12 @@ public class World {
 
     public WorldConfig worldConfig = new WorldConfig();
     public TerrainConfig terrainConfig = new TerrainConfig();
+    public BiomeGeneratorConfig biomeGeneratorConfig = new BiomeGeneratorConfig();
+    public BiomeOverrideConfig biomeOverrideConfig = new BiomeOverrideConfig();
     public List<CaveGeneratorInstance> caveInstances = new ArrayList<>();
 
     private TerrainHeightGenerator terrainHeightGenerator;
+    private BiomeGenerator biomeGenerator;
     private List<CaveGenerator> caveGenerators = new ArrayList<>();
 
 
@@ -26,7 +32,7 @@ public class World {
 
         int surfaceY = terrainHeightGenerator.getHeight(x);
         int clampedWaterLevel = worldConfig.height - Math.min(worldConfig.waterLevel, worldConfig.height - 1);
-
+        int flippedBaseHeight = worldConfig.height - Math.min(terrainConfig.baseHeight, worldConfig.height - 1);
         if (y < surfaceY) {
             return y > clampedWaterLevel ? TileType.WATER : TileType.AIR;
         }
@@ -34,11 +40,11 @@ public class World {
         int depth = y - surfaceY;
 
         if (depth > 4 && isCave(x,y)) {
-            return surfaceY >= clampedWaterLevel ? TileType.WATER : TileType.AIR;
+            return TileType.AIR;
         }
 
-        if (depth == 0) return surfaceY > clampedWaterLevel ? TileType.SAND : TileType.GRASS;
-        if (depth <= 4) return surfaceY > clampedWaterLevel ? TileType.SAND : TileType.DIRT;
+        if (depth == 0) return biomeGenerator.getBiome(x, surfaceY, flippedBaseHeight, clampedWaterLevel).surfaceTile;
+        if (depth <= 4) return biomeGenerator.getBiome(x, surfaceY, flippedBaseHeight, clampedWaterLevel).subsurfaceTile;
         return TileType.STONE;
     }
 
@@ -57,9 +63,18 @@ public class World {
     public void regenerate() {
         terrainHeightGenerator = new TerrainHeightGenerator(worldConfig.seed, worldConfig.height, terrainConfig);
 
+        biomeOverrideConfig.waterLevelRef = worldConfig.waterLevel;
+        biomeGenerator = new BiomeGenerator(
+                worldConfig.seed + 100,
+                biomeGeneratorConfig,
+                biomeOverrideConfig,
+                terrainHeightGenerator,
+                worldConfig.width,
+                worldConfig.height
+        );
+
         caveGenerators.clear();
         for (CaveGeneratorInstance instance : caveInstances) {
-            System.out.println("Instance: " + instance.type + " enabled: " + instance.enabled);
             if (!instance.enabled) continue;
             switch (instance.type) {
                 case CA -> caveGenerators.add(new CACaveGenerator(
@@ -76,7 +91,6 @@ public class World {
                 ));
             }
         }
-        System.out.println(caveGenerators.size());
     }
 
     public double getExposedLevel(int x, int y) {

@@ -7,5 +7,6 @@ public enum TileType {
     STONE,
     SAND,
     WATER,
-    GRAVEL
+    GRAVEL,
+    SNOW
 }

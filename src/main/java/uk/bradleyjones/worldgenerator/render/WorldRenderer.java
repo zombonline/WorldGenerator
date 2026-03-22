@@ -30,12 +30,19 @@ public class WorldRenderer {
             for (int x = 0; x < tilesX + 1; x++) {
                 int worldX = baseTileX + x;
                 int worldY = baseTileY + y;
+
                 if (worldX < 0 || worldX >= world.worldConfig.width || worldY < 0 || worldY >= world.worldConfig.height) {
+                    gc.setFill(Color.BLACK);
+                    gc.fillRect(
+                            x * scaledTileSize + offsetX,
+                            y * scaledTileSize + offsetY,
+                            scaledTileSize,
+                            scaledTileSize
+                    );
                     continue;
                 }
 
                 TileType tile = world.getTile(worldX, worldY);
-
                 gc.setFill(colorFor(tile, world, worldX, worldY));
                 gc.fillRect(
                         x * scaledTileSize + offsetX,
@@ -56,6 +63,8 @@ public class WorldRenderer {
             case AIR -> Color.LIGHTBLUE.interpolate(Color.BLACK, world.getExposedLevel(x, y));
             case DIRT -> Color.BROWN;
             case GRAVEL -> Color.LIGHTGRAY;
+            case SNOW -> Color.WHITE;
+            default -> Color.HOTPINK;
         };
     }
 
