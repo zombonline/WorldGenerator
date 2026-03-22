@@ -1,9 +1,12 @@
 package uk.bradleyjones.worldgenerator.world;
 
+import uk.bradleyjones.worldgenerator.world.biomes.Biome;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeGenerator;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeGeneratorConfig;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeOverrideConfig;
 import uk.bradleyjones.worldgenerator.world.caves.*;
+import uk.bradleyjones.worldgenerator.world.decorations.Decoration;
+import uk.bradleyjones.worldgenerator.world.decorations.DecorationGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +22,21 @@ public class World {
     private TerrainHeightGenerator terrainHeightGenerator;
     private BiomeGenerator biomeGenerator;
     private List<CaveGenerator> caveGenerators = new ArrayList<>();
+    private DecorationGenerator decorationGenerator;
 
 
     public World() {
         regenerate();
     }
 
-    public TileType getTile(int x, int y) {
+    public TileType getTile(int x, int y, boolean ignoreDecorations) {
         if (x < 0 || x >= worldConfig.width || y < 0 || y >= worldConfig.height) {
             return TileType.AIR;
         }
-
+        if(!ignoreDecorations) {
+            TileType decoration = decorationGenerator != null ? decorationGenerator.getTile(x, y) : null;
+            if (decoration != null) return decoration;
+        }
         int surfaceY = terrainHeightGenerator.getHeight(x);
         int clampedWaterLevel = worldConfig.height - Math.min(worldConfig.waterLevel, worldConfig.height - 1);
         int flippedBaseHeight = worldConfig.height - Math.min(terrainConfig.baseHeight, worldConfig.height - 1);
@@ -42,14 +49,22 @@ public class World {
         if (depth > 4 && isCave(x,y)) {
             return TileType.AIR;
         }
-
         if (depth == 0) return biomeGenerator.getBiome(x, surfaceY, flippedBaseHeight, clampedWaterLevel).surfaceTile;
         if (depth <= 4) return biomeGenerator.getBiome(x, surfaceY, flippedBaseHeight, clampedWaterLevel).subsurfaceTile;
+
+
         return TileType.STONE;
     }
 
     private boolean isCave(int x, int y) {
         return caveGenerators.stream().anyMatch(g -> g.isCave(x, y));
+    }
+
+    public Biome getBiomeAt(int x, int y) {
+        int surfaceY = terrainHeightGenerator.getHeight(x);
+        int flippedBaseHeight = worldConfig.height - Math.min(terrainConfig.baseHeight, worldConfig.height - 1);
+        int clampedWaterLevel = worldConfig.height - Math.min(worldConfig.waterLevel, worldConfig.height - 1);
+        return biomeGenerator.getBiome(x, surfaceY, flippedBaseHeight, clampedWaterLevel);
     }
 
     public void addCaveInstance(CaveGeneratorType type) {
@@ -91,10 +106,11 @@ public class World {
                 ));
             }
         }
+        decorationGenerator = new DecorationGenerator(this, worldConfig.seed, Decoration.ALL);
     }
 
     public double getExposedLevel(int x, int y) {
-        if (getTile(x, y) != TileType.AIR) return 0;
+        if (getTile(x, y, true) != TileType.AIR) return 0;
         int surfaceY = terrainHeightGenerator.getHeight(x);
         return y > surfaceY ? 1.0 : 0.0;
     }

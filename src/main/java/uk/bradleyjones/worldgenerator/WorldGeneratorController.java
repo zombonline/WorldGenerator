@@ -53,6 +53,7 @@ public class WorldGeneratorController implements CameraListener {
     public void initialize() {
         world = new World();
         renderer = new WorldRenderer();
+        renderer.loadImageMap();
         renderer.buildWorldImageAsync(world);
         camera = new Camera();
         camera.addListener(this);

@@ -4,7 +4,7 @@ module uk.bradleyjones.worldgenerator {
     requires java.desktop;
     requires opensimplex;
 
-
     opens uk.bradleyjones.worldgenerator to javafx.fxml;
+    opens uk.bradleyjones.worldgenerator.images;
     exports uk.bradleyjones.worldgenerator;
 }

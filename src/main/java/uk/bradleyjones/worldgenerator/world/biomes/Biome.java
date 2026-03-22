@@ -2,6 +2,9 @@ package uk.bradleyjones.worldgenerator.world.biomes;
 
 import uk.bradleyjones.worldgenerator.world.TileType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Biome {
 
     public Biome(String name, TileType surfaceTile, TileType subsurfaceTile) {
@@ -24,6 +27,7 @@ public class Biome {
     public static final Biome LAKE = new Biome("Lake", TileType.SAND, TileType.SAND);
     public static final Biome MOUNTAIN = new Biome("Mountain", TileType.STONE, TileType.STONE);
     public static final Biome MOUNTAIN_PEAK = new Biome("Mountain PEAK", TileType.SNOW, TileType.STONE);
+    public static final List<Biome> ALL = List.of(PLAINS,DESERT,TUNDRA,FOREST,BEACH,OCEAN,LAKE,MOUNTAIN,MOUNTAIN_PEAK);
 
 }
 

@@ -2,19 +2,52 @@ package uk.bradleyjones.worldgenerator.render;
 
 import javafx.concurrent.Task;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import uk.bradleyjones.worldgenerator.world.TileType;
 import uk.bradleyjones.worldgenerator.world.World;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
 public class WorldRenderer {
 
+    private Map<TileType, Image> tileTypeImageMap = new HashMap<>();
     private WritableImage worldImage;
     private int imageWidth;
     private int imageHeight;
     private static final double IMAGE_CACHE_ZOOM_THRESHOLD = .5;
     private static final int TILE_SIZE = 8;
+
+    public void loadImageMap() {
+        TileType[] tileTypes = TileType.values();
+
+        for (TileType tileType : tileTypes) {
+            String name = "tile_" + tileType.toString().toLowerCase() + ".png";
+            String path = "uk/bradleyjones/worldgenerator/images/" + name;
+
+            try (InputStream stream = WorldRenderer.class
+                    .getClassLoader()
+                    .getResourceAsStream(path)) {
+
+                if (stream == null) {
+                    System.err.println("Not found: " + path);
+                    continue;
+                }
+
+                Image image = new Image(stream);
+                tileTypeImageMap.put(tileType, image);
+                System.out.println("Loaded: " + name);
+
+            } catch (Exception e) {
+                System.err.println("Error loading: " + name);
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void buildWorldImageAsync(World world) {
         worldImage = null; // clear old image so tile renderer takes over
@@ -28,7 +61,7 @@ public class WorldRenderer {
                 PixelWriter pw = img.getPixelWriter();
                 for (int y = 0; y < h; y++) {
                     for (int x = 0; x < w; x++) {
-                        TileType tile = world.getTile(x, y);
+                        TileType tile = world.getTile(x, y, false);
                         Color colour = colorFor(tile, world, x, y);
                         pw.setColor(x, y, colour);
                     }
@@ -88,15 +121,33 @@ public class WorldRenderer {
                     continue;
                 }
 
-                TileType tile = world.getTile(worldX, worldY);
-                gc.setFill(colorFor(tile, world, worldX, worldY));
-                gc.fillRect(
-                        Math.floor(x * scaledTileSize + offsetX),
-                        Math.floor(y * scaledTileSize + offsetY),
-                        Math.ceil(scaledTileSize),
-                        Math.ceil(scaledTileSize)
-                );
+                TileType tile = world.getTile(worldX, worldY, false);
+                double modifiedX = Math.floor(x * scaledTileSize + offsetX);
+                double modifiedY = Math.floor(y * scaledTileSize + offsetY);
+                placeTileImageAndColor(gc, world, tile, worldX, worldY, modifiedX, modifiedY, scaledTileSize);
             }
+        }
+    }
+
+    private void placeTileImageAndColor(GraphicsContext gc, World world, TileType tile, int worldX, int worldY, double modifiedX, double modifiedY, double scaledTileSize) {
+        if(tileTypeImageMap.containsKey(tile)) {
+            gc.setFill(colorFor(world.getTile(worldX,worldY,true), world, worldX, worldY));
+            gc.fillRect(
+                    modifiedX,
+                    modifiedY,
+                    Math.ceil(scaledTileSize),
+                    Math.ceil(scaledTileSize)
+            );
+            gc.drawImage(tileTypeImageMap.get(tile), modifiedX, modifiedY, Math.ceil(scaledTileSize), Math.ceil(scaledTileSize));
+        }
+        else {
+            gc.setFill(colorFor(tile, world, worldX, worldY));
+            gc.fillRect(
+                    modifiedX,
+                    modifiedY,
+                    Math.ceil(scaledTileSize),
+                    Math.ceil(scaledTileSize)
+            );
         }
     }
 
@@ -139,6 +190,7 @@ public class WorldRenderer {
                 dstX, dstY, dstW, dstH);
     }
 
+
     private Color colorFor(TileType tile, World world, int x, int y) {
         return switch (tile) {
             case GRASS -> Color.FORESTGREEN;
@@ -149,6 +201,8 @@ public class WorldRenderer {
             case DIRT -> Color.BROWN;
             case GRAVEL -> Color.LIGHTGRAY;
             case SNOW -> Color.WHITE;
+            case LEAVES -> Color.DARKGREEN;
+            case LOG -> Color.SADDLEBROWN;
             default -> Color.HOTPINK;
         };
     }
