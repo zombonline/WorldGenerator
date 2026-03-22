@@ -53,6 +53,7 @@ public class WorldGeneratorController implements CameraListener {
     public void initialize() {
         world = new World();
         renderer = new WorldRenderer();
+        renderer.buildWorldImageAsync(world);
         camera = new Camera();
         camera.addListener(this);
 
@@ -131,6 +132,8 @@ public class WorldGeneratorController implements CameraListener {
             world.biomeOverrideConfig.oceanMinWidth = Integer.parseInt(oceanMinWidthInput.getText());
 
             world.regenerate();
+            renderer.buildWorldImageAsync(world);
+            draw();
             draw();
         } catch (NumberFormatException e) {
             System.out.println("NumberFormatException: " + e.getMessage());
