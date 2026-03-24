@@ -1,5 +1,6 @@
 package uk.bradleyjones.worldgenerator.world;
 
+import com.raylabz.opensimplex.OpenSimplexNoise;
 import uk.bradleyjones.worldgenerator.world.biomes.Biome;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeGenerator;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeGeneratorConfig;
@@ -23,13 +24,14 @@ public class World {
     private BiomeGenerator biomeGenerator;
     private List<CaveGenerator> caveGenerators = new ArrayList<>();
     private DecorationGenerator decorationGenerator;
-
+    OpenSimplexNoise noise;
 
     public World() {
         regenerate();
     }
 
     public TileType getTile(int x, int y, boolean ignoreDecorations) {
+        int minDepth = 2, maxDepth = 30;
         if (x < 0 || x >= worldConfig.width || y < 0 || y >= worldConfig.height) {
             return TileType.AIR;
         }
@@ -38,6 +40,9 @@ public class World {
             if (decoration != null) return decoration;
         }
         int surfaceY = terrainHeightGenerator.getHeight(x);
+        double raw = noise.getNoise2D(x,0).getValue();
+        double normalized = (raw + 1)/2;
+        int subsurfaceY =(int)(normalized * (maxDepth-minDepth) + minDepth);
         int clampedWaterLevel = worldConfig.height - Math.min(worldConfig.waterLevel, worldConfig.height - 1);
         int flippedBaseHeight = worldConfig.height - Math.min(terrainConfig.baseHeight, worldConfig.height - 1);
         if (y < surfaceY) {
@@ -46,11 +51,12 @@ public class World {
 
         int depth = y - surfaceY;
 
-        if (depth > 4 && isCave(x,y)) {
+        if (depth > subsurfaceY && isCave(x,y)) {
             return TileType.AIR;
         }
         if (depth == 0) return biomeGenerator.getBiome(x, surfaceY, flippedBaseHeight, clampedWaterLevel).surfaceTile;
-        if (depth <= 4) return biomeGenerator.getBiome(x, surfaceY, flippedBaseHeight, clampedWaterLevel).subsurfaceTile;
+
+        if (depth <= subsurfaceY) return biomeGenerator.getBiome(x, surfaceY, flippedBaseHeight, clampedWaterLevel).subsurfaceTile;
 
 
         return TileType.STONE;
@@ -76,6 +82,7 @@ public class World {
     }
 
     public void regenerate() {
+        noise = new OpenSimplexNoise(worldConfig.seed*2L);
         terrainHeightGenerator = new TerrainHeightGenerator(worldConfig.seed, worldConfig.height, terrainConfig);
 
         biomeOverrideConfig.waterLevelRef = worldConfig.waterLevel;

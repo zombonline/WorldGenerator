@@ -95,6 +95,22 @@ public class Decoration {
             .02F,
             PlacementSide.FLOOR
     );
+    public static final Decoration FOREST_TREE = new Decoration(
+            "Tree",
+            parser.parse(new String[]{
+                    " L ",
+                    "LLL",
+                    "LLL",
+                    " T ",
+                    " T ",
+                    " T ",
+                    " * "
+            }, Map.of('L', TileType.LEAVES, 'T', TileType.LOG)),
+            List.of(Biome.FOREST),
+            TileType.GRASS,
+            .5F,
+            PlacementSide.FLOOR
+    );
     public static final Decoration HOUSE = new Decoration(
             "House",
             parser.parse(new String[]{
@@ -138,9 +154,21 @@ public class Decoration {
             .3F,
             PlacementSide.UNDERWATER_FLOOR
     );
+    public static final Decoration CACTUS = new Decoration(
+            "Cactus",
+            parser.parse(new String[]{
+                    "C",
+                    "C",
+                    "*"
+            }, Map.of('C', TileType.CACTUS)),
+            List.of(Biome.DESERT),
+            TileType.SAND,
+            .05F,
+            PlacementSide.FLOOR
+    );
 
 
-    public static final List<Decoration> ALL = List.of(FLOWER,HANGING_RED_MOSS,TREE,HOUSE, SEAWEED, SEAWEED_SMALL, HANGING_MOSS, PINK_MUSHROOM, RED_MUSHROOM);
+    public static final List<Decoration> ALL = List.of(FLOWER,HANGING_RED_MOSS,TREE, FOREST_TREE, HOUSE, SEAWEED, SEAWEED_SMALL, HANGING_MOSS, PINK_MUSHROOM, RED_MUSHROOM, CACTUS);
 
 
 }

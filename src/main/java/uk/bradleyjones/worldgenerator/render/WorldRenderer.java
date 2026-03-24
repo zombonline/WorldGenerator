@@ -203,6 +203,7 @@ public class WorldRenderer {
             case SNOW -> Color.WHITE;
             case LEAVES -> Color.DARKGREEN;
             case LOG -> Color.SADDLEBROWN;
+            case CACTUS -> Color.LIMEGREEN;
             default -> Color.HOTPINK;
         };
     }

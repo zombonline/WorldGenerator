@@ -17,5 +17,6 @@ public enum TileType {
     HANGING_RED_MOSS,
     HANGING_MOSS,
     RED_MUSHROOM,
-    PINK_MUSHROOM
+    PINK_MUSHROOM,
+    CACTUS
 }
