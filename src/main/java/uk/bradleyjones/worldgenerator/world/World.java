@@ -8,6 +8,7 @@ import uk.bradleyjones.worldgenerator.world.biomes.BiomeOverrideConfig;
 import uk.bradleyjones.worldgenerator.world.caves.*;
 import uk.bradleyjones.worldgenerator.world.decorations.Decoration;
 import uk.bradleyjones.worldgenerator.world.decorations.DecorationGenerator;
+import uk.bradleyjones.worldgenerator.world.lighting.Light;
 import uk.bradleyjones.worldgenerator.world.lighting.LightingGenerator;
 
 import java.util.ArrayList;
@@ -102,8 +103,8 @@ public class World {
         lightingGenerator = new LightingGenerator(this);
     }
 
-    public double getExposedLevel(int x, int y) {
-        return lightingGenerator.getLightingLevel(x,y);
+    public Light getExposedLevel(int x, int y) {
+        return lightingGenerator.getLight(x,y);
 //        if (getTile(x, y, true) != TileType.AIR) return 0.0;
 //
 //        int surfaceY = terrainHeightGenerator.getHeight(x);

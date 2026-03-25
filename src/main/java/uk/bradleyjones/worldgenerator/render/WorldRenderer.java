@@ -197,7 +197,7 @@ public class WorldRenderer {
             case SAND -> Color.SANDYBROWN;
             case WATER -> Color.DEEPSKYBLUE;
             case STONE -> Color.GRAY;
-            case AIR -> Color.BLACK.interpolate(Color.LIGHTBLUE, world.getExposedLevel(x, y));
+            case AIR -> Color.BLACK.interpolate(world.getExposedLevel(x,y).color, world.getExposedLevel(x, y).normalizedIntensity);
             case DIRT -> Color.BROWN;
             case GRAVEL -> Color.LIGHTGRAY;
             case SNOW -> Color.WHITE;

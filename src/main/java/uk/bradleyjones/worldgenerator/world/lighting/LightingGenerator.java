@@ -1,5 +1,6 @@
 package uk.bradleyjones.worldgenerator.world.lighting;
 
+import javafx.scene.paint.Color;
 import uk.bradleyjones.worldgenerator.world.TileType;
 import uk.bradleyjones.worldgenerator.world.World;
 
@@ -8,7 +9,7 @@ import java.util.Queue;
 
 public class LightingGenerator {
     private  World world;
-    double[][] lightingMap;
+    Light[][] lightingMap;
     private int maxLightingLevel = 50;
     public LightingGenerator(World world)
     {
@@ -19,18 +20,21 @@ public class LightingGenerator {
         int width = world.getWorldConfig().width;
         int height = world.getWorldConfig().height;
 
-        lightingMap = new double[width][height];
-
-        Queue<int[]> queue = new ArrayDeque<>();
-
-        //place lights
+        lightingMap = new Light[width][height];
+        Queue<LightNode> queue = new ArrayDeque<>();
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                if (positionProvidesLighting(x, y)) {
-                    lightingMap[x][y] = maxLightingLevel;
-                    queue.add(new int[]{x, y, 0, 0});
-                } else {
-                    lightingMap[x][y] = 0;
+                lightingMap[x][y] = new Light(0, Color.BLACK, 0);
+
+                Light source = getLightSource(x, y);
+                if (source != null) {
+                    lightingMap[x][y] = new Light(
+                            source.intensity,
+                            source.color,
+                            source.intensity/maxLightingLevel
+                    );
+
+                    queue.add(new LightNode(x, y, 0, 0, lightingMap[x][y]));
                 }
             }
         }
@@ -40,14 +44,15 @@ public class LightingGenerator {
         };
 
         while (!queue.isEmpty()) {
-            int[] pos = queue.poll();
-            int x = pos[0];
-            int y = pos[1];
+            LightNode node = queue.poll();
+            int x = node.x;
+            int y = node.y;
 
-            double currentLight = lightingMap[x][y];
+            Light current = lightingMap[x][y];
+            double currentLight = current.intensity;
 
-            int px = pos[2];
-            int py = pos[3];
+            int px = node.dx;
+            int py = node.dy;
 
             for (int[] dir : directions) {
                 int dx = dir[0];
@@ -76,26 +81,51 @@ public class LightingGenerator {
                 }
 
                 if (newLight <= 0) continue;
-
                 if (world.getTile(nx, ny, true) != TileType.AIR) continue;
 
-                if (newLight > lightingMap[nx][ny]) {
-                    lightingMap[nx][ny] = newLight;
-                    queue.add(new int[]{nx, ny, dx, dy});
+                Light target = lightingMap[nx][ny];
+
+                if (newLight > 0) {
+
+                    double existing = target.intensity;
+                    double total = existing + newLight;
+                    if (total > 0) {
+                        double r =
+                                (target.color.getRed() * existing + current.color.getRed() * newLight) / total;
+
+                        double g =
+                                (target.color.getGreen() * existing + current.color.getGreen() * newLight) / total;
+
+                        double b =
+                                (target.color.getBlue() * existing + current.color.getBlue() * newLight) / total;
+
+                        target.color = Color.color(r, g, b);
+                    }
+                    // keep strongest intensity
+                    if (newLight > existing) {
+                        target.intensity = newLight;
+                        target.normalizedIntensity = newLight / maxLightingLevel;
+
+                        queue.add(new LightNode(nx, ny, dx, dy, target));
+                    }
                 }
             }
         }
     }
-    public boolean positionProvidesLighting(int x, int y )
-    {
-        if(world.getTile(x,y, true)== TileType.AIR && world.getDepthOfPosition(x,y) < 0)
-            return true;
-        if(world.getTile(x,y,false) == TileType.PINK_MUSHROOM)
-            return true;
-        return false;
-    }
+    public Light getLightSource(int x, int y) {
+        // Sunlight (above ground air)
+        if (world.getTile(x, y, true) == TileType.AIR && world.getDepthOfPosition(x, y) < 0) {
+            return new Light(maxLightingLevel, Color.LIGHTBLUE);
+        }
 
-    public double getLightingLevel(int x, int y){
-        return lightingMap[x][y]/maxLightingLevel;
+        // Mushroom glow
+        if (world.getTile(x, y, false) == TileType.PINK_MUSHROOM) {
+            return new Light(maxLightingLevel * 0.2, Color.PINK);
+        }
+
+        return null;
+    }
+    public Light getLight(int x, int y){
+        return lightingMap[x][y];
     }
 }
