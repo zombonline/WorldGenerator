@@ -1,15 +1,18 @@
 package uk.bradleyjones.worldgenerator.world.caves;
 
+import uk.bradleyjones.worldgenerator.world.World;
+
 import java.util.Random;
 
-public class CACaveGenerator implements CaveGenerator {
+public class CACaveGenerator extends CaveGenerator {
 
     private final boolean[][] caveGrid;
     private final int width;
     private final int height;
     private CACaveConfig config;
 
-    public CACaveGenerator(int width, int height, long seed, CACaveConfig config) {
+    public CACaveGenerator(int width, int height, long seed, CACaveConfig config, World world) {
+        super(config, world);
         this.width = width;
         this.height = height;
         this.config = config;
@@ -20,9 +23,9 @@ public class CACaveGenerator implements CaveGenerator {
     private void generate(long seed) {
         Random random = new Random(seed);
 
-        // Step 1 - randomly fill grid
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
+                
                 caveGrid[x][y] = random.nextInt(100) < config.fillPercent;
             }
         }
@@ -72,6 +75,6 @@ public class CACaveGenerator implements CaveGenerator {
     @Override
     public boolean isCave(int x, int y) {
         if (x < 0 || x >= width || y < 0 || y >= height) return false;
-        return !caveGrid[x][y]; // false in grid = air = cave
+        return super.isCave(x,y) && !caveGrid[x][y];
     }
 }

@@ -1,28 +1,24 @@
 package uk.bradleyjones.worldgenerator.world.biomes;
 
 import com.raylabz.opensimplex.OpenSimplexNoise;
-import uk.bradleyjones.worldgenerator.world.TerrainHeightGenerator;
+import uk.bradleyjones.worldgenerator.world.World;
 
 public class BiomeGenerator {
     private final OpenSimplexNoise noise;
     private final BiomeGeneratorConfig config;
     private final BiomeOverrideConfig overrideConfig;
-    private final TerrainHeightGenerator terrain;
     private final WaterBodyType[] waterBodyMap;
-    private final int worldWidth;
-    private final int worldHeight;
+    private final World world;
 
-    public BiomeGenerator(int seed, BiomeGeneratorConfig config, BiomeOverrideConfig overrideConfig, TerrainHeightGenerator terrain, int worldWidth, int worldHeight) {
+    public BiomeGenerator(int seed, BiomeGeneratorConfig config, BiomeOverrideConfig overrideConfig, World world) {
         this.noise = new OpenSimplexNoise(seed);
         this.config = config;
+        this.world = world;
         this.overrideConfig = overrideConfig;
-        this.terrain = terrain;
-        this.worldWidth = worldWidth;
-        this.worldHeight = worldHeight;
         this.waterBodyMap = computeWaterBodies();
     }
 
-    public Biome getBiome(int x, int surfaceY, int baseHeight, int waterLevel) {
+    public Biome getBiome(int x) {
         double value = noise.getNoise2D(x * config.noiseScale, 0).getValue();
 
         // Remap noise to flatten distribution away from centre
@@ -47,7 +43,9 @@ public class BiomeGenerator {
                 break;
             }
         }
-
+        int surfaceY = world.getSurfaceY(x);
+        int baseHeight = world.getTerrainConfig().baseHeight;
+        int waterLevel = world.getWorldConfig().waterLevel;
         // Apply override rules in priority order
         if (isMountainPeak(surfaceY, baseHeight)) return Biome.MOUNTAIN_PEAK;
         if (isMountain(surfaceY, baseHeight)) return Biome.MOUNTAIN;
@@ -88,19 +86,21 @@ public class BiomeGenerator {
     }
 
     private WaterBodyType[] computeWaterBodies() {
+        int worldWidth = world.getWorldConfig().width;
+        int worldHeight = world.getWorldConfig().height;
         WaterBodyType[] map = new WaterBodyType[worldWidth];
         int waterLevel = worldHeight - Math.min(overrideConfig.waterLevelRef, worldHeight - 1);
 
         int x = 0;
         while (x < worldWidth) {
-            if (terrain.getHeight(x) <= waterLevel) {
+            if (world.getSurfaceY(x) <= waterLevel) {
                 // Above water - not a water body
                 map[x] = WaterBodyType.NONE;
                 x++;
             } else {
                 // Submerged region - find extent
                 int start = x;
-                while (x < worldWidth && terrain.getHeight(x) > waterLevel) {
+                while (x < worldWidth && world.getSurfaceY(x) > waterLevel) {
                     x++;
                 }
                 int width = x - start;

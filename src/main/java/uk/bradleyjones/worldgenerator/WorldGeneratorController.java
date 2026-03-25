@@ -64,39 +64,39 @@ public class WorldGeneratorController implements CameraListener {
         worldCanvas.heightProperty().addListener((obs, oldVal, newVal) -> draw());
 
         // Populate fields from config objects
-        seedInput.setText(String.valueOf(world.worldConfig.seed));
-        worldWidthInput.setText(String.valueOf(world.worldConfig.width));
-        worldHeightInput.setText(String.valueOf(world.worldConfig.height));
-        waterLevelInput.setText(String.valueOf(world.worldConfig.waterLevel));
+        seedInput.setText(String.valueOf(world.getWorldConfig().seed));
+        worldWidthInput.setText(String.valueOf(world.getWorldConfig().width));
+        worldHeightInput.setText(String.valueOf(world.getWorldConfig().height));
+        waterLevelInput.setText(String.valueOf(world.getWorldConfig().waterLevel));
 
-        baseHeightInput.setText(String.valueOf(world.terrainConfig.baseHeight));
-        noiseScaleAInput.setText(String.valueOf(world.terrainConfig.scaleA));
-        noiseScaleBInput.setText(String.valueOf(world.terrainConfig.scaleB));
-        noiseScaleCInput.setText(String.valueOf(world.terrainConfig.scaleC));
-        noiseAmplitudeAInput.setText(String.valueOf(world.terrainConfig.ampA));
-        noiseAmplitudeBInput.setText(String.valueOf(world.terrainConfig.ampB));
-        noiseAmplitudeCInput.setText(String.valueOf(world.terrainConfig.ampC));
+        baseHeightInput.setText(String.valueOf(world.getTerrainConfig().baseHeight));
+        noiseScaleAInput.setText(String.valueOf(world.getTerrainConfig().scaleA));
+        noiseScaleBInput.setText(String.valueOf(world.getTerrainConfig().scaleB));
+        noiseScaleCInput.setText(String.valueOf(world.getTerrainConfig().scaleC));
+        noiseAmplitudeAInput.setText(String.valueOf(world.getTerrainConfig().ampA));
+        noiseAmplitudeBInput.setText(String.valueOf(world.getTerrainConfig().ampB));
+        noiseAmplitudeCInput.setText(String.valueOf(world.getTerrainConfig().ampC));
 
 
 
         addCaveButton.setOnAction(e -> {
             world.addCaveInstance(CaveGeneratorType.CA);
-            CaveGeneratorInstance instance = world.caveInstances.get(world.caveInstances.size() - 1);
+            CaveGeneratorInstance instance = world.getCaveInstances().get(world.getCaveInstances().size() - 1);
             addCaveInstanceUI(instance);
         });
 
 // Populate biome distribution
-        biomeNoiseScaleInput.setText(String.valueOf(world.biomeGeneratorConfig.noiseScale));
-        for (BiomeEntry entry : world.biomeGeneratorConfig.biomes) {
+        biomeNoiseScaleInput.setText(String.valueOf(world.getBiomeGeneratorConfig().noiseScale));
+        for (BiomeEntry entry : world.getBiomeGeneratorConfig().biomes) {
             addBiomeWeightUI(entry);
         }
 
 // Populate biome overrides
-        beachWidthInput.setText(String.valueOf(world.biomeOverrideConfig.beachWidth));
-        mountainHeightInput.setText(String.valueOf(world.biomeOverrideConfig.mountainHeight));
-        peakHeightInput.setText(String.valueOf(world.biomeOverrideConfig.peakHeight));
-        lakeMinWidthInput.setText(String.valueOf(world.biomeOverrideConfig.lakeMinWidth));
-        oceanMinWidthInput.setText(String.valueOf(world.biomeOverrideConfig.oceanMinWidth));
+        beachWidthInput.setText(String.valueOf(world.getBiomeOverrideConfig().beachWidth));
+        mountainHeightInput.setText(String.valueOf(world.getBiomeOverrideConfig().mountainHeight));
+        peakHeightInput.setText(String.valueOf(world.getBiomeOverrideConfig().peakHeight));
+        lakeMinWidthInput.setText(String.valueOf(world.getBiomeOverrideConfig().lakeMinWidth));
+        oceanMinWidthInput.setText(String.valueOf(world.getBiomeOverrideConfig().oceanMinWidth));
 
 
         regenButton.setOnAction(e -> handleInitializeWorld());
@@ -112,25 +112,25 @@ public class WorldGeneratorController implements CameraListener {
 
     public void handleInitializeWorld() {
         try {
-            world.worldConfig.seed = Integer.parseInt(seedInput.getText());
-            world.worldConfig.width = Integer.parseInt(worldWidthInput.getText());
-            world.worldConfig.height = Integer.parseInt(worldHeightInput.getText());
-            world.worldConfig.waterLevel = Integer.parseInt(waterLevelInput.getText());
+            world.getWorldConfig().seed = Integer.parseInt(seedInput.getText());
+            world.getWorldConfig().width = Integer.parseInt(worldWidthInput.getText());
+            world.getWorldConfig().height = Integer.parseInt(worldHeightInput.getText());
+            world.getWorldConfig().waterLevel = Integer.parseInt(waterLevelInput.getText());
 
-            world.terrainConfig.baseHeight = Integer.parseInt(baseHeightInput.getText());
-            world.terrainConfig.ampA = Double.parseDouble(noiseAmplitudeAInput.getText());
-            world.terrainConfig.ampB = Double.parseDouble(noiseAmplitudeBInput.getText());
-            world.terrainConfig.ampC = Double.parseDouble(noiseAmplitudeCInput.getText());
-            world.terrainConfig.scaleA = Double.parseDouble(noiseScaleAInput.getText());
-            world.terrainConfig.scaleB = Double.parseDouble(noiseScaleBInput.getText());
-            world.terrainConfig.scaleC = Double.parseDouble(noiseScaleCInput.getText());
+            world.getTerrainConfig().baseHeight = Integer.parseInt(baseHeightInput.getText());
+            world.getTerrainConfig().ampA = Double.parseDouble(noiseAmplitudeAInput.getText());
+            world.getTerrainConfig().ampB = Double.parseDouble(noiseAmplitudeBInput.getText());
+            world.getTerrainConfig().ampC = Double.parseDouble(noiseAmplitudeCInput.getText());
+            world.getTerrainConfig().scaleA = Double.parseDouble(noiseScaleAInput.getText());
+            world.getTerrainConfig().scaleB = Double.parseDouble(noiseScaleBInput.getText());
+            world.getTerrainConfig().scaleC = Double.parseDouble(noiseScaleCInput.getText());
 
-            world.biomeGeneratorConfig.noiseScale = Float.parseFloat(biomeNoiseScaleInput.getText());
-            world.biomeOverrideConfig.beachWidth = Integer.parseInt(beachWidthInput.getText());
-            world.biomeOverrideConfig.mountainHeight = Integer.parseInt(mountainHeightInput.getText());
-            world.biomeOverrideConfig.peakHeight = Integer.parseInt(peakHeightInput.getText());
-            world.biomeOverrideConfig.lakeMinWidth = Integer.parseInt(lakeMinWidthInput.getText());
-            world.biomeOverrideConfig.oceanMinWidth = Integer.parseInt(oceanMinWidthInput.getText());
+            world.getBiomeGeneratorConfig().noiseScale = Float.parseFloat(biomeNoiseScaleInput.getText());
+            world.getBiomeOverrideConfig().beachWidth = Integer.parseInt(beachWidthInput.getText());
+            world.getBiomeOverrideConfig().mountainHeight = Integer.parseInt(mountainHeightInput.getText());
+            world.getBiomeOverrideConfig().peakHeight = Integer.parseInt(peakHeightInput.getText());
+            world.getBiomeOverrideConfig().lakeMinWidth = Integer.parseInt(lakeMinWidthInput.getText());
+            world.getBiomeOverrideConfig().oceanMinWidth = Integer.parseInt(oceanMinWidthInput.getText());
 
             world.regenerate();
             renderer.buildWorldImageAsync(world);
@@ -159,6 +159,14 @@ public class WorldGeneratorController implements CameraListener {
         CheckBox enabledBox = new CheckBox("Enabled");
         enabledBox.setSelected(instance.enabled);
         enabledBox.selectedProperty().addListener((obs, o, n) -> instance.enabled = n);
+
+        //Effects surface checkbox
+        CheckBox effectsSurfaceBox = new CheckBox("Effects Surface");
+        effectsSurfaceBox.setSelected(instance.getConfig().effectsSurface);
+        effectsSurfaceBox.selectedProperty().addListener((obs, o, n) -> {
+            instance.getConfig().effectsSurface = n;
+            System.out.println("Instance " + instance.type + " effects surface: " + instance.getConfig().effectsSurface);
+        });
 
         // CA params
         VBox caParamsSection = new VBox(4);
@@ -259,7 +267,7 @@ public class WorldGeneratorController implements CameraListener {
             caveInstancesBox.getChildren().remove(pane);
         });
 
-        params.getChildren().addAll(enabledBox, typeDropdown, caParamsSection, noiseParamsSection, drunkardParamsSection, removeButton);
+        params.getChildren().addAll(enabledBox, effectsSurfaceBox, typeDropdown, caParamsSection, noiseParamsSection, drunkardParamsSection, removeButton);
         caveInstancesBox.getChildren().add(pane);
     }
 

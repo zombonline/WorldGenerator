@@ -33,7 +33,20 @@ public class TerrainHeightGenerator {
         return clampedBase + (int)(base + detail + mountains);
     }
 
-    public void setWorldHeight(int worldHeight) {
-        this.worldHeight = worldHeight;
+    public float getSteepness(int fromX, int toX) {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int x = fromX; x <= toX; x++) {
+            int h = getHeight(x);
+            if (h < min) min = h;
+            if (h > max) max = h;
+        }
+        return max - min;
+    }
+
+    public float getGradient(int fromX, int toX) {
+        int start = getHeight(fromX);
+        int end = getHeight(toX);
+        return Math.abs(end - start) / (float)(toX - fromX);
     }
 }

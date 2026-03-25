@@ -15,8 +15,8 @@ public class DecorationGenerator {
     private final int height;
 
     public DecorationGenerator(World world, long seed, List<Decoration> decorations) {
-        this.width = world.worldConfig.width;
-        this.height = world.worldConfig.height;
+        this.width = world.getWorldConfig().width;
+        this.height = world.getWorldConfig().height;
         this.grid = new TileType[width][height];
         generate(world, seed, decorations);
     }
@@ -33,7 +33,7 @@ public class DecorationGenerator {
                 if (tile != TileType.AIR && tile != TileType.WATER) continue;
                 if (grid[x][y] != null) continue;
 
-                Biome biome = world.getBiomeAt(x, y);
+                Biome biome = world.getBiomeAt(x);
 
                 List<Decoration> eligible = new ArrayList<>();
                 for (Decoration d : decorations) {

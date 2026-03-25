@@ -10,4 +10,11 @@ public class CaveGeneratorInstance {
     public CaveGeneratorInstance(CaveGeneratorType type) {
         this.type = type;
     }
+    public CaveConfig getConfig() {
+        return switch (type) {
+            case CA -> caConfig;
+            case NOISE -> noiseConfig;
+            case DRUNKARD -> drunkardConfig;
+        };
+    }
 }

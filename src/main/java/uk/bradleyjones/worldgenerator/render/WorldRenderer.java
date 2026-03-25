@@ -55,8 +55,8 @@ public class WorldRenderer {
         Task<WritableImage> task = new Task<>() {
             @Override
             protected WritableImage call() {
-                int w = world.worldConfig.width;
-                int h = world.worldConfig.height;
+                int w = world.getWorldConfig().width;
+                int h = world.getWorldConfig().height;
                 WritableImage img = new WritableImage(w, h);
                 PixelWriter pw = img.getPixelWriter();
                 for (int y = 0; y < h; y++) {
@@ -72,8 +72,8 @@ public class WorldRenderer {
 
         task.setOnSucceeded(e -> {
             worldImage = task.getValue();
-            imageWidth = world.worldConfig.width;
-            imageHeight = world.worldConfig.height;
+            imageWidth = world.getWorldConfig().width;
+            imageHeight = world.getWorldConfig().height;
         });
 
         Thread thread = new Thread(task);
@@ -110,7 +110,7 @@ public class WorldRenderer {
                 int worldX = baseTileX + x;
                 int worldY = baseTileY + y;
 
-                if (worldX < 0 || worldX >= world.worldConfig.width || worldY < 0 || worldY >= world.worldConfig.height) {
+                if (worldX < 0 || worldX >= world.getWorldConfig().width || worldY < 0 || worldY >= world.getWorldConfig().height) {
                     gc.setFill(Color.BLACK);
                     gc.fillRect(
                             x * scaledTileSize + offsetX,
@@ -197,7 +197,7 @@ public class WorldRenderer {
             case SAND -> Color.SANDYBROWN;
             case WATER -> Color.DEEPSKYBLUE;
             case STONE -> Color.GRAY;
-            case AIR -> Color.LIGHTBLUE.interpolate(Color.BLACK, world.getExposedLevel(x, y));
+            case AIR -> Color.BLACK.interpolate(Color.LIGHTBLUE, world.getExposedLevel(x, y));
             case DIRT -> Color.BROWN;
             case GRAVEL -> Color.LIGHTGRAY;
             case SNOW -> Color.WHITE;

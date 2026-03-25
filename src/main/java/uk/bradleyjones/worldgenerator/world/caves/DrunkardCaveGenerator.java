@@ -1,17 +1,21 @@
 package uk.bradleyjones.worldgenerator.world.caves;
 
 import uk.bradleyjones.worldgenerator.util.Vector2Int;
+import uk.bradleyjones.worldgenerator.world.World;
 
 import java.util.Random;
 
 
-public class DrunkardCaveGenerator implements CaveGenerator {
-    private int width, height, seed;
+public class DrunkardCaveGenerator extends CaveGenerator {
+    private final int width;
+    private int height;
+    private int seed;
     private DrunkardCaveConfig config;
     private boolean[][] map;
     private Vector2Int[] directions = new Vector2Int[]{Vector2Int.UP,Vector2Int.DOWN,Vector2Int.LEFT,Vector2Int.RIGHT};
-    public DrunkardCaveGenerator(int width, int height, int seed, DrunkardCaveConfig config)
+    public DrunkardCaveGenerator(int width, int height, int seed, DrunkardCaveConfig config, World world)
     {
+        super(config, world);
         this.width = width;
         this.height = height;
         map = new boolean[width][height];
@@ -40,15 +44,6 @@ public class DrunkardCaveGenerator implements CaveGenerator {
 
     @Override
     public boolean isCave(int x, int y) {
-        if(map[x][y]) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("Checking if ");
-            stringBuilder.append(x);
-            stringBuilder.append(y);
-            stringBuilder.append("is cave: ");
-            stringBuilder.append(map[x][y]);
-            System.out.println(stringBuilder.toString());
-        }
-        return map[x][y];
+        return map[x][y] && super.isCave(x,y);
     }
 }
