@@ -164,8 +164,9 @@ public class WorldGeneratorController implements CameraListener {
         CheckBox effectsSurfaceBox = new CheckBox("Effects Surface");
         effectsSurfaceBox.setSelected(instance.getConfig().effectsSurface);
         effectsSurfaceBox.selectedProperty().addListener((obs, o, n) -> {
-            instance.getConfig().effectsSurface = n;
-            System.out.println("Instance " + instance.type + " effects surface: " + instance.getConfig().effectsSurface);
+            instance.caConfig.effectsSurface = n;
+            instance.noiseConfig.effectsSurface = n;
+            instance.drunkardConfig.effectsSurface = n;
         });
 
         // CA params
