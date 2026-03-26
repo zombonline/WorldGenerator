@@ -1,0 +1,14 @@
+{
+  "name": "Pink Mushroom",
+  "asciiRows": [
+    "M",
+    "*"
+  ],
+  "map": {
+    "M": "PINK_MUSHROOM"
+  },
+  "allowedBiomes": [],
+  "requiredSurface": "STONE",
+  "chance": 0.03,
+  "placementSide": "FLOOR"
+}

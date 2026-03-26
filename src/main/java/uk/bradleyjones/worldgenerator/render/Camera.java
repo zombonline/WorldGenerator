@@ -42,7 +42,6 @@ public class Camera {
 
     public void setZoom(double zoom) {
         this.zoom = zoom;
-        System.out.println("Zoom set to: " + zoom);
         notifyUpdated();
     }
 

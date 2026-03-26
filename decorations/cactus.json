@@ -1,0 +1,17 @@
+{
+  "name": "Cactus",
+  "asciiRows": [
+    "C",
+    "C",
+    "*"
+  ],
+  "map": {
+    "C": "CACTUS"
+  },
+  "allowedBiomes": [
+    "desert"
+  ],
+  "requiredSurface": "SAND",
+  "chance": 0.05,
+  "placementSide": "FLOOR"
+}

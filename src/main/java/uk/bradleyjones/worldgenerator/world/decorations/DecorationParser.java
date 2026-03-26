@@ -1,6 +1,5 @@
 package uk.bradleyjones.worldgenerator.world.decorations;
 
-import uk.bradleyjones.worldgenerator.util.Vector2Int;
 import uk.bradleyjones.worldgenerator.world.TileType;
 
 import java.util.ArrayList;
@@ -9,15 +8,15 @@ import java.util.Map;
 
 public class DecorationParser {
     public static final char ROOT_CHARACTER = '*';
-    public List<DecorationCell> parse(String[] rows, Map<Character, TileType> characterTileTypeMap){
+    public List<DecorationCell> parse(List<String> rows, Map<Character, TileType> characterTileTypeMap){
         List<DecorationCell> cells = new ArrayList<>();
 
         int rootRow = Integer.MAX_VALUE, rootCol = Integer.MAX_VALUE;
-        for(int i = 0; i < rows.length; i++)
+        for(int i = 0; i < rows.size(); i++)
         {
-            for(int j = 0; j < rows[i].length(); j++)
+            for(int j = 0; j < rows.get(i).length(); j++)
             {
-                if(rows[i].charAt(j) == ROOT_CHARACTER) {
+                if(rows.get(i).charAt(j) == ROOT_CHARACTER) {
                     rootRow = i;
                     rootCol = j;
                 }
@@ -28,11 +27,11 @@ public class DecorationParser {
             return null;
         }
 
-        for(int i = 0; i < rows.length; i++)
+        for(int i = 0; i < rows.size(); i++)
         {
-            for(int j = 0; j < rows[i].length(); j++)
+            for(int j = 0; j < rows.get(i).length(); j++)
             {
-                char c = rows[i].charAt(j);
+                char c = rows.get(i).charAt(j);
                 if(!characterTileTypeMap.containsKey(c))
                     continue;
                 int row = i - rootRow;

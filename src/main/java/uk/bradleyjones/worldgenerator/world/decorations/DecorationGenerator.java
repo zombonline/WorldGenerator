@@ -69,7 +69,7 @@ public class DecorationGenerator {
                         if (d.requiredSurface != surface) continue;
                     }
 
-                    if (!d.allowedBiomes.contains(biome)) continue;
+                    if (!d.allowedBiomes.contains(biome.id) && !d.allowedBiomes.isEmpty()) continue;
                     eligible.add(d);
                 }
 
@@ -103,8 +103,8 @@ public class DecorationGenerator {
 
                 // Footprint solid ground check for floor placements
                 if (chosen.placementSide == PlacementSide.FLOOR || chosen.placementSide == PlacementSide.UNDERWATER_FLOOR) {
-                    int maxDy = chosen.cells.stream().mapToInt(c -> c.dy).max().orElse(0);
-                    for (DecorationCell cell : chosen.cells) {
+                    int maxDy = chosen.getCells().stream().mapToInt(c -> c.dy).max().orElse(0);
+                    for (DecorationCell cell : chosen.getCells()) {
                         if (cell.dy == maxDy) {
                             int cx = x + cell.dx;
                             int cy = rootY + cell.dy;
@@ -120,7 +120,7 @@ public class DecorationGenerator {
                 if (!canPlace) continue;
 
                 // Bounds and occupancy check
-                for (DecorationCell cell : chosen.cells) {
+                for (DecorationCell cell : chosen.getCells()) {
                     int cx = x + cell.dx;
                     int cy = rootY + cell.dy;
                     if (cx < 0 || cx >= width || cy < 0 || cy >= height) {
@@ -136,7 +136,7 @@ public class DecorationGenerator {
                 if (!canPlace) continue;
 
                 // Place
-                for (DecorationCell cell : chosen.cells) {
+                for (DecorationCell cell : chosen.getCells()) {
                     grid[x + cell.dx][rootY + cell.dy] = cell.tileType;
                 }
             }

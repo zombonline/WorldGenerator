@@ -14,14 +14,15 @@
 
     <!-- Left side panel -->
     <left>
-        <ScrollPane fitToWidth="true" prefWidth="220" style="-fx-background-color: #1e1e1e;">
+        <ScrollPane fitToWidth="true" prefWidth="220"
+                    style="-fx-background: #1e1e1e; -fx-background-color: #1e1e1e;">
             <VBox spacing="4" style="-fx-background-color: #1e1e1e; -fx-padding: 8;">
 
                 <!-- Regenerate button -->
                 <Button fx:id="regenButton" text="Regenerate" maxWidth="Infinity"/>
 
                 <!-- World section -->
-                <TitledPane text="World" animated="true">
+                <TitledPane text="World" animated="true" expanded="false">
                     <VBox spacing="4" style="-fx-padding: 4;">
                         <Label text="Seed"/>
                         <TextField fx:id="seedInput" promptText="Seed"/>
@@ -35,7 +36,7 @@
                 </TitledPane>
 
                 <!-- Terrain section -->
-                <TitledPane text="Terrain" animated="true">
+                <TitledPane text="Terrain" animated="true" expanded="false">
                     <VBox spacing="4" style="-fx-padding: 4;">
                         <Label text="Base Height"/>
                         <TextField fx:id="baseHeightInput" promptText="Base Height"/>
@@ -55,15 +56,23 @@
                 </TitledPane>
 
                 <!-- Caves section -->
-                <TitledPane text="Caves" animated="true">
+                <TitledPane text="Caves" animated="true" expanded="false">
                     <VBox spacing="4" style="-fx-padding: 4;">
                         <Button fx:id="addCaveButton" text="+ Add Cave Generator" maxWidth="Infinity"/>
                         <VBox fx:id="caveInstancesBox" spacing="4"/>
                     </VBox>
                 </TitledPane>
 
+                <!-- Decorations section -->
+                <TitledPane text="Decorations" animated="true" expanded="false">
+                    <VBox spacing="4" style="-fx-padding: 4;">
+                        <Button fx:id="addDecorationButton" text="+ Add Decoration" maxWidth="Infinity"/>
+                        <VBox fx:id="decorationInstancesBox" spacing="4"/>
+                    </VBox>
+                </TitledPane>
+
                 <!-- Biome Distribution section -->
-                <TitledPane text="Biome Distribution" animated="true">
+                <TitledPane text="Biome Distribution" animated="true" expanded="false">
                     <VBox spacing="4" style="-fx-padding: 4;">
                         <Label text="Noise Scale"/>
                         <TextField fx:id="biomeNoiseScaleInput" promptText="Noise Scale"/>
@@ -72,7 +81,7 @@
                 </TitledPane>
 
                 <!-- Biome Overrides section -->
-                <TitledPane text="Biome Overrides" animated="true">
+                <TitledPane text="Biome Overrides" animated="true" expanded="false">
                     <VBox spacing="4" style="-fx-padding: 4;">
                         <Label text="Beach Width"/>
                         <TextField fx:id="beachWidthInput" promptText="Beach Width"/>

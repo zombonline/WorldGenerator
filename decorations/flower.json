@@ -1,0 +1,16 @@
+{
+  "name": "Flower",
+  "asciiRows": [
+    "F",
+    "*"
+  ],
+  "map": {
+    "F": "FLOWER"
+  },
+  "allowedBiomes": [
+    "plains", "forest"
+  ],
+  "requiredSurface": "GRASS",
+  "chance": 0.1,
+  "placementSide": "FLOOR"
+}

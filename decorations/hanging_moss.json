@@ -1,0 +1,14 @@
+{
+  "name": "Hanging Moss",
+  "asciiRows": [
+    "*",
+    "F"
+  ],
+  "map": {
+    "F": "HANGING_MOSS"
+  },
+  "allowedBiomes": [],
+  "requiredSurface": "STONE",
+  "chance": 0.35,
+  "placementSide": "CEILING"
+}

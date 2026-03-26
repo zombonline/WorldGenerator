@@ -1,0 +1,22 @@
+{
+  "name": "Tree",
+  "asciiRows": [
+    " L ",
+    "LLL",
+    "LLL",
+    " T ",
+    " T ",
+    " T ",
+    " * "
+  ],
+  "map": {
+    "T": "LOG",
+    "L": "LEAVES"
+  },
+  "allowedBiomes": [
+    "forest"
+  ],
+  "requiredSurface": "GRASS",
+  "chance": 0.5,
+  "placementSide": "FLOOR"
+}

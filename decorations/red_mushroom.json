@@ -1,0 +1,16 @@
+{
+  "name": "Red Mushroom",
+  "asciiRows": [
+    "M",
+    "*"
+  ],
+  "map": {
+    "M": "RED_MUSHROOM"
+  },
+  "allowedBiomes": [
+    "plains", "forest"
+  ],
+  "requiredSurface": "GRASS",
+  "chance": 0.15,
+  "placementSide": "FLOOR"
+}

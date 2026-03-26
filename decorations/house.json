@@ -1,0 +1,26 @@
+{
+  "name": "House",
+  "asciiRows": [
+    "       L       ",
+    "      LLL      ",
+    "    LLLLLLL    ",
+    "  LLLLLLLLLLL  ",
+    "LLLLLLLLLLLLLLL",
+    "SSSSSSSSSSSSSSS",
+    "SS    SSS    SS",
+    "SSSSSSSSSSSSSSS",
+    "SS  SSSSS    SS",
+    "SS  SSSSSSSSSSS",
+    "       *       "
+  ],
+  "map": {
+    "S": "STONE",
+    "L": "LOG"
+  },
+  "allowedBiomes": [
+    "plains"
+  ],
+  "requiredSurface": "GRASS",
+  "chance": 0.12,
+  "placementSide": "FLOOR"
+}

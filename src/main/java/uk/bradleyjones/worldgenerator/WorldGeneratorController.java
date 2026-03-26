@@ -11,12 +11,18 @@ import javafx.scene.paint.Color;
 import uk.bradleyjones.worldgenerator.render.Camera;
 import uk.bradleyjones.worldgenerator.render.CameraListener;
 import uk.bradleyjones.worldgenerator.render.WorldRenderer;
+import uk.bradleyjones.worldgenerator.world.TileType;
 import uk.bradleyjones.worldgenerator.world.World;
+import uk.bradleyjones.worldgenerator.world.biomes.Biome;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeEntry;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorInstance;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorType;
+import uk.bradleyjones.worldgenerator.world.decorations.Decoration;
+import uk.bradleyjones.worldgenerator.world.decorations.DecorationInstance;
+import uk.bradleyjones.worldgenerator.world.decorations.DecorationRepository;
 
-import java.security.PrivateKey;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorldGeneratorController implements CameraListener {
     @FXML public TextField noiseScaleAInput;
@@ -36,6 +42,9 @@ public class WorldGeneratorController implements CameraListener {
 
     @FXML public VBox caveInstancesBox;
     @FXML public Button addCaveButton;
+
+    @FXML public VBox decorationInstancesBox;
+    @FXML public Button addDecorationButton;
 
     @FXML public TextField biomeNoiseScaleInput;
     @FXML public TextField beachWidthInput;
@@ -83,6 +92,13 @@ public class WorldGeneratorController implements CameraListener {
             world.addCaveInstance(CaveGeneratorType.CA);
             CaveGeneratorInstance instance = world.getCaveInstances().get(world.getCaveInstances().size() - 1);
             addCaveInstanceUI(instance);
+        });
+
+        addDecorationButton.setOnAction(e -> {
+//            world.addCaveInstance(CaveGeneratorType.CA);
+            Decoration decoration = DecorationRepository.loadAll().get(1);
+            DecorationInstance instance = new DecorationInstance(decoration, true);
+            addDecorationInstanceUI(instance);
         });
 
 // Populate biome distribution
@@ -270,6 +286,63 @@ public class WorldGeneratorController implements CameraListener {
 
         params.getChildren().addAll(enabledBox, effectsSurfaceBox, typeDropdown, caParamsSection, noiseParamsSection, drunkardParamsSection, removeButton);
         caveInstancesBox.getChildren().add(pane);
+    }
+
+    public void addDecorationInstanceUI(DecorationInstance instance){
+        VBox params = new VBox(4);
+        params.setStyle("-fx-padding: 4;");
+
+        TitledPane pane = new TitledPane(instance.decoration.name, params);
+        pane.setAnimated(true);
+        pane.setExpanded(false);
+
+        // Enabled checkbox
+        CheckBox enabledBox = new CheckBox("Enabled");
+        enabledBox.setSelected(instance.enabled);
+        enabledBox.selectedProperty().addListener((obs, o, n) -> instance.enabled = n);
+
+        //Decoration Params
+        VBox decorationParamsSection = new VBox(4);
+        Label nameLabel = new Label("Name");
+        TextField nameField = new TextField(String.valueOf(instance.decoration.name));
+        nameField.textProperty().addListener((obs, o, n) -> {
+            instance.decoration.name = n;
+            pane.setText(n);
+        });
+
+        Label biomesLabel = new Label("Allowed Biomes");
+        biomesLabel.setTooltip(new Tooltip("Leave blank to allow any biome, separate with a comma"));
+        TextField biomesField = new TextField(String.join(", ", instance.decoration.allowedBiomes));
+        Tooltip biomesTooltip = new Tooltip();
+        biomesField.setTooltip(biomesTooltip);
+        biomesField.textProperty().addListener((obs, o,  n) -> {
+            String[] items = n.split("\\s*,\\s*");
+            List<String> invalid = new ArrayList<>();
+            for(String s : items)
+            {
+                if(Biome.getById(s) == null) {
+                    invalid.add(s);
+                    break;
+                }
+            }
+            if (!invalid.isEmpty()) {
+                biomesTooltip.setText("Invalid: " + String.join(", ", invalid));
+                biomesField.setStyle("-fx-border-color: red;");
+            } else {
+                biomesTooltip.setText(null);
+                biomesField.setStyle("");
+            }
+        });
+
+        Label requiredSurfaceTileLabel = new Label("Required Surface Tile");
+        ComboBox<TileType> requiredSurfaceTileDropdown = new ComboBox<>();
+        requiredSurfaceTileDropdown.getItems().addAll(TileType.values());
+        requiredSurfaceTileDropdown.setValue(instance.decoration.requiredSurface);
+        requiredSurfaceTileDropdown.setMaxWidth(Double.MAX_VALUE);
+
+        decorationParamsSection.getChildren().addAll(nameLabel,nameField, biomesLabel, biomesField, requiredSurfaceTileLabel, requiredSurfaceTileDropdown);
+        params.getChildren().addAll(enabledBox, decorationParamsSection);
+        decorationInstancesBox.getChildren().add(pane);
     }
 
     private void addBiomeWeightUI(BiomeEntry entry) {
