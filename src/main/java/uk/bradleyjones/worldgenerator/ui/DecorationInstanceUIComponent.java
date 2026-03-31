@@ -202,7 +202,7 @@ public class DecorationInstanceUIComponent {
     }
 
     private void syncMapWithAscii() {
-        var map = instance.decoration.map;
+        var map = instance.decoration.charMap;
 
         // Collect all chars currently used
         HashMap<Character, Boolean> used = new HashMap<>();
@@ -221,7 +221,7 @@ public class DecorationInstanceUIComponent {
     }
 
     private void updateTileKeyBox() {
-        var map = instance.decoration.map;
+        var map = instance.decoration.charMap;
 
         tileKeyBox.getChildren().clear();
 

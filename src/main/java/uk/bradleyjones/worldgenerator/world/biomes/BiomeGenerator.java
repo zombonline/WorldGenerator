@@ -9,13 +9,21 @@ public class BiomeGenerator {
     private final BiomeOverrideConfig overrideConfig;
     private final WaterBodyType[] waterBodyMap;
     private final World world;
-
+    private float totalWeight;
     public BiomeGenerator(int seed, BiomeGeneratorConfig config, BiomeOverrideConfig overrideConfig, World world) {
         this.noise = new OpenSimplexNoise(seed);
         this.config = config;
+        calculateTotalWeight();
         this.world = world;
         this.overrideConfig = overrideConfig;
         this.waterBodyMap = computeWaterBodies();
+    }
+
+    private void calculateTotalWeight() {
+        totalWeight = 0;
+        for (BiomeEntry entry : config.biomes) {
+            totalWeight += entry.weight;
+        }
     }
 
     public Biome getBiome(int x) {
@@ -26,12 +34,6 @@ public class BiomeGenerator {
 
         // Normalise to 0..1
         double normalized = (remapped + 1) / 2.0;
-
-        // Calculate total weight
-        float totalWeight = 0;
-        for (BiomeEntry entry : config.biomes) {
-            totalWeight += entry.weight;
-        }
 
         // Get base biome from noise
         Biome base = config.biomes.get(config.biomes.size() - 1).type;
@@ -44,7 +46,7 @@ public class BiomeGenerator {
             }
         }
         int surfaceY = world.getSurfaceY(x);
-        int baseHeight = world.getTerrainConfig().baseHeight;
+        int baseHeight = world.getHeightmapConfig().baseHeight;
         int waterLevel = world.getWorldConfig().waterLevel;
         // Apply override rules in priority order
         if (isMountainPeak(surfaceY, baseHeight)) return Biome.MOUNTAIN_PEAK;

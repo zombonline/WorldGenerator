@@ -10,5 +10,6 @@ module uk.bradleyjones.worldgenerator {
     exports uk.bradleyjones.worldgenerator.world to com.google.gson;
     exports uk.bradleyjones.worldgenerator.world.decorations to com.google.gson;
     exports uk.bradleyjones.worldgenerator.world.biomes to com.google.gson;
+    exports uk.bradleyjones.worldgenerator.world.heightmap to com.google.gson;
 
 }

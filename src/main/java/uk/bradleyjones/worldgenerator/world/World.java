@@ -9,6 +9,7 @@ import uk.bradleyjones.worldgenerator.world.caves.*;
 import uk.bradleyjones.worldgenerator.world.decorations.Decoration;
 import uk.bradleyjones.worldgenerator.world.decorations.DecorationGenerator;
 import uk.bradleyjones.worldgenerator.world.decorations.DecorationInstance;
+import uk.bradleyjones.worldgenerator.world.heightmap.HeightmapConfig;
 import uk.bradleyjones.worldgenerator.world.lighting.Light;
 import uk.bradleyjones.worldgenerator.world.lighting.LightingGenerator;
 
@@ -18,19 +19,18 @@ import java.util.List;
 public class World {
 
     private WorldConfig worldConfig = new WorldConfig();
-    private TerrainConfig terrainConfig = new TerrainConfig();
+    private HeightmapConfig heightmapConfig = new HeightmapConfig(worldConfig.seed);
     private BiomeGeneratorConfig biomeGeneratorConfig = new BiomeGeneratorConfig();
     private BiomeOverrideConfig biomeOverrideConfig = new BiomeOverrideConfig();
     private List<CaveGeneratorInstance> caveInstances = new ArrayList<>();
     private List<DecorationInstance> decorationInstances = new ArrayList<>();
 
-    private TerrainHeightGenerator terrainHeightGenerator;
     private BiomeGenerator biomeGenerator;
     private List<CaveGenerator> caveGenerators = new ArrayList<>();
     private DecorationGenerator decorationGenerator;
     private LightingGenerator lightingGenerator;
     private List<Decoration> activeDecorations = new ArrayList<>();
-    OpenSimplexNoise noise;
+    private OpenSimplexNoise noise;
 
     public World() {
         regenerate();
@@ -84,8 +84,7 @@ public class World {
 
     public void regenerate() {
         noise = new OpenSimplexNoise(worldConfig.seed*2L);
-        terrainHeightGenerator = new TerrainHeightGenerator(worldConfig.seed, worldConfig.height, terrainConfig);
-
+        heightmapConfig.heightmapGroup.refreshSeed(worldConfig.seed);
         biomeOverrideConfig.waterLevelRef = worldConfig.waterLevel;
         biomeGenerator = new BiomeGenerator(
                 worldConfig.seed + 100,
@@ -125,20 +124,19 @@ public class World {
     }
 
     public int getDepthOfPosition(int x, int y) {
-        return y - terrainHeightGenerator.getHeight(x);
+        return y - getSurfaceY(x);
     }
 
     public int getSurfaceY(int x) {
-        return terrainHeightGenerator.getHeight(x);
+        int clampedBase = worldConfig.height - Math.min(heightmapConfig.baseHeight, worldConfig.height - 1);
+        return clampedBase + heightmapConfig.heightmapGroup.getHeight(x);
     }
 
     //World getters to reach into it's generators
     public int getSubSurfaceDepth(int x) {
-        int minDepth = 2, maxDepth = 30; //TODO: MOVE THIS TO A CONFIG ELSEWHERE
-        int surfaceY = terrainHeightGenerator.getHeight(x);
         double raw = noise.getNoise2D(x,0).getValue();
         double normalized = (raw + 1)/2;
-        int subsurfaceY =(int)(normalized * (maxDepth-minDepth) + minDepth);
+        int subsurfaceY =(int)(normalized * (heightmapConfig.maxSubSurfaceDepth-heightmapConfig.minSubSurfaceDepth) + heightmapConfig.minSubSurfaceDepth);
         return subsurfaceY;
     }
 
@@ -152,8 +150,8 @@ public class World {
         return worldConfig;
     }
 
-    public TerrainConfig getTerrainConfig() {
-        return terrainConfig;
+    public HeightmapConfig getHeightmapConfig() {
+        return heightmapConfig;
     }
 
     public List<CaveGeneratorInstance> getCaveInstances() {

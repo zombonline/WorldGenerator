@@ -8,9 +8,9 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 public class LightingGenerator {
-    private  World world;
+    private final World world;
     Light[][] lightingMap;
-    private int maxLightingLevel = 50;
+    private final int maxLightingLevel = 50;
     public LightingGenerator(World world)
     {
         this.world = world;

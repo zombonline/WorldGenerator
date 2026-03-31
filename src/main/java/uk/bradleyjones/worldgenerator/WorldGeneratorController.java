@@ -14,6 +14,7 @@ import uk.bradleyjones.worldgenerator.render.Camera;
 import uk.bradleyjones.worldgenerator.render.CameraListener;
 import uk.bradleyjones.worldgenerator.render.WorldRenderer;
 import uk.bradleyjones.worldgenerator.ui.DecorationInstanceUIComponent;
+import uk.bradleyjones.worldgenerator.ui.HeightmapGroupUIComponent;
 import uk.bradleyjones.worldgenerator.world.World;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeEntry;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorInstance;
@@ -24,7 +25,6 @@ import uk.bradleyjones.worldgenerator.world.decorations.DecorationRepository;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,16 +33,16 @@ public class WorldGeneratorController implements CameraListener {
 
     Stage stage;
 
-    @FXML public TextField noiseScaleAInput;
-    @FXML public TextField noiseScaleBInput;
-    @FXML public TextField noiseScaleCInput;
-    @FXML public TextField noiseAmplitudeAInput;
-    @FXML public TextField noiseAmplitudeBInput;
-    @FXML public TextField noiseAmplitudeCInput;
     @FXML public TextField worldWidthInput;
     @FXML public TextField worldHeightInput;
     @FXML public TextField waterLevelInput;
+
     @FXML public TextField baseHeightInput;
+    @FXML public TextField minSubsurfaceInput;
+    @FXML public TextField maxSubsurfaceInput;
+
+    @FXML public VBox terrainChildrenBox;
+
     @FXML private Pane canvasPane;
     @FXML private Canvas worldCanvas;
     @FXML private TextField seedInput;
@@ -91,14 +91,14 @@ public class WorldGeneratorController implements CameraListener {
         worldHeightInput.setText(String.valueOf(world.getWorldConfig().height));
         waterLevelInput.setText(String.valueOf(world.getWorldConfig().waterLevel));
 
-        baseHeightInput.setText(String.valueOf(world.getTerrainConfig().baseHeight));
-        noiseScaleAInput.setText(String.valueOf(world.getTerrainConfig().scaleA));
-        noiseScaleBInput.setText(String.valueOf(world.getTerrainConfig().scaleB));
-        noiseScaleCInput.setText(String.valueOf(world.getTerrainConfig().scaleC));
-        noiseAmplitudeAInput.setText(String.valueOf(world.getTerrainConfig().ampA));
-        noiseAmplitudeBInput.setText(String.valueOf(world.getTerrainConfig().ampB));
-        noiseAmplitudeCInput.setText(String.valueOf(world.getTerrainConfig().ampC));
+        baseHeightInput.setText(String.valueOf(world.getHeightmapConfig().baseHeight));
+        minSubsurfaceInput.setText(String.valueOf(world.getHeightmapConfig().minSubSurfaceDepth));
+        maxSubsurfaceInput.setText(String.valueOf(world.getHeightmapConfig().maxSubSurfaceDepth));
 
+        HeightmapGroupUIComponent rootGroupUI = new HeightmapGroupUIComponent(
+                world.getHeightmapConfig().heightmapGroup
+        );
+        terrainChildrenBox.getChildren().add(rootGroupUI.get());
 
 
         addCaveButton.setOnAction(e -> {
@@ -179,13 +179,10 @@ public class WorldGeneratorController implements CameraListener {
             world.getWorldConfig().height = Integer.parseInt(worldHeightInput.getText());
             world.getWorldConfig().waterLevel = Integer.parseInt(waterLevelInput.getText());
 
-            world.getTerrainConfig().baseHeight = Integer.parseInt(baseHeightInput.getText());
-            world.getTerrainConfig().ampA = Double.parseDouble(noiseAmplitudeAInput.getText());
-            world.getTerrainConfig().ampB = Double.parseDouble(noiseAmplitudeBInput.getText());
-            world.getTerrainConfig().ampC = Double.parseDouble(noiseAmplitudeCInput.getText());
-            world.getTerrainConfig().scaleA = Double.parseDouble(noiseScaleAInput.getText());
-            world.getTerrainConfig().scaleB = Double.parseDouble(noiseScaleBInput.getText());
-            world.getTerrainConfig().scaleC = Double.parseDouble(noiseScaleCInput.getText());
+            world.getHeightmapConfig().baseHeight = Integer.parseInt(baseHeightInput.getText());
+            world.getHeightmapConfig().minSubSurfaceDepth = Integer.parseInt(minSubsurfaceInput.getText());
+            world.getHeightmapConfig().maxSubSurfaceDepth = Integer.parseInt(maxSubsurfaceInput.getText());
+
 
             world.getBiomeGeneratorConfig().noiseScale = Float.parseFloat(biomeNoiseScaleInput.getText());
             world.getBiomeOverrideConfig().beachWidth = Integer.parseInt(beachWidthInput.getText());

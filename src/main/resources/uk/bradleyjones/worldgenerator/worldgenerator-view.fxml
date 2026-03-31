@@ -40,18 +40,11 @@
                     <VBox spacing="4" style="-fx-padding: 4;">
                         <Label text="Base Height"/>
                         <TextField fx:id="baseHeightInput" promptText="Base Height"/>
-                        <Label text="Scale A (broad)"/>
-                        <TextField fx:id="noiseScaleAInput" promptText="Scale A"/>
-                        <Label text="Scale B (detail)"/>
-                        <TextField fx:id="noiseScaleBInput" promptText="Scale B"/>
-                        <Label text="Scale C (mountain mask)"/>
-                        <TextField fx:id="noiseScaleCInput" promptText="Scale C"/>
-                        <Label text="Amplitude A"/>
-                        <TextField fx:id="noiseAmplitudeAInput" promptText="Amplitude A"/>
-                        <Label text="Amplitude B"/>
-                        <TextField fx:id="noiseAmplitudeBInput" promptText="Amplitude B"/>
-                        <Label text="Amplitude C (mountain)"/>
-                        <TextField fx:id="noiseAmplitudeCInput" promptText="Amplitude C"/>
+                        <Label text="Min Subsurface Depth"/>
+                        <TextField fx:id="minSubsurfaceInput" promptText="Min Subsurface Depth"/>
+                        <Label text="Max Subsurface Depth"/>
+                        <TextField fx:id="maxSubsurfaceInput" promptText="Max Subsurface Depth"/>
+                        <VBox fx:id="terrainChildrenBox" spacing="4"/>
                     </VBox>
                 </TitledPane>
 
