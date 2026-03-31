@@ -8,12 +8,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import uk.bradleyjones.worldgenerator.render.Camera;
 import uk.bradleyjones.worldgenerator.render.CameraListener;
 import uk.bradleyjones.worldgenerator.render.WorldRenderer;
-import uk.bradleyjones.worldgenerator.world.TileType;
+import uk.bradleyjones.worldgenerator.ui.DecorationInstanceUIComponent;
 import uk.bradleyjones.worldgenerator.world.World;
-import uk.bradleyjones.worldgenerator.world.biomes.Biome;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeEntry;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorInstance;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorType;
@@ -21,10 +22,17 @@ import uk.bradleyjones.worldgenerator.world.decorations.Decoration;
 import uk.bradleyjones.worldgenerator.world.decorations.DecorationInstance;
 import uk.bradleyjones.worldgenerator.world.decorations.DecorationRepository;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 
 public class WorldGeneratorController implements CameraListener {
+
+    Stage stage;
+
     @FXML public TextField noiseScaleAInput;
     @FXML public TextField noiseScaleBInput;
     @FXML public TextField noiseScaleCInput;
@@ -45,6 +53,7 @@ public class WorldGeneratorController implements CameraListener {
 
     @FXML public VBox decorationInstancesBox;
     @FXML public Button addDecorationButton;
+    @FXML public Button loadDecorationButton;
 
     @FXML public TextField biomeNoiseScaleInput;
     @FXML public TextField beachWidthInput;
@@ -57,6 +66,10 @@ public class WorldGeneratorController implements CameraListener {
     public static World world;
     public static WorldRenderer renderer;
     public static Camera camera;
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
 
     @FXML
     public void initialize() {
@@ -95,10 +108,43 @@ public class WorldGeneratorController implements CameraListener {
         });
 
         addDecorationButton.setOnAction(e -> {
-//            world.addCaveInstance(CaveGeneratorType.CA);
-            Decoration decoration = DecorationRepository.loadAll().get(1);
+            Decoration decoration = new Decoration();
             DecorationInstance instance = new DecorationInstance(decoration, true);
+            world.addDecorationInstance(instance);
             addDecorationInstanceUI(instance);
+        });
+
+        loadDecorationButton.setOnAction(e -> {
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Load Decoration");
+            chooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Decoration Files", "*.decoration")
+            );
+            File dir = new File(DecorationRepository.DECORATIONS_DIR);
+
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            chooser.setInitialDirectory(dir);
+            List<File> files = chooser.showOpenMultipleDialog(stage);
+            try {
+                for(File file : files) {
+                    var decoration = DecorationRepository.load(file.toPath());
+                    var instance = new DecorationInstance(decoration, true);
+                    instance.fileName = file.getName();
+                    var existingInstances = world.getDecorationInstances();
+                    for (var existingInstance : existingInstances) {
+                        System.out.println("Existing instance file name: " + existingInstance.fileName + ", loaded file name: " + file.getName());
+                        if (Objects.equals(existingInstance.fileName, file.getName()))
+                            return;
+                    }
+                    world.addDecorationInstance(instance);
+                    addDecorationInstanceUI(instance);
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
 // Populate biome distribution
@@ -289,60 +335,7 @@ public class WorldGeneratorController implements CameraListener {
     }
 
     public void addDecorationInstanceUI(DecorationInstance instance){
-        VBox params = new VBox(4);
-        params.setStyle("-fx-padding: 4;");
-
-        TitledPane pane = new TitledPane(instance.decoration.name, params);
-        pane.setAnimated(true);
-        pane.setExpanded(false);
-
-        // Enabled checkbox
-        CheckBox enabledBox = new CheckBox("Enabled");
-        enabledBox.setSelected(instance.enabled);
-        enabledBox.selectedProperty().addListener((obs, o, n) -> instance.enabled = n);
-
-        //Decoration Params
-        VBox decorationParamsSection = new VBox(4);
-        Label nameLabel = new Label("Name");
-        TextField nameField = new TextField(String.valueOf(instance.decoration.name));
-        nameField.textProperty().addListener((obs, o, n) -> {
-            instance.decoration.name = n;
-            pane.setText(n);
-        });
-
-        Label biomesLabel = new Label("Allowed Biomes");
-        biomesLabel.setTooltip(new Tooltip("Leave blank to allow any biome, separate with a comma"));
-        TextField biomesField = new TextField(String.join(", ", instance.decoration.allowedBiomes));
-        Tooltip biomesTooltip = new Tooltip();
-        biomesField.setTooltip(biomesTooltip);
-        biomesField.textProperty().addListener((obs, o,  n) -> {
-            String[] items = n.split("\\s*,\\s*");
-            List<String> invalid = new ArrayList<>();
-            for(String s : items)
-            {
-                if(Biome.getById(s) == null) {
-                    invalid.add(s);
-                    break;
-                }
-            }
-            if (!invalid.isEmpty()) {
-                biomesTooltip.setText("Invalid: " + String.join(", ", invalid));
-                biomesField.setStyle("-fx-border-color: red;");
-            } else {
-                biomesTooltip.setText(null);
-                biomesField.setStyle("");
-            }
-        });
-
-        Label requiredSurfaceTileLabel = new Label("Required Surface Tile");
-        ComboBox<TileType> requiredSurfaceTileDropdown = new ComboBox<>();
-        requiredSurfaceTileDropdown.getItems().addAll(TileType.values());
-        requiredSurfaceTileDropdown.setValue(instance.decoration.requiredSurface);
-        requiredSurfaceTileDropdown.setMaxWidth(Double.MAX_VALUE);
-
-        decorationParamsSection.getChildren().addAll(nameLabel,nameField, biomesLabel, biomesField, requiredSurfaceTileLabel, requiredSurfaceTileDropdown);
-        params.getChildren().addAll(enabledBox, decorationParamsSection);
-        decorationInstancesBox.getChildren().add(pane);
+        decorationInstancesBox.getChildren().add(new DecorationInstanceUIComponent(instance, decorationInstancesBox).get());
     }
 
     private void addBiomeWeightUI(BiomeEntry entry) {

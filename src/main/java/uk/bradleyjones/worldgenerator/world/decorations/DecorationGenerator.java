@@ -26,9 +26,9 @@ public class DecorationGenerator {
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                TileType tile = world.getTile(x, y, false);
-                TileType below = world.getTile(x, y + 1, false);
-                TileType above = world.getTile(x, y - 1, false);
+                TileType tile = world.getTile(x, y, true);
+                TileType below = world.getTile(x, y + 1, true);
+                TileType above = world.getTile(x, y - 1, true);
 
                 if (tile != TileType.AIR && tile != TileType.WATER) continue;
                 if (grid[x][y] != null) continue;
@@ -37,7 +37,7 @@ public class DecorationGenerator {
 
                 List<Decoration> eligible = new ArrayList<>();
                 for (Decoration d : decorations) {
-                    switch (d.placementSide) {
+                    switch (d.placementType) {
                         case FLOOR -> {
                             if (tile != TileType.AIR) continue;
                             if (below == TileType.AIR || below == TileType.WATER) continue;
@@ -61,7 +61,7 @@ public class DecorationGenerator {
 
                     // Required surface check
                     if (d.requiredSurface != null) {
-                        TileType surface = switch (d.placementSide) {
+                        TileType surface = switch (d.placementType) {
                             case FLOOR, UNDERWATER_FLOOR -> below;
                             case CEILING, UNDERWATER_CEILING -> above;
                             default -> null;
@@ -93,7 +93,7 @@ public class DecorationGenerator {
 
                 if (chosen == null) continue;
 
-                int rootY = switch (chosen.placementSide) {
+                int rootY = switch (chosen.placementType) {
                     case FLOOR, UNDERWATER_FLOOR -> y + 1;
                     case CEILING, UNDERWATER_CEILING -> y - 1;
                     case UNDERWATER -> y;
@@ -102,7 +102,7 @@ public class DecorationGenerator {
                 boolean canPlace = true;
 
                 // Footprint solid ground check for floor placements
-                if (chosen.placementSide == PlacementSide.FLOOR || chosen.placementSide == PlacementSide.UNDERWATER_FLOOR) {
+                if (chosen.placementType == PlacementType.FLOOR || chosen.placementType == PlacementType.UNDERWATER_FLOOR) {
                     int maxDy = chosen.getCells().stream().mapToInt(c -> c.dy).max().orElse(0);
                     for (DecorationCell cell : chosen.getCells()) {
                         if (cell.dy == maxDy) {

@@ -1,6 +1,5 @@
 package uk.bradleyjones.worldgenerator.render;
 
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 

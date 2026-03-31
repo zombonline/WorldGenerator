@@ -1,5 +1,5 @@
 {
-  "name": "Cactus",
+  "desc": "Cactus",
   "asciiRows": [
     "C",
     "C",
@@ -13,5 +13,5 @@
   ],
   "requiredSurface": "SAND",
   "chance": 0.05,
-  "placementSide": "FLOOR"
+  "placementType": "FLOOR"
 }

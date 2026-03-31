@@ -8,7 +8,7 @@ import uk.bradleyjones.worldgenerator.world.biomes.BiomeOverrideConfig;
 import uk.bradleyjones.worldgenerator.world.caves.*;
 import uk.bradleyjones.worldgenerator.world.decorations.Decoration;
 import uk.bradleyjones.worldgenerator.world.decorations.DecorationGenerator;
-import uk.bradleyjones.worldgenerator.world.decorations.DecorationRepository;
+import uk.bradleyjones.worldgenerator.world.decorations.DecorationInstance;
 import uk.bradleyjones.worldgenerator.world.lighting.Light;
 import uk.bradleyjones.worldgenerator.world.lighting.LightingGenerator;
 
@@ -22,12 +22,14 @@ public class World {
     private BiomeGeneratorConfig biomeGeneratorConfig = new BiomeGeneratorConfig();
     private BiomeOverrideConfig biomeOverrideConfig = new BiomeOverrideConfig();
     private List<CaveGeneratorInstance> caveInstances = new ArrayList<>();
+    private List<DecorationInstance> decorationInstances = new ArrayList<>();
 
     private TerrainHeightGenerator terrainHeightGenerator;
     private BiomeGenerator biomeGenerator;
     private List<CaveGenerator> caveGenerators = new ArrayList<>();
     private DecorationGenerator decorationGenerator;
     private LightingGenerator lightingGenerator;
+    private List<Decoration> activeDecorations = new ArrayList<>();
     OpenSimplexNoise noise;
 
     public World() {
@@ -71,6 +73,15 @@ public class World {
         caveInstances.remove(instance);
     }
 
+    public void addDecorationInstance(DecorationInstance instance) {
+        decorationInstances.add(instance);
+    }
+
+    public void removeDecorationInstance(DecorationInstance instance) {
+        decorationInstances.remove(instance);
+    }
+
+
     public void regenerate() {
         noise = new OpenSimplexNoise(worldConfig.seed*2L);
         terrainHeightGenerator = new TerrainHeightGenerator(worldConfig.seed, worldConfig.height, terrainConfig);
@@ -100,34 +111,17 @@ public class World {
                 ));
             }
         }
-        decorationGenerator = new DecorationGenerator(this, worldConfig.seed, DecorationRepository.loadAll());
+        activeDecorations.clear();
+        for(var instance : decorationInstances) {
+            if (!instance.enabled) continue;
+            activeDecorations.add(instance.decoration);
+        }
+        decorationGenerator = new DecorationGenerator(this, worldConfig.seed, activeDecorations);
         lightingGenerator = new LightingGenerator(this);
     }
 
     public Light getExposedLevel(int x, int y) {
-        return lightingGenerator.getLight(x,y);
-//        if (getTile(x, y, true) != TileType.AIR) return 0.0;
-//
-//        int surfaceY = terrainHeightGenerator.getHeight(x);
-//        int distance = Math.abs(surfaceY - y);
-//
-//
-//        //above ground
-//        if(y < surfaceY ) return 1;
-//        //tile above ground is air
-//        if(getTile(x, surfaceY-1, true) != TileType.AIR)
-//            return 0;
-//        //5 meters from surface
-//        System.out.println("y: " + y + " surface y "+ surfaceY + " distance " + distance);
-//        if(distance > 50)
-//            return 0;
-//        for (int yy = y - 1; yy >= surfaceY; yy--) {
-//            if (getTile(x, yy, true) != TileType.AIR) {
-//                return 0.0;
-//            }
-//        }
-//
-//        return 1.0 - (distance / 50.0);
+        return lightingGenerator.getLight(x, y);
     }
 
     public int getDepthOfPosition(int x, int y) {
@@ -149,6 +143,10 @@ public class World {
     }
 
     //GET CONFIGS, should only be used by UI/Controller
+
+    public List<DecorationInstance> getDecorationInstances() {
+        return decorationInstances;
+    }
 
     public WorldConfig getWorldConfig() {
         return worldConfig;

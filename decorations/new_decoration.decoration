@@ -1,0 +1,9 @@
+{
+  "desc": "New Decoration",
+  "asciiRows": [],
+  "map": {},
+  "allowedBiomes": [],
+  "requiredSurface": "NONE",
+  "chance": 0.0,
+  "placementType": "FLOOR"
+}

@@ -1,5 +1,5 @@
 {
-  "name": "Red Mushroom",
+  "desc": "Red Mushroom",
   "asciiRows": [
     "M",
     "*"
@@ -12,5 +12,5 @@
   ],
   "requiredSurface": "GRASS",
   "chance": 0.15,
-  "placementSide": "FLOOR"
+  "placementType": "FLOOR"
 }

@@ -1,6 +1,6 @@
 package uk.bradleyjones.worldgenerator.world.decorations;
 
-public enum PlacementSide {
+public enum PlacementType {
     FLOOR,
     CEILING,
     UNDERWATER,

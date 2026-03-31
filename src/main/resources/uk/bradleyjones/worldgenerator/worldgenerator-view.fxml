@@ -67,6 +67,7 @@
                 <TitledPane text="Decorations" animated="true" expanded="false">
                     <VBox spacing="4" style="-fx-padding: 4;">
                         <Button fx:id="addDecorationButton" text="+ Add Decoration" maxWidth="Infinity"/>
+                        <Button fx:id="loadDecorationButton" text="+ Load Decoration" maxWidth="Infinity"/>
                         <VBox fx:id="decorationInstancesBox" spacing="4"/>
                     </VBox>
                 </TitledPane>

@@ -1,9 +1,8 @@
 module uk.bradleyjones.worldgenerator {
-    requires javafx.controls;
     requires javafx.fxml;
-    requires java.desktop;
     requires opensimplex;
     requires com.google.gson;
+    requires com.dlsc.gemsfx;
 
     opens uk.bradleyjones.worldgenerator to javafx.fxml;
     opens uk.bradleyjones.worldgenerator.images;

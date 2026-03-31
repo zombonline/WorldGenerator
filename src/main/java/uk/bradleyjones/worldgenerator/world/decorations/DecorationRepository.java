@@ -10,7 +10,7 @@ import java.util.*;
 public class DecorationRepository {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final String DECORATIONS_DIR = "decorations";
+    public static final String DECORATIONS_DIR = "decorations";
 
     // Load all Decoration JSONs from the decorations folder
     public static List<Decoration> loadAll() {
@@ -46,13 +46,14 @@ public class DecorationRepository {
         return result;
     }
 
-    private static Decoration load(Path path) throws IOException {
+    public static Decoration load(Path path) throws IOException {
         try (Reader reader = Files.newBufferedReader(path)) {
             return GSON.fromJson(reader, Decoration.class);
         }
     }
 
-    public static void save(Decoration decoration) {
+
+    public static void save(Decoration decoration, String fileName) {
         Path dir = Path.of(DECORATIONS_DIR);
         try {
             Files.createDirectories(dir);
@@ -61,7 +62,6 @@ public class DecorationRepository {
             return;
         }
 
-        String fileName = decoration.name.toLowerCase().replace(" ", "_") + ".json";
         Path path = dir.resolve(fileName);
 
         try (Writer writer = Files.newBufferedWriter(path)) {

@@ -1,5 +1,5 @@
 {
-  "name": "Hanging Moss",
+  "desc": "Hanging Moss",
   "asciiRows": [
     "*",
     "F"
@@ -10,5 +10,5 @@
   "allowedBiomes": [],
   "requiredSurface": "STONE",
   "chance": 0.35,
-  "placementSide": "CEILING"
+  "placementType": "CEILING"
 }

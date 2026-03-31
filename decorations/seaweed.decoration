@@ -1,5 +1,5 @@
 {
-  "name": "Seaweed",
+  "desc": "Seaweed",
   "asciiRows": [
     "S",
     "B",
@@ -14,5 +14,5 @@
   ],
   "requiredSurface": "SAND",
   "chance": 0.3,
-  "placementSide": "UNDERWATER_FLOOR"
+  "placementType": "UNDERWATER_FLOOR"
 }

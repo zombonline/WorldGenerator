@@ -17,6 +17,7 @@ public class WorldGeneratorApp extends Application {
         //maximize the window
 
         WorldGeneratorController controller = fxmlLoader.getController();
+        controller.setStage(stage);
         scene.setOnKeyPressed(inputHandler::handleKeyPressed);
         scene.setOnKeyReleased(inputHandler::handleKeyReleased);
         scene.setOnScroll(inputHandler::handleScroll);

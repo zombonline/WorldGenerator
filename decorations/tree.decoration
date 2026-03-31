@@ -1,5 +1,5 @@
 {
-  "name": "Tree",
+  "desc": "Tree",
   "asciiRows": [
     " L ",
     "LLL",
@@ -18,5 +18,5 @@
   ],
   "requiredSurface": "GRASS",
   "chance": 0.5,
-  "placementSide": "FLOOR"
+  "placementType": "FLOOR"
 }

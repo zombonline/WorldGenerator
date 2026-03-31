@@ -1,5 +1,5 @@
 {
-  "name": "Flower",
+  "desc": "Flower",
   "asciiRows": [
     "F",
     "*"
@@ -8,9 +8,10 @@
     "F": "FLOWER"
   },
   "allowedBiomes": [
-    "plains", "forest"
+    "plains",
+    "forest"
   ],
   "requiredSurface": "GRASS",
   "chance": 0.1,
-  "placementSide": "FLOOR"
+  "placementType": "FLOOR"
 }

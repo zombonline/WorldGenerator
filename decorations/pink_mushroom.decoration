@@ -1,5 +1,5 @@
 {
-  "name": "Pink Mushroom",
+  "desc": "Pink Mushroom",
   "asciiRows": [
     "M",
     "*"
@@ -10,5 +10,5 @@
   "allowedBiomes": [],
   "requiredSurface": "STONE",
   "chance": 0.03,
-  "placementSide": "FLOOR"
+  "placementType": "FLOOR"
 }

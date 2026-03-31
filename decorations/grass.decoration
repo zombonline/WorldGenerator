@@ -1,0 +1,15 @@
+{
+  "desc": "grass",
+  "asciiRows": [
+    "l",
+    "*"
+  ],
+  "map": {
+    "*": "NONE",
+    "l": "NONE"
+  },
+  "allowedBiomes": [],
+  "requiredSurface": "NONE",
+  "chance": 1.0,
+  "placementType": "FLOOR"
+}
