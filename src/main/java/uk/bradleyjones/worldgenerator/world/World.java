@@ -33,7 +33,6 @@ public class World {
     private OpenSimplexNoise noise;
 
     public World() {
-        regenerate();
     }
 
     public TileType getTile(int x, int y, boolean ignoreDecorations) {
@@ -84,30 +83,18 @@ public class World {
 
     public void regenerate() {
         noise = new OpenSimplexNoise(worldConfig.seed*2L);
-        heightmapConfig.heightmapGroup.refreshSeed(worldConfig.seed);
+        heightmapConfig.heightmapGroup.regenerate();
         biomeOverrideConfig.waterLevelRef = worldConfig.waterLevel;
-        biomeGenerator = new BiomeGenerator(
-                worldConfig.seed + 100,
-                biomeGeneratorConfig,
-                biomeOverrideConfig,
-                this
-        );
+        biomeGenerator = new BiomeGenerator();
 
         caveGenerators.clear();
         for (CaveGeneratorInstance instance : caveInstances) {
             if (!instance.enabled) continue;
+
             switch (instance.type) {
-                case CA -> caveGenerators.add(new CACaveGenerator(
-                        worldConfig.width, worldConfig.height, worldConfig.seed,
-                        instance.caConfig, this
-                ));
-                case NOISE -> caveGenerators.add(new NoiseCaveGenerator(
-                        worldConfig.seed, instance.noiseConfig, this
-                ));
-                case DRUNKARD -> caveGenerators.add(new DrunkardCaveGenerator(
-                        worldConfig.width, worldConfig.height, worldConfig.seed,
-                        instance.drunkardConfig, this
-                ));
+                case CA -> caveGenerators.add(new CACaveGenerator(instance.caConfig));
+                case NOISE -> caveGenerators.add(new NoiseCaveGenerator(instance.noiseConfig));
+                case DRUNKARD -> caveGenerators.add(new DrunkardCaveGenerator(instance.drunkardConfig));
             }
         }
         activeDecorations.clear();
@@ -115,8 +102,8 @@ public class World {
             if (!instance.enabled) continue;
             activeDecorations.add(instance.decoration);
         }
-        decorationGenerator = new DecorationGenerator(this, worldConfig.seed, activeDecorations);
-        lightingGenerator = new LightingGenerator(this);
+        decorationGenerator = new DecorationGenerator(worldConfig.seed, activeDecorations);
+        lightingGenerator = new LightingGenerator();
     }
 
     public Light getExposedLevel(int x, int y) {

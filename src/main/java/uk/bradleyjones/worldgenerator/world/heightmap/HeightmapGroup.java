@@ -1,9 +1,12 @@
 package uk.bradleyjones.worldgenerator.world.heightmap;
 
 import com.raylabz.opensimplex.OpenSimplexNoise;
+import uk.bradleyjones.worldgenerator.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
 
 public class HeightmapGroup implements HeightmapNode {
 
@@ -18,12 +21,13 @@ public class HeightmapGroup implements HeightmapNode {
         this.blendNoise = new OpenSimplexNoise(seed);
     }
 
-    public void refreshSeed(long seed) {
-        this.blendNoise = new OpenSimplexNoise(seed);
+    public void regenerate() {
+        this.blendNoise = new OpenSimplexNoise(world.getWorldConfig().seed);
         for (HeightmapChild child : children) {
-            child.node.refreshSeed(seed);
+            child.node.regenerate();
         }
     }
+
     public void add(HeightmapNode node) {
         children.add(new HeightmapChild(node));
     }
@@ -62,14 +66,11 @@ public class HeightmapGroup implements HeightmapNode {
                 yield sum / active.size();
             }
             case NOISE_BLEND -> {
-                // Normalise noise to 0..1
                 double blendValue = (blendNoise.getNoise2D(x * noiseScale, 0).getValue() + 1) / 2.0;
 
-                // Calculate total weight
                 float totalWeight = 0;
                 for (HeightmapChild child : active) totalWeight += child.weight;
 
-                // Walk children and interpolate
                 float cursor = 0;
                 for (int i = 0; i < active.size() - 1; i++) {
                     float segStart = cursor / totalWeight;

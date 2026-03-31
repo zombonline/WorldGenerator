@@ -3,19 +3,19 @@ package uk.bradleyjones.worldgenerator.world.biomes;
 import com.raylabz.opensimplex.OpenSimplexNoise;
 import uk.bradleyjones.worldgenerator.world.World;
 
+import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
+
 public class BiomeGenerator {
     private final OpenSimplexNoise noise;
     private final BiomeGeneratorConfig config;
     private final BiomeOverrideConfig overrideConfig;
     private final WaterBodyType[] waterBodyMap;
-    private final World world;
     private float totalWeight;
-    public BiomeGenerator(int seed, BiomeGeneratorConfig config, BiomeOverrideConfig overrideConfig, World world) {
-        this.noise = new OpenSimplexNoise(seed);
-        this.config = config;
+    public BiomeGenerator() {
+        this.noise = new OpenSimplexNoise(world.getWorldConfig().seed);
+        this.config = world.getBiomeGeneratorConfig();
         calculateTotalWeight();
-        this.world = world;
-        this.overrideConfig = overrideConfig;
+        this.overrideConfig = world.getBiomeOverrideConfig();
         this.waterBodyMap = computeWaterBodies();
     }
 

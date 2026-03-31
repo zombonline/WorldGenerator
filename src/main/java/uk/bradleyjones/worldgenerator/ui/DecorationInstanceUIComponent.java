@@ -269,6 +269,7 @@ public class DecorationInstanceUIComponent {
             } else {
                 biomesTooltip.setText(null);
                 biomesField.setStyle("");
+                instance.decoration.allowedBiomes = List.of(items);
             }
         });
     }

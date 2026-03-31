@@ -2,12 +2,12 @@ package uk.bradleyjones.worldgenerator.world.caves;
 
 import uk.bradleyjones.worldgenerator.world.World;
 
+import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
+
 public abstract class CaveGenerator {
     public boolean effectsSurface;
-    protected final World world;
-    public CaveGenerator(CaveConfig config, World world) {
+    public CaveGenerator(CaveConfig config) {
         effectsSurface = config.effectsSurface;
-        this.world = world;
     }
 
     public boolean isCave(int x, int y)

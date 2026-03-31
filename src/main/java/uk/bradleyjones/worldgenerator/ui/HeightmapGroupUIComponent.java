@@ -44,7 +44,7 @@ public class HeightmapGroupUIComponent {
         pane.setAnimated(true);
         pane.setExpanded(true);
 
-        // Enabled (only for non-root)
+        // Enabled + weight (only for non-root sub-groups)
         if (child != null) {
             CheckBox enabledBox = new CheckBox("Enabled");
             enabledBox.setSelected(child.enabled);
@@ -88,24 +88,21 @@ public class HeightmapGroupUIComponent {
 
         // Children box
         childrenBox = new VBox(4);
-
-        // Populate existing children
         for (HeightmapChild c : group.children) {
             addChildUI(c);
         }
 
-        // Add noise generator button
-        Button addNoiseButton = new Button("+ Add Noise Generator");
-        addNoiseButton.setMaxWidth(Double.MAX_VALUE);
-        addNoiseButton.setOnAction(e -> {
-            NoiseHeightmapGenerator gen = new NoiseHeightmapGenerator(
-                    world.getWorldConfig().seed, 0.1, 64, 1.0, false
+        // Add generator button
+        Button addGeneratorButton = new Button("+ Add Generator");
+        addGeneratorButton.setMaxWidth(Double.MAX_VALUE);
+        addGeneratorButton.setOnAction(e -> {
+            HeightmapGeneratorInstance instance = new HeightmapGeneratorInstance(
+                    HeightmapGeneratorType.NOISE, world.getWorldConfig().seed
             );
-            HeightmapChild newChild = new HeightmapChild(gen);
-            group.children.add(newChild);
-            HeightmapNoiseGeneratorUIComponent component =
-                    new HeightmapNoiseGeneratorUIComponent(newChild, group, childrenBox);
-            childrenBox.getChildren().add(component.get());
+            group.children.add(instance);
+            childrenBox.getChildren().add(
+                    new HeightmapGeneratorInstanceUIComponent(instance, group, childrenBox).get()
+            );
         });
 
         // Add sub-group button
@@ -115,12 +112,12 @@ public class HeightmapGroupUIComponent {
             HeightmapGroup subGroup = new HeightmapGroup(CombineMode.ADDITIVE, world.getWorldConfig().seed);
             HeightmapChild newChild = new HeightmapChild(subGroup);
             group.children.add(newChild);
-            HeightmapGroupUIComponent component =
-                    new HeightmapGroupUIComponent(subGroup, newChild, group, childrenBox);
-            childrenBox.getChildren().add(component.get());
+            childrenBox.getChildren().add(
+                    new HeightmapGroupUIComponent(subGroup, newChild, group, childrenBox).get()
+            );
         });
 
-        // Remove button (only for non-root)
+        // Remove button (only for non-root sub-groups)
         if (parentGroup != null) {
             Button removeButton = new Button("Remove Group");
             removeButton.setMaxWidth(Double.MAX_VALUE);
@@ -135,19 +132,19 @@ public class HeightmapGroupUIComponent {
                 modeLabel, modeDropdown,
                 noiseScaleLabel, noiseScaleField,
                 childrenBox,
-                addNoiseButton, addGroupButton
+                addGeneratorButton, addGroupButton
         );
     }
 
     private void addChildUI(HeightmapChild child) {
-        if (child.node instanceof NoiseHeightmapGenerator gen) {
-            HeightmapNoiseGeneratorUIComponent component =
-                    new HeightmapNoiseGeneratorUIComponent(child, group, childrenBox);
-            childrenBox.getChildren().add(component.get());
+        if (child instanceof HeightmapGeneratorInstance instance) {
+            childrenBox.getChildren().add(
+                    new HeightmapGeneratorInstanceUIComponent(instance, group, childrenBox).get()
+            );
         } else if (child.node instanceof HeightmapGroup subGroup) {
-            HeightmapGroupUIComponent component =
-                    new HeightmapGroupUIComponent(subGroup, child, group, childrenBox);
-            childrenBox.getChildren().add(component.get());
+            childrenBox.getChildren().add(
+                    new HeightmapGroupUIComponent(subGroup, child, group, childrenBox).get()
+            );
         }
     }
 }

@@ -7,11 +7,12 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import uk.bradleyjones.worldgenerator.world.TileType;
-import uk.bradleyjones.worldgenerator.world.World;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
 
 public class WorldRenderer {
 
@@ -49,7 +50,7 @@ public class WorldRenderer {
         }
     }
 
-    public void buildWorldImageAsync(World world) {
+    public void buildWorldImageAsync() {
         worldImage = null; // clear old image so tile renderer takes over
 
         Task<WritableImage> task = new Task<>() {
@@ -62,7 +63,7 @@ public class WorldRenderer {
                 for (int y = 0; y < h; y++) {
                     for (int x = 0; x < w; x++) {
                         TileType tile = world.getTile(x, y, false);
-                        Color colour = colorFor(tile, world, x, y);
+                        Color colour = colorFor(tile, x, y);
                         pw.setColor(x, y, colour);
                     }
                 }
@@ -81,15 +82,15 @@ public class WorldRenderer {
         thread.start();
     }
 
-    public void render(GraphicsContext gc, World world, Camera camera, double canvasWidth, double canvasHeight) {
+    public void render(GraphicsContext gc, Camera camera, double canvasWidth, double canvasHeight) {
         if (worldImage != null && camera.getZoom() < IMAGE_CACHE_ZOOM_THRESHOLD) {
             renderFromImage(gc, camera, canvasWidth, canvasHeight);
         } else {
-            renderTiles(gc, world, camera, canvasWidth, canvasHeight);
+            renderTiles(gc, camera, canvasWidth, canvasHeight);
         }
     }
 
-    public void renderTiles(GraphicsContext gc, World world, Camera camera, double canvasWidth, double canvasHeight) {
+    public void renderTiles(GraphicsContext gc, Camera camera, double canvasWidth, double canvasHeight) {
         double scaledTileSize = TILE_SIZE * camera.getZoom();
 
         double topLeftX = camera.getX() - (canvasWidth / 2) / scaledTileSize;
@@ -124,14 +125,14 @@ public class WorldRenderer {
                 TileType tile = world.getTile(worldX, worldY, false);
                 double modifiedX = Math.floor(x * scaledTileSize + offsetX);
                 double modifiedY = Math.floor(y * scaledTileSize + offsetY);
-                placeTileImageAndColor(gc, world, tile, worldX, worldY, modifiedX, modifiedY, scaledTileSize);
+                placeTileImageAndColor(gc, tile, worldX, worldY, modifiedX, modifiedY, scaledTileSize);
             }
         }
     }
 
-    private void placeTileImageAndColor(GraphicsContext gc, World world, TileType tile, int worldX, int worldY, double modifiedX, double modifiedY, double scaledTileSize) {
+    private void placeTileImageAndColor(GraphicsContext gc, TileType tile, int worldX, int worldY, double modifiedX, double modifiedY, double scaledTileSize) {
         if(tileTypeImageMap.containsKey(tile)) {
-            gc.setFill(colorFor(world.getTile(worldX,worldY,true), world, worldX, worldY));
+            gc.setFill(colorFor(world.getTile(worldX,worldY,true), worldX, worldY));
             gc.fillRect(
                     modifiedX,
                     modifiedY,
@@ -141,7 +142,7 @@ public class WorldRenderer {
             gc.drawImage(tileTypeImageMap.get(tile), modifiedX, modifiedY, Math.ceil(scaledTileSize), Math.ceil(scaledTileSize));
         }
         else {
-            gc.setFill(colorFor(tile, world, worldX, worldY));
+            gc.setFill(colorFor(tile, worldX, worldY));
             gc.fillRect(
                     modifiedX,
                     modifiedY,
@@ -191,7 +192,7 @@ public class WorldRenderer {
     }
 
 
-    private Color colorFor(TileType tile, World world, int x, int y) {
+    private Color colorFor(TileType tile, int x, int y) {
         return switch (tile) {
             case GRASS -> Color.FORESTGREEN;
             case SAND -> Color.SANDYBROWN;

@@ -7,13 +7,13 @@ import uk.bradleyjones.worldgenerator.world.World;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
+
 public class LightingGenerator {
-    private final World world;
     Light[][] lightingMap;
     private final int maxLightingLevel = 50;
-    public LightingGenerator(World world)
+    public LightingGenerator()
     {
-        this.world = world;
         generate();
     }
     public void generate() {
@@ -104,7 +104,7 @@ public class LightingGenerator {
                     // keep strongest intensity
                     if (newLight > existing) {
                         target.intensity = newLight;
-                        target.normalizedIntensity = newLight / maxLightingLevel;
+                        target.normalizedIntensity = Math.min(newLight*1.25, maxLightingLevel) / maxLightingLevel;
 
                         queue.add(new LightNode(nx, ny, dx, dy, target));
                     }

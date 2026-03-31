@@ -13,7 +13,7 @@
     "SS  SSSSSSSSSSS",
     "       *       "
   ],
-  "map": {
+  "charMap": {
     "S": "STONE",
     "L": "LOG"
   },

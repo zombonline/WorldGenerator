@@ -5,7 +5,7 @@
     "C",
     "*"
   ],
-  "map": {
+  "charMap": {
     "C": "CACTUS"
   },
   "allowedBiomes": [

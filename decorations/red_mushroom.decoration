@@ -4,7 +4,7 @@
     "M",
     "*"
   ],
-  "map": {
+  "charMap": {
     "M": "RED_MUSHROOM"
   },
   "allowedBiomes": [

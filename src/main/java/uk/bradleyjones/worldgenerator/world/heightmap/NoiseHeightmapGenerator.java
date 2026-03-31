@@ -2,6 +2,8 @@ package uk.bradleyjones.worldgenerator.world.heightmap;
 
 import com.raylabz.opensimplex.OpenSimplexNoise;
 
+import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
+
 public class NoiseHeightmapGenerator implements HeightmapNode {
 
     private OpenSimplexNoise noise;
@@ -10,8 +12,8 @@ public class NoiseHeightmapGenerator implements HeightmapNode {
     private double power;
     private boolean clampToPositive;
 
-    public NoiseHeightmapGenerator(long seed, double scale, double amplitude, double power, boolean clampToPositive) {
-        this.noise = new OpenSimplexNoise(seed);
+    public NoiseHeightmapGenerator(double scale, double amplitude, double power, boolean clampToPositive) {
+        this.noise = new OpenSimplexNoise(world.getWorldConfig().seed);
         this.scale = scale;
         this.amplitude = amplitude;
         this.power = power;
@@ -25,8 +27,8 @@ public class NoiseHeightmapGenerator implements HeightmapNode {
         return (int)(Math.pow(value, power) * amplitude);
     }
 
-    public void refreshSeed(long seed) {
-        this.noise = new OpenSimplexNoise(seed);
+    public void regenerate() {
+        this.noise = new OpenSimplexNoise(world.getWorldConfig().seed);
     }
 
     // Getters and setters for UI

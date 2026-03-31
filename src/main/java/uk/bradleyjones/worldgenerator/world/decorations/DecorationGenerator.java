@@ -1,12 +1,13 @@
 package uk.bradleyjones.worldgenerator.world.decorations;
 
 import uk.bradleyjones.worldgenerator.world.TileType;
-import uk.bradleyjones.worldgenerator.world.World;
 import uk.bradleyjones.worldgenerator.world.biomes.Biome;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
 
 public class DecorationGenerator {
 
@@ -14,14 +15,14 @@ public class DecorationGenerator {
     private final int width;
     private final int height;
 
-    public DecorationGenerator(World world, long seed, List<Decoration> decorations) {
+    public DecorationGenerator(long seed, List<Decoration> decorations) {
         this.width = world.getWorldConfig().width;
         this.height = world.getWorldConfig().height;
         this.grid = new TileType[width][height];
-        generate(world, seed, decorations);
+        generate(seed, decorations);
     }
 
-    private void generate(World world, long seed, List<Decoration> decorations) {
+    private void generate(long seed, List<Decoration> decorations) {
         Random random = new Random(seed);
 
         for (int x = 0; x < width; x++) {
@@ -103,11 +104,11 @@ public class DecorationGenerator {
 
                 // Footprint solid ground check for floor placements
                 if (chosen.placementType == PlacementType.FLOOR || chosen.placementType == PlacementType.UNDERWATER_FLOOR) {
-                    int maxDy = chosen.getCells().stream().mapToInt(c -> c.dy).max().orElse(0);
+                    int maxDy = chosen.getCells().stream().mapToInt(c -> c.dy()).max().orElse(0);
                     for (DecorationCell cell : chosen.getCells()) {
-                        if (cell.dy == maxDy) {
-                            int cx = x + cell.dx;
-                            int cy = rootY + cell.dy;
+                        if (cell.dy() == maxDy) {
+                            int cx = x + cell.dx();
+                            int cy = rootY + cell.dy();
                             TileType tileBelow = world.getTile(cx, cy + 1, true);
                             if (tileBelow == TileType.AIR || tileBelow == TileType.WATER) {
                                 canPlace = false;
@@ -121,8 +122,8 @@ public class DecorationGenerator {
 
                 // Bounds and occupancy check
                 for (DecorationCell cell : chosen.getCells()) {
-                    int cx = x + cell.dx;
-                    int cy = rootY + cell.dy;
+                    int cx = x + cell.dx();
+                    int cy = rootY + cell.dy();
                     if (cx < 0 || cx >= width || cy < 0 || cy >= height) {
                         canPlace = false;
                         break;
@@ -137,7 +138,7 @@ public class DecorationGenerator {
 
                 // Place
                 for (DecorationCell cell : chosen.getCells()) {
-                    grid[x + cell.dx][rootY + cell.dy] = cell.tileType;
+                    grid[x + cell.dx()][rootY + cell.dy()] = cell.tileType();
                 }
             }
         }

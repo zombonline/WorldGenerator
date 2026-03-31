@@ -4,7 +4,7 @@
     "S",
     "*"
   ],
-  "map": {
+  "charMap": {
     "S": "SEAWEED",
     "B": "SEAWEED_BOTTOM"
   },

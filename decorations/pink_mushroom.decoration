@@ -4,10 +4,14 @@
     "M",
     "*"
   ],
-  "map": {
+  "charMap": {
     "M": "PINK_MUSHROOM"
   },
-  "allowedBiomes": [],
+  "allowedBiomes": [
+    "plains",
+    "forest",
+    "desert"
+  ],
   "requiredSurface": "STONE",
   "chance": 0.03,
   "placementType": "FLOOR"

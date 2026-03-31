@@ -9,7 +9,7 @@
     " T ",
     " * "
   ],
-  "map": {
+  "charMap": {
     "T": "LOG",
     "L": "LEAVES"
   },

@@ -4,6 +4,8 @@ import uk.bradleyjones.worldgenerator.world.World;
 
 import java.util.Random;
 
+import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
+
 public class CACaveGenerator extends CaveGenerator {
 
     private final boolean[][] caveGrid;
@@ -11,13 +13,13 @@ public class CACaveGenerator extends CaveGenerator {
     private final int height;
     private CACaveConfig config;
 
-    public CACaveGenerator(int width, int height, long seed, CACaveConfig config, World world) {
-        super(config, world);
-        this.width = width;
-        this.height = height;
+    public CACaveGenerator(CACaveConfig config) {
+        super(config);
+        this.width = world.getWorldConfig().width;
+        this.height = world.getWorldConfig().height;
         this.config = config;
         this.caveGrid = new boolean[width][height];
-        generate(seed);
+        generate(world.getWorldConfig().seed);
     }
 
     private void generate(long seed) {

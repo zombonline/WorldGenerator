@@ -5,28 +5,28 @@ import uk.bradleyjones.worldgenerator.world.World;
 
 import java.util.Random;
 
+import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
+
 
 public class DrunkardCaveGenerator extends CaveGenerator {
     private final int width;
-    private int height;
-    private int seed;
-    private DrunkardCaveConfig config;
-    private boolean[][] map;
-    private Vector2Int[] directions = new Vector2Int[]{Vector2Int.UP,Vector2Int.DOWN,Vector2Int.LEFT,Vector2Int.RIGHT};
-    public DrunkardCaveGenerator(int width, int height, int seed, DrunkardCaveConfig config, World world)
+    private final int height;
+    private final DrunkardCaveConfig config;
+    private final boolean[][] map;
+    private final Vector2Int[] directions = new Vector2Int[]{Vector2Int.UP,Vector2Int.DOWN,Vector2Int.LEFT,Vector2Int.RIGHT};
+    public DrunkardCaveGenerator(DrunkardCaveConfig config)
     {
-        super(config, world);
-        this.width = width;
-        this.height = height;
+        super(config);
+        this.width = world.getWorldConfig().width;
+        this.height = world.getWorldConfig().height;
         map = new boolean[width][height];
-        this.seed = seed;
         this.config = config;
         generate();
     }
 
     private void generate(){
         Vector2Int[] walkerPositions = new Vector2Int[config.walkerCount];
-        Random random = new Random(seed);
+        Random random = new Random(world.getWorldConfig().seed);
         for(int i = 0; i < walkerPositions.length; i++)
         {
             walkerPositions[i] = new Vector2Int(random.nextInt(0, width), random.nextInt(0,height));

@@ -44,14 +44,13 @@
                         <TextField fx:id="minSubsurfaceInput" promptText="Min Subsurface Depth"/>
                         <Label text="Max Subsurface Depth"/>
                         <TextField fx:id="maxSubsurfaceInput" promptText="Max Subsurface Depth"/>
-                        <VBox fx:id="terrainChildrenBox" spacing="4"/>
+                        <VBox fx:id="heightmapInstancesBox" spacing="4"/>
                     </VBox>
                 </TitledPane>
 
                 <!-- Caves section -->
                 <TitledPane text="Caves" animated="true" expanded="false">
                     <VBox spacing="4" style="-fx-padding: 4;">
-                        <Button fx:id="addCaveButton" text="+ Add Cave Generator" maxWidth="Infinity"/>
                         <VBox fx:id="caveInstancesBox" spacing="4"/>
                     </VBox>
                 </TitledPane>
@@ -59,8 +58,6 @@
                 <!-- Decorations section -->
                 <TitledPane text="Decorations" animated="true" expanded="false">
                     <VBox spacing="4" style="-fx-padding: 4;">
-                        <Button fx:id="addDecorationButton" text="+ Add Decoration" maxWidth="Infinity"/>
-                        <Button fx:id="loadDecorationButton" text="+ Load Decoration" maxWidth="Infinity"/>
                         <VBox fx:id="decorationInstancesBox" spacing="4"/>
                     </VBox>
                 </TitledPane>

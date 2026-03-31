@@ -4,7 +4,7 @@
     "*",
     "F"
   ],
-  "map": {
+  "charMap": {
     "F": "HANGING_MOSS"
   },
   "allowedBiomes": [],

@@ -4,14 +4,15 @@ package uk.bradleyjones.worldgenerator.world.caves;
 import com.raylabz.opensimplex.OpenSimplexNoise;
 import uk.bradleyjones.worldgenerator.world.World;
 
+import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
+
 public class NoiseCaveGenerator extends CaveGenerator{
     private NoiseCaveConfig config;
     private OpenSimplexNoise noise;
-    private World world;
-    public NoiseCaveGenerator(int seed, NoiseCaveConfig config, World world) {
-        super(config, world);
+    public NoiseCaveGenerator(NoiseCaveConfig config) {
+        super(config);
         this.config = config;
-        noise = new OpenSimplexNoise(seed);
+        noise = new OpenSimplexNoise(world.getWorldConfig().seed);
     }
     @Override
     public boolean isCave(int x, int y) {
