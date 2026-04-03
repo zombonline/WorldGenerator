@@ -46,8 +46,6 @@ public class WorldGeneratorController implements CameraListener {
     @FXML public TextField beachWidthInput;
     @FXML public TextField mountainHeightInput;
     @FXML public TextField peakHeightInput;
-    @FXML public TextField lakeMinWidthInput;
-    @FXML public TextField oceanMinWidthInput;
     @FXML public VBox biomeWeightsBox;
 
     public static World world;
@@ -97,10 +95,6 @@ public class WorldGeneratorController implements CameraListener {
         beachWidthInput.setText(String.valueOf(world.getBiomeOverrideConfig().beachWidth));
         mountainHeightInput.setText(String.valueOf(world.getBiomeOverrideConfig().mountainHeight));
         peakHeightInput.setText(String.valueOf(world.getBiomeOverrideConfig().peakHeight));
-        lakeMinWidthInput.setText(String.valueOf(world.getBiomeOverrideConfig().lakeMinWidth));
-        oceanMinWidthInput.setText(String.valueOf(world.getBiomeOverrideConfig().oceanMinWidth));
-
-
         regenButton.setOnAction(e -> handleInitializeWorld());
         draw();
     }
@@ -128,8 +122,6 @@ public class WorldGeneratorController implements CameraListener {
             world.getBiomeOverrideConfig().beachWidth = Integer.parseInt(beachWidthInput.getText());
             world.getBiomeOverrideConfig().mountainHeight = Integer.parseInt(mountainHeightInput.getText());
             world.getBiomeOverrideConfig().peakHeight = Integer.parseInt(peakHeightInput.getText());
-            world.getBiomeOverrideConfig().lakeMinWidth = Integer.parseInt(lakeMinWidthInput.getText());
-            world.getBiomeOverrideConfig().oceanMinWidth = Integer.parseInt(oceanMinWidthInput.getText());
 
             world.regenerate();
             renderer.buildWorldImageAsync();

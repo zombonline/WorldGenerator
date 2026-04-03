@@ -81,7 +81,14 @@ public class LightingGenerator {
                 }
 
                 if (newLight <= 0) continue;
-                if (world.getTile(nx, ny, true) != TileType.AIR) continue;
+                if (world.getTile(nx, ny, true) != TileType.AIR) {
+                    // Allow light through water with a penalty
+                    if (world.getTile(nx, ny, true) == TileType.WATER) {
+                        newLight -= 2; // water penalty
+                    } else {
+                        continue; // solid tile, block light
+                    }
+                }
 
                 Light target = lightingMap[nx][ny];
 
@@ -113,9 +120,16 @@ public class LightingGenerator {
         }
     }
     public Light getLightSource(int x, int y) {
-        // Sunlight (above ground air)
-        if (world.getTile(x, y, true) == TileType.AIR && world.getDepthOfPosition(x, y) < 0) {
+        TileType tile = world.getTile(x, y, true);
+
+        // Sunlight (above ground air or water surface)
+        if (tile == TileType.AIR && world.getDepthOfPosition(x, y) < 0) {
             return new Light(maxLightingLevel, Color.LIGHTBLUE);
+        }
+
+        // Water gets tinted sunlight
+        if (tile == TileType.WATER && world.getDepthOfPosition(x, y) < 0) {
+            return new Light(maxLightingLevel, Color.CYAN);
         }
 
         // Mushroom glow

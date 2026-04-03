@@ -1,0 +1,9 @@
+package uk.bradleyjones.worldgenerator.world;
+
+public class WaterConfig {
+    public int lakeMinWidth = 10;
+    public int oceanMinWidth = 60;
+    public float pressurePerDepth = 0.8f;
+    public float upwardCost = 2.0f;
+    public float minPressureToFlood = 0.1f;
+}

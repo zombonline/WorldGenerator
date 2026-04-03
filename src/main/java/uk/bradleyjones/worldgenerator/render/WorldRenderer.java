@@ -196,7 +196,10 @@ public class WorldRenderer {
         return switch (tile) {
             case GRASS -> Color.FORESTGREEN;
             case SAND -> Color.SANDYBROWN;
-            case WATER -> Color.DEEPSKYBLUE;
+            case WATER -> Color.MIDNIGHTBLUE.interpolate(
+                    world.getExposedLevel(x, y).color.interpolate(Color.DEEPSKYBLUE, 0.5),
+                    world.getExposedLevel(x, y).normalizedIntensity
+            );
             case STONE -> Color.GRAY;
             case AIR -> Color.BLACK.interpolate(world.getExposedLevel(x,y).color, world.getExposedLevel(x, y).normalizedIntensity);
             case DIRT -> Color.BROWN;

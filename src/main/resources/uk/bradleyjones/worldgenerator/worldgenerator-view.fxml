@@ -80,10 +80,6 @@
                         <TextField fx:id="mountainHeightInput" promptText="Mountain Height"/>
                         <Label text="Peak Height"/>
                         <TextField fx:id="peakHeightInput" promptText="Peak Height"/>
-                        <Label text="Lake Min Width"/>
-                        <TextField fx:id="lakeMinWidthInput" promptText="Lake Min Width"/>
-                        <Label text="Ocean Min Width"/>
-                        <TextField fx:id="oceanMinWidthInput" promptText="Ocean Min Width"/>
                     </VBox>
                 </TitledPane>
 

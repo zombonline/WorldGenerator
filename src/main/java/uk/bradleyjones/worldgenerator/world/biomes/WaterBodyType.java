@@ -2,6 +2,8 @@ package uk.bradleyjones.worldgenerator.world.biomes;
 
 public enum WaterBodyType {
     NONE,
+    NEGLIGIBLE,
     LAKE,
-    OCEAN
+    OCEAN,
+    UNDERGROUND_POOL,
 }

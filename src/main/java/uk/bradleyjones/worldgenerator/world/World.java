@@ -22,10 +22,12 @@ public class World {
     private HeightmapConfig heightmapConfig = new HeightmapConfig(worldConfig.seed);
     private BiomeGeneratorConfig biomeGeneratorConfig = new BiomeGeneratorConfig();
     private BiomeOverrideConfig biomeOverrideConfig = new BiomeOverrideConfig();
+    private WaterConfig waterConfig = new WaterConfig();
     private List<CaveGeneratorInstance> caveInstances = new ArrayList<>();
     private List<DecorationInstance> decorationInstances = new ArrayList<>();
 
     private BiomeGenerator biomeGenerator;
+    private WaterGenerator waterGenerator;
     private List<CaveGenerator> caveGenerators = new ArrayList<>();
     private DecorationGenerator decorationGenerator;
     private LightingGenerator lightingGenerator;
@@ -43,20 +45,18 @@ public class World {
             TileType decoration = decorationGenerator != null ? decorationGenerator.getTile(x, y) : null;
             if (decoration != null) return decoration;
         }
-        int clampedWaterLevel = worldConfig.height - Math.min(worldConfig.waterLevel, worldConfig.height - 1);
-        if (getDepthOfPosition(x,y) < 0) {
-            return y > clampedWaterLevel ? TileType.WATER : TileType.AIR;
-        }
 
-        if (isCave(x,y)) {
-            return TileType.AIR;
-        }
-        if (getDepthOfPosition(x,y) == 0) return biomeGenerator.getBiome(x).surfaceTile;
-        if (getDepthOfPosition(x,y) <= getSubSurfaceDepth(x)) return biomeGenerator.getBiome(x).subsurfaceTile;
+        if (waterGenerator.isWater(x, y)) return TileType.WATER;
+
+        if (getDepthOfPosition(x, y) < 0) return TileType.AIR;
+
+        if (isCave(x, y)) return TileType.AIR;
+        if (getDepthOfPosition(x, y) == 0) return biomeGenerator.getBiome(x).surfaceTile;
+        if (getDepthOfPosition(x, y) <= getSubSurfaceDepth(x)) return biomeGenerator.getBiome(x).subsurfaceTile;
         return TileType.STONE;
     }
 
-    private boolean isCave(int x, int y) {
+    public boolean isCave(int x, int y) {
         return caveGenerators.stream().anyMatch(g -> g.isCave(x, y));
     }
 
@@ -84,7 +84,6 @@ public class World {
     public void regenerate() {
         noise = new OpenSimplexNoise(worldConfig.seed*2L);
         heightmapConfig.heightmapGroup.regenerate();
-        biomeOverrideConfig.waterLevelRef = worldConfig.waterLevel;
         biomeGenerator = new BiomeGenerator();
 
         caveGenerators.clear();
@@ -97,6 +96,7 @@ public class World {
                 case DRUNKARD -> caveGenerators.add(new DrunkardCaveGenerator(instance.drunkardConfig));
             }
         }
+        waterGenerator = new WaterGenerator();
         activeDecorations.clear();
         for(var instance : decorationInstances) {
             if (!instance.enabled) continue;
@@ -151,5 +151,8 @@ public class World {
 
     public BiomeOverrideConfig getBiomeOverrideConfig() {
         return biomeOverrideConfig;
+    }
+    public WaterConfig getWaterConfig() {
+        return waterConfig;
     }
 }
