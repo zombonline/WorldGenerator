@@ -6,6 +6,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import uk.bradleyjones.worldgenerator.world.GenerationPassType;
+import uk.bradleyjones.worldgenerator.world.GenerationPassTypeSets;
 import uk.bradleyjones.worldgenerator.world.TileType;
 
 import java.io.InputStream;
@@ -62,7 +64,7 @@ public class WorldRenderer {
                 PixelWriter pw = img.getPixelWriter();
                 for (int y = 0; y < h; y++) {
                     for (int x = 0; x < w; x++) {
-                        TileType tile = world.getTile(x, y, false);
+                        TileType tile = world.getTile(x, y, GenerationPassTypeSets.ALL);
                         Color colour = colorFor(tile, x, y);
                         pw.setColor(x, y, colour);
                     }
@@ -122,7 +124,7 @@ public class WorldRenderer {
                     continue;
                 }
 
-                TileType tile = world.getTile(worldX, worldY, false);
+                TileType tile = world.getTile(worldX, worldY, GenerationPassTypeSets.ALL);
                 double modifiedX = Math.floor(x * scaledTileSize + offsetX);
                 double modifiedY = Math.floor(y * scaledTileSize + offsetY);
                 placeTileImageAndColor(gc, tile, worldX, worldY, modifiedX, modifiedY, scaledTileSize);
@@ -132,7 +134,7 @@ public class WorldRenderer {
 
     private void placeTileImageAndColor(GraphicsContext gc, TileType tile, int worldX, int worldY, double modifiedX, double modifiedY, double scaledTileSize) {
         if(tileTypeImageMap.containsKey(tile)) {
-            gc.setFill(colorFor(world.getTile(worldX,worldY,true), worldX, worldY));
+            gc.setFill(colorFor(world.getTile(worldX,worldY, GenerationPassTypeSets.ALL), worldX, worldY));
             gc.fillRect(
                     modifiedX,
                     modifiedY,
@@ -208,6 +210,13 @@ public class WorldRenderer {
             case LEAVES -> Color.DARKGREEN;
             case LOG -> Color.SADDLEBROWN;
             case CACTUS -> Color.LIMEGREEN;
+            case COAL_ORE -> Color.DARKSLATEGRAY;
+            case DIAMOND_ORE -> colorFor(TileType.STONE,x,y);
+            case COPPER_ORE -> Color.rgb(184, 115, 51);   // warm orange-brown
+            case LAPIS_ORE  -> Color.rgb(30, 60, 180);    // deep royal blue
+            case AMETHYST_ORE -> Color.rgb(153, 50, 204); // rich purple
+            case RED_CLAY   -> Color.rgb(180, 80, 60);    // terracotta rust
+            case QUARTZ     -> Color.rgb(220, 215, 210);  // off-white cream
             default -> Color.HOTPINK;
         };
     }

@@ -1,5 +1,6 @@
 package uk.bradleyjones.worldgenerator.world.decorations;
 
+import uk.bradleyjones.worldgenerator.world.GenerationPassTypeSets;
 import uk.bradleyjones.worldgenerator.world.TileType;
 import uk.bradleyjones.worldgenerator.world.biomes.Biome;
 
@@ -27,9 +28,9 @@ public class DecorationGenerator {
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                TileType tile = world.getTile(x, y, true);
-                TileType below = world.getTile(x, y + 1, true);
-                TileType above = world.getTile(x, y - 1, true);
+                TileType tile = world.getTile(x, y, GenerationPassTypeSets.NO_DECOR);
+                TileType below = world.getTile(x, y + 1, GenerationPassTypeSets.NO_DECOR);
+                TileType above = world.getTile(x, y - 1, GenerationPassTypeSets.NO_DECOR);
 
                 if (tile != TileType.AIR && tile != TileType.WATER) continue;
                 if (grid[x][y] != null) continue;
@@ -109,7 +110,7 @@ public class DecorationGenerator {
                         if (cell.dy() == maxDy) {
                             int cx = x + cell.dx();
                             int cy = rootY + cell.dy();
-                            TileType tileBelow = world.getTile(cx, cy + 1, true);
+                            TileType tileBelow = world.getTile(cx, cy + 1, GenerationPassTypeSets.NO_DECOR);
                             if (tileBelow == TileType.AIR || tileBelow == TileType.WATER) {
                                 canPlace = false;
                                 break;

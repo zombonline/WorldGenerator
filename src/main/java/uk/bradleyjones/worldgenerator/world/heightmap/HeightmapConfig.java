@@ -1,6 +1,5 @@
 package uk.bradleyjones.worldgenerator.world.heightmap;
 
-import uk.bradleyjones.worldgenerator.world.World;
 
 public class HeightmapConfig {
     public int baseHeight = 100;

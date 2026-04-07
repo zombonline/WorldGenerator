@@ -2,6 +2,7 @@ package uk.bradleyjones.worldgenerator.world.biomes;
 
 import com.raylabz.opensimplex.OpenSimplexNoise;
 import uk.bradleyjones.worldgenerator.world.World;
+import uk.bradleyjones.worldgenerator.world.water.WaterBodyType;
 
 import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
 
@@ -49,9 +50,9 @@ public class BiomeGenerator {
         // Apply override rules in priority order
         if (isMountainPeak(surfaceY, baseHeight)) return Biome.MOUNTAIN_PEAK;
         if (isMountain(surfaceY, baseHeight)) return Biome.MOUNTAIN;
-//        if (isOcean(x)) return Biome.OCEAN;
-//        if (isLake(x)) return Biome.LAKE;
-//        if (isBeach(x, surfaceY, waterLevel)) return Biome.BEACH;
+        if (isOcean(x)) return Biome.OCEAN;
+        if (isLake(x)) return Biome.LAKE;
+        if (isBeach(x, surfaceY, waterLevel)) return Biome.BEACH;
 
         return base;
     }
@@ -64,26 +65,26 @@ public class BiomeGenerator {
         return surfaceY < baseHeight - overrideConfig.mountainHeight;
     }
 
-//    private boolean isOcean(int x) {
-//        return waterBodyMap[x] == WaterBodyType.OCEAN;
-//    }
-//
-//    private boolean isLake(int x) {
-//        return waterBodyMap[x] == WaterBodyType.LAKE;
-//    }
-//
-//    private boolean isBeach(int x, int surfaceY, int waterLevel) {
-//        if (surfaceY > waterLevel || surfaceY <= waterLevel - overrideConfig.beachWidth) return false;
-//
-//        // Only beach if adjacent to an actual water body
-//        for (int i = x - overrideConfig.beachWidth; i <= x + overrideConfig.beachWidth; i++) {
-//            if (i < 0 || i >= waterBodyMap.length) continue;
-//            if (waterBodyMap[i] != WaterBodyType.NONE) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+    private boolean isOcean(int x) {
+        return world.getWaterBodyType(x) == WaterBodyType.OCEAN;
+    }
+
+    private boolean isLake(int x) {
+        return world.getWaterBodyType(x) == WaterBodyType.LAKE;
+    }
+
+    private boolean isBeach(int x, int surfaceY, int waterLevel) {
+        if (surfaceY > waterLevel || surfaceY <= waterLevel - overrideConfig.beachWidth) return false;
+
+        // Only beach if adjacent to an actual water body
+        for (int i = x - overrideConfig.beachWidth; i <= x + overrideConfig.beachWidth; i++) {
+            if (i < 0 || i >= world.getWorldConfig().width) continue;
+            if (world.getWaterBodyType(x) != WaterBodyType.NONE) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 }

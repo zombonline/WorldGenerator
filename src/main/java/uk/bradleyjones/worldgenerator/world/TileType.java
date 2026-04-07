@@ -19,5 +19,14 @@ public enum TileType {
     HANGING_MOSS,
     RED_MUSHROOM,
     PINK_MUSHROOM,
-    CACTUS
+    CACTUS,
+    IRON_ORE,
+    COAL_ORE,
+    DIAMOND_ORE,
+    CLAY,
+    COPPER_ORE,
+    QUARTZ,
+    AMETHYST_ORE,
+    LAPIS_ORE,
+    RED_CLAY
 }

@@ -1,10 +1,7 @@
-package uk.bradleyjones.worldgenerator.world;
-
-import uk.bradleyjones.worldgenerator.world.biomes.WaterBodyType;
+package uk.bradleyjones.worldgenerator.world.water;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Random;
 
 import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
 

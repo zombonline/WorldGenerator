@@ -15,6 +15,7 @@ import uk.bradleyjones.worldgenerator.render.WorldRenderer;
 import uk.bradleyjones.worldgenerator.ui.CaveListUIComponent;
 import uk.bradleyjones.worldgenerator.ui.DecorationListUIComponent;
 import uk.bradleyjones.worldgenerator.ui.HeightmapGroupUIComponent;
+import uk.bradleyjones.worldgenerator.ui.SubstanceListUIComponent;
 import uk.bradleyjones.worldgenerator.world.World;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeEntry;
 
@@ -47,6 +48,7 @@ public class WorldGeneratorController implements CameraListener {
     @FXML public TextField mountainHeightInput;
     @FXML public TextField peakHeightInput;
     @FXML public VBox biomeWeightsBox;
+    @FXML public VBox substanceRulesBox;
 
     public static World world;
     public static WorldRenderer renderer;
@@ -84,6 +86,7 @@ public class WorldGeneratorController implements CameraListener {
         heightmapInstancesBox.getChildren().add(new HeightmapGroupUIComponent(world.getHeightmapConfig().heightmapGroup).get());
         caveInstancesBox.getChildren().add(new CaveListUIComponent().get());
         decorationInstancesBox.getChildren().add(new DecorationListUIComponent().get());
+        substanceRulesBox.getChildren().add(new SubstanceListUIComponent().get());
 
 // Populate biome distribution
         biomeNoiseScaleInput.setText(String.valueOf(world.getBiomeGeneratorConfig().noiseScale));

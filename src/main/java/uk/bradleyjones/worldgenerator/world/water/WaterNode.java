@@ -1,4 +1,4 @@
-package uk.bradleyjones.worldgenerator.world;
+package uk.bradleyjones.worldgenerator.world.water;
 
 public class WaterNode {
     public int x, y;

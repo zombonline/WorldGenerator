@@ -5,15 +5,14 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+
+import org.apache.commons.lang3.StringUtils;
 import uk.bradleyjones.worldgenerator.world.TileType;
 import uk.bradleyjones.worldgenerator.world.biomes.Biome;
 import uk.bradleyjones.worldgenerator.world.decorations.DecorationInstance;
-import uk.bradleyjones.worldgenerator.world.decorations.DecorationRepository;
+import uk.bradleyjones.worldgenerator.world.decorations.DecorationParser;
 import uk.bradleyjones.worldgenerator.world.decorations.PlacementType;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +65,7 @@ public class DecorationInstanceUIComponent {
     private Label placementTypeLabel;
     private ComboBox<PlacementType> placementTypeDropdown;
 
-    private Button saveButton, removeButton;
+    private Button removeButton;
 
     public DecorationInstanceUIComponent(DecorationInstance instance, VBox parent)
     {
@@ -89,7 +88,6 @@ public class DecorationInstanceUIComponent {
         initRequiredSurfaceField();
         initChanceField();
         initPlacementTypeField();
-        initSaveButton();
         initRemoveButton();
 
         decorationParamsSection.getChildren().addAll(
@@ -101,7 +99,7 @@ public class DecorationInstanceUIComponent {
                 requiredSurfaceTileLabel, requiredSurfaceTileDropdown,
                 chanceLabel, chanceField,
                 placementTypeLabel, placementTypeDropdown,
-                saveButton, removeButton
+                removeButton
         );
         params.getChildren().addAll(enabledBox, decorationParamsSection);
     }
@@ -120,28 +118,17 @@ public class DecorationInstanceUIComponent {
     }
 
     private void updateTitleLabel() {
-        int maxRowLength = 20; // max chars per line
+        int maxRowLength = 20;
         List<String> lines = new ArrayList<>();
-
-
         String desc = instance.decoration.desc;
         while (desc.length() > maxRowLength) {
             lines.add(desc.substring(0, maxRowLength - 3) + "...");
             desc = desc.substring(maxRowLength - 3);
         }
         lines.add(desc);
-
-
-        if (instance.fileName != null) {
-            String fileLine = "\uD83D\uDCBE " + instance.fileName;
-            if(fileLine.length() > maxRowLength)
-                fileLine = fileLine.substring(0, maxRowLength - 3) + "...";
-            lines.add(fileLine);
-        }
         titleLabel.setText(String.join("\n", lines));
         titleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: black;");
     }
-
     private void initEnabledCheckbox() {
         enabledBox = new CheckBox("Enabled");
         enabledBox.setSelected(instance.enabled);
@@ -159,6 +146,7 @@ public class DecorationInstanceUIComponent {
 
     private void initAsciiEditor() {
         asciiRowsLabel = new Label("Decoration Shape");
+        Tooltip errorTooltip = new Tooltip();
         sizeLabel = new Label();
         sizeBox = new HBox(sizeLabel);
         sizeBox.setAlignment(Pos.CENTER_RIGHT);
@@ -179,7 +167,21 @@ public class DecorationInstanceUIComponent {
             var split = cleaned.split("\\n");
             instance.decoration.asciiRows = List.of(split);
             setAsciiTextSizeLabelValue(n);
-
+            if(n.indexOf(DecorationParser.ROOT_CHARACTER)==-1) {
+                asciiRowsField.setTooltip(errorTooltip);
+                errorTooltip.setText("No root present (*)");
+                asciiRowsField.setStyle("-fx-border-color: red;");
+            }
+            else if(StringUtils.countMatches(n, DecorationParser.ROOT_CHARACTER) > 1) {
+                asciiRowsField.setTooltip(errorTooltip);
+                errorTooltip.setText("Too many roots present (*)");
+                asciiRowsField.setStyle("-fx-border-color: red;");
+            }
+            else {
+                asciiRowsField.setTooltip(null);
+                errorTooltip.hide();
+                asciiRowsField.setStyle("");
+            }
             syncMapWithAscii();
             updateTileKeyBox();
         });
@@ -209,6 +211,8 @@ public class DecorationInstanceUIComponent {
 
         for (String row : instance.decoration.asciiRows) {
             for (char c : row.toCharArray()) {
+                if(!Character.isAlphabetic(c))
+                    continue;
                 used.put(c, true);
 
                 // Add missing entries
@@ -280,6 +284,7 @@ public class DecorationInstanceUIComponent {
         requiredSurfaceTileDropdown.getItems().addAll(TileType.values());
         requiredSurfaceTileDropdown.setValue(instance.decoration.requiredSurface);
         requiredSurfaceTileDropdown.setMaxWidth(Double.MAX_VALUE);
+        requiredSurfaceTileDropdown.valueProperty().addListener((obs, o, n) -> instance.decoration.requiredSurface = n);
     }
 
     private void initChanceField() {
@@ -296,41 +301,7 @@ public class DecorationInstanceUIComponent {
         placementTypeDropdown.getItems().addAll(PlacementType.values());
         placementTypeDropdown.setValue(instance.decoration.placementType);
         placementTypeDropdown.setMaxWidth(Double.MAX_VALUE);
-    }
-
-    private void initSaveButton() {
-        saveButton = new Button("Save");
-        saveButton.setMaxWidth(Double.MAX_VALUE);
-        saveButton.setOnAction(e -> {
-            if (instance.fileName != null) {
-                // Already has a file, overwrite
-                DecorationRepository.save(instance.decoration, instance.fileName);
-            } else {
-                FileChooser chooser = new FileChooser();
-                chooser.setTitle("Save Decoration");
-
-                chooser.getExtensionFilters().add(
-                        new FileChooser.ExtensionFilter("Decoration Files", "*.decoration")
-                );
-
-                File dir = new File(DecorationRepository.DECORATIONS_DIR);
-                if (!dir.exists()) dir.mkdirs();
-                chooser.setInitialDirectory(dir);
-
-                chooser.setInitialFileName(
-                        instance.decoration.desc.replaceAll("\\s+", "_").toLowerCase() + ".decoration"
-                );
-
-                Stage stage = (Stage) saveButton.getScene().getWindow();
-                File file = chooser.showSaveDialog(stage);
-
-                if (file != null) {
-                    instance.fileName = file.getName();
-                    updateTitleLabel();
-                    DecorationRepository.save(instance.decoration, instance.fileName);
-                }
-            }
-        });
+        placementTypeDropdown.valueProperty().addListener((obs, o, n) -> instance.decoration.placementType = n);
     }
 
     private void initRemoveButton() {

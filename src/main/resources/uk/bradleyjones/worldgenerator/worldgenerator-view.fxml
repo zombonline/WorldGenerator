@@ -83,6 +83,13 @@
                     </VBox>
                 </TitledPane>
 
+                <!-- Substances section -->
+                <TitledPane text="Substances" animated="true" expanded="false">
+                    <VBox spacing="4" style="-fx-padding: 4;">
+                        <VBox fx:id="substanceRulesBox" spacing="4"/>
+                    </VBox>
+                </TitledPane>
+
             </VBox>
         </ScrollPane>
     </left>

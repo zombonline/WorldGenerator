@@ -1,6 +1,7 @@
 package uk.bradleyjones.worldgenerator.world.lighting;
 
 import javafx.scene.paint.Color;
+import uk.bradleyjones.worldgenerator.world.GenerationPassTypeSets;
 import uk.bradleyjones.worldgenerator.world.TileType;
 import uk.bradleyjones.worldgenerator.world.World;
 
@@ -67,7 +68,7 @@ public class LightingGenerator {
 
                 // diagonal path check
                 if (Math.abs(dx + dy) != 1) {
-                    if(world.getTile(x, ny, true)!=TileType.AIR || world.getTile(nx, y, true)!= TileType.AIR) {
+                    if(world.getTile(x, ny, GenerationPassTypeSets.NO_DECOR)!=TileType.AIR || world.getTile(nx, y, GenerationPassTypeSets.NO_DECOR)!= TileType.AIR) {
                         continue;
                     }
                     newLight -= 0.5;
@@ -81,9 +82,9 @@ public class LightingGenerator {
                 }
 
                 if (newLight <= 0) continue;
-                if (world.getTile(nx, ny, true) != TileType.AIR) {
+                if (world.getTile(nx, ny, GenerationPassTypeSets.NO_DECOR) != TileType.AIR) {
                     // Allow light through water with a penalty
-                    if (world.getTile(nx, ny, true) == TileType.WATER) {
+                    if (world.getTile(nx, ny, GenerationPassTypeSets.NO_DECOR) == TileType.WATER) {
                         newLight -= 2; // water penalty
                     } else {
                         continue; // solid tile, block light
@@ -120,7 +121,7 @@ public class LightingGenerator {
         }
     }
     public Light getLightSource(int x, int y) {
-        TileType tile = world.getTile(x, y, true);
+        TileType tile = world.getTile(x, y, GenerationPassTypeSets.NO_DECOR);
 
         // Sunlight (above ground air or water surface)
         if (tile == TileType.AIR && world.getDepthOfPosition(x, y) < 0) {
@@ -133,8 +134,18 @@ public class LightingGenerator {
         }
 
         // Mushroom glow
-        if (world.getTile(x, y, false) == TileType.PINK_MUSHROOM) {
-            return new Light(maxLightingLevel * 0.2, Color.PINK);
+        if (world.getTile(x, y, GenerationPassTypeSets.NO_DECOR) == TileType.PINK_MUSHROOM) {
+            return new Light(maxLightingLevel * 0.14, Color.PINK);
+        }
+
+        //diamond glow
+        if(world.getTile(x,y,GenerationPassTypeSets.NO_DECOR) == TileType.DIAMOND_ORE) {
+            return new Light(maxLightingLevel*.25, Color.CADETBLUE);
+        }
+
+        //amethyst
+        if(world.getTile(x,y,GenerationPassTypeSets.NO_DECOR) == TileType.AMETHYST_ORE) {
+            return new Light(maxLightingLevel*.25, Color.PURPLE);
         }
 
         return null;

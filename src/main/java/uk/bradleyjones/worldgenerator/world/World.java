@@ -12,8 +12,14 @@ import uk.bradleyjones.worldgenerator.world.decorations.DecorationInstance;
 import uk.bradleyjones.worldgenerator.world.heightmap.HeightmapConfig;
 import uk.bradleyjones.worldgenerator.world.lighting.Light;
 import uk.bradleyjones.worldgenerator.world.lighting.LightingGenerator;
+import uk.bradleyjones.worldgenerator.world.substances.SubstanceGenerator;
+import uk.bradleyjones.worldgenerator.world.substances.SubstanceRule;
+import uk.bradleyjones.worldgenerator.world.water.WaterBodyType;
+import uk.bradleyjones.worldgenerator.world.water.WaterConfig;
+import uk.bradleyjones.worldgenerator.world.water.WaterGenerator;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class World {
@@ -25,6 +31,7 @@ public class World {
     private WaterConfig waterConfig = new WaterConfig();
     private List<CaveGeneratorInstance> caveInstances = new ArrayList<>();
     private List<DecorationInstance> decorationInstances = new ArrayList<>();
+    private List<SubstanceRule> substanceRules = new ArrayList<>();
 
     private BiomeGenerator biomeGenerator;
     private WaterGenerator waterGenerator;
@@ -33,29 +40,48 @@ public class World {
     private LightingGenerator lightingGenerator;
     private List<Decoration> activeDecorations = new ArrayList<>();
     private OpenSimplexNoise noise;
+    private SubstanceGenerator substanceGenerator;
+
+
 
     public World() {
+
     }
 
-    public TileType getTile(int x, int y, boolean ignoreDecorations) {
+    public TileType getTile(int x, int y, EnumSet<GenerationPassType> passes) {
         if (x < 0 || x >= worldConfig.width || y < 0 || y >= worldConfig.height) {
             return TileType.AIR;
         }
-        if(!ignoreDecorations) {
+
+        if (passes.contains(GenerationPassType.DECORATIONS)) {
             TileType decoration = decorationGenerator != null ? decorationGenerator.getTile(x, y) : null;
             if (decoration != null) return decoration;
         }
 
-        if (waterGenerator.isWater(x, y)) return TileType.WATER;
+        if (passes.contains(GenerationPassType.WATER) && waterGenerator.isWater(x, y)) {
+            return TileType.WATER;
+        }
 
         if (getDepthOfPosition(x, y) < 0) return TileType.AIR;
 
-        if (isCave(x, y)) return TileType.AIR;
-        if (getDepthOfPosition(x, y) == 0) return biomeGenerator.getBiome(x).surfaceTile;
-        if (getDepthOfPosition(x, y) <= getSubSurfaceDepth(x)) return biomeGenerator.getBiome(x).subsurfaceTile;
-        return TileType.STONE;
-    }
+        if (passes.contains(GenerationPassType.CAVES) && isCave(x, y)) {
+            return TileType.AIR;
+        }
 
+        int depth = getDepthOfPosition(x, y);
+        boolean useBiome = passes.contains(GenerationPassType.BIOME);
+        boolean useSubstance = passes.contains(GenerationPassType.SUBSTANCE);
+
+        TileType surface = useBiome ? biomeGenerator.getBiome(x).surfaceTile : TileType.GRASS;
+        TileType subsurface = useBiome ? biomeGenerator.getBiome(x).subsurfaceTile : TileType.DIRT;
+        TileType base = TileType.STONE;
+
+        TileType raw = depth == 0 ? surface
+                : depth <= getSubSurfaceDepth(x) ? subsurface
+                : base;
+
+        return useSubstance ? substanceGenerator.getOverride(x, y, raw) : raw;
+    }
     public boolean isCave(int x, int y) {
         return caveGenerators.stream().anyMatch(g -> g.isCave(x, y));
     }
@@ -80,11 +106,26 @@ public class World {
         decorationInstances.remove(instance);
     }
 
+    public void addSubstanceRule(SubstanceRule rule) {
+        substanceRules.add(rule);
+    }
+
+    public void removeSubstanceRule(SubstanceRule rule) {
+        substanceRules.remove(rule);
+    }
+
+    public List<SubstanceRule> getSubstanceRules() {
+        return substanceRules;
+    }
+
 
     public void regenerate() {
         noise = new OpenSimplexNoise(worldConfig.seed*2L);
         heightmapConfig.heightmapGroup.regenerate();
         biomeGenerator = new BiomeGenerator();
+        substanceGenerator = new SubstanceGenerator(substanceRules);
+
+
 
         caveGenerators.clear();
         for (CaveGeneratorInstance instance : caveInstances) {
@@ -117,6 +158,25 @@ public class World {
     public int getSurfaceY(int x) {
         int clampedBase = worldConfig.height - Math.min(heightmapConfig.baseHeight, worldConfig.height - 1);
         return clampedBase + heightmapConfig.heightmapGroup.getHeight(x);
+    }
+
+    public WaterBodyType getWaterBodyType(int x) {
+        return waterGenerator.getWaterBodyType(x);
+    }
+
+    private boolean isWaterRaw(int x, int y) {
+        if(x < 0 || x >= worldConfig.width || y < 0 || y >= getWorldConfig().height)
+            return false;
+        return waterGenerator.isWater(x, y);
+    }
+
+    public boolean isNearWater(int x, int y) {
+        for (int nx = x - 5; nx <= x + 5; nx++) {
+            for (int ny = y - 5; ny <= y + 5; ny++) {
+                if (isWaterRaw(nx, ny)) return true;
+            }
+        }
+        return false;
     }
 
     //World getters to reach into it's generators
@@ -155,4 +215,7 @@ public class World {
     public WaterConfig getWaterConfig() {
         return waterConfig;
     }
+
+
+
 }

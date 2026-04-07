@@ -1,4 +1,4 @@
-package uk.bradleyjones.worldgenerator.world.biomes;
+package uk.bradleyjones.worldgenerator.world.water;
 
 public enum WaterBodyType {
     NONE,
