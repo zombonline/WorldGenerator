@@ -146,7 +146,7 @@ public class DecorationGenerator {
     }
     public TileType getTile(int x, int y) {
         if (x < 0 || x >= width || y < 0 || y >= height) return null;
-        return grid[x][y]; // null means no decoration here
+        return grid[x][y];
     }
 
 }

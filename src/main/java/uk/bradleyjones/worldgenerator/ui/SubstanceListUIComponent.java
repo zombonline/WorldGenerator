@@ -28,7 +28,7 @@ public class SubstanceListUIComponent {
         addButton.setMaxWidth(Double.MAX_VALUE);
         addButton.setOnAction(e -> {
             SubstanceRule rule = new SubstanceRule();
-            world.addSubstanceRule(rule);
+            world.getSubstanceRules().add(rule);
             instancesBox.getChildren().add(new SubstanceRuleUIComponent(rule, instancesBox).get());
         });
 
@@ -47,7 +47,7 @@ public class SubstanceListUIComponent {
         defaultsDropdown.valueProperty().addListener((obs, o, selected) -> {
             if (selected == null) return;
             SubstanceRule copy = new SubstanceRule(selected);
-            world.addSubstanceRule(copy);
+            world.getSubstanceRules().add(copy);
             instancesBox.getChildren().add(new SubstanceRuleUIComponent(copy, instancesBox).get());
             defaultsDropdown.setValue(null);
         });

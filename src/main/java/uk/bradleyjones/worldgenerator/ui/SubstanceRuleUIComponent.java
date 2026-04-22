@@ -126,7 +126,7 @@ public class SubstanceRuleUIComponent {
         Button removeButton = new Button("Remove");
         removeButton.setMaxWidth(Double.MAX_VALUE);
         removeButton.setOnAction(e -> {
-            world.removeSubstanceRule(rule);
+            world.getSubstanceRules().remove(rule);
             parentContainer.getChildren().remove(pane);
         });
 

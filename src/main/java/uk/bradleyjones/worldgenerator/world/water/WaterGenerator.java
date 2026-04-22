@@ -34,6 +34,8 @@ public class WaterGenerator {
             if (waterBodyMap[x] == WaterBodyType.NONE) continue;
             int surfaceY = world.getSurfaceY(x);
             for (int y = waterLevel; y < surfaceY; y++) {
+                if(y > waterGrid[x].length)
+                    continue;
                 waterGrid[x][y] = true;
             }
         }

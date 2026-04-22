@@ -4,6 +4,7 @@ module uk.bradleyjones.worldgenerator {
     requires com.google.gson;
     requires com.dlsc.gemsfx;
     requires org.apache.commons.lang3;
+    requires com.github.weisj.jsvg;
 
     opens uk.bradleyjones.worldgenerator to javafx.fxml;
     opens uk.bradleyjones.worldgenerator.images;

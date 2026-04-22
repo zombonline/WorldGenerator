@@ -1,7 +1,4 @@
 package uk.bradleyjones.worldgenerator.world.caves;
-
-import uk.bradleyjones.worldgenerator.world.World;
-
 import java.util.Random;
 
 import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;

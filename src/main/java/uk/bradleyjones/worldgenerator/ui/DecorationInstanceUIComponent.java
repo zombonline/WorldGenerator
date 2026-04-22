@@ -188,7 +188,7 @@ public class DecorationInstanceUIComponent {
     }
 
     private void setAsciiTextSizeLabelValue(String n) {
-        String[] rows = n.split("\\n", -1); // keep empty rows
+        String[] rows = n.split("\\n", -1);
         int height = rows.length;
 
         int width = 0;
@@ -308,7 +308,7 @@ public class DecorationInstanceUIComponent {
         removeButton = new Button("Remove");
         removeButton.setMaxWidth(Double.MAX_VALUE);
         removeButton.setOnAction(e -> {
-            world.removeDecorationInstance(instance);
+            world.getDecorationInstances().remove(instance);
             parent.getChildren().remove(this.get());
 
         });

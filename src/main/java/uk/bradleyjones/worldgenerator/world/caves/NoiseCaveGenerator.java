@@ -2,7 +2,6 @@ package uk.bradleyjones.worldgenerator.world.caves;
 
 
 import com.raylabz.opensimplex.OpenSimplexNoise;
-import uk.bradleyjones.worldgenerator.world.World;
 
 import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
 

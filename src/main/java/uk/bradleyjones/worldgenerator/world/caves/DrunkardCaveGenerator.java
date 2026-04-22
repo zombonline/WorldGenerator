@@ -1,7 +1,6 @@
 package uk.bradleyjones.worldgenerator.world.caves;
 
 import uk.bradleyjones.worldgenerator.util.Vector2Int;
-import uk.bradleyjones.worldgenerator.world.World;
 
 import java.util.Random;
 

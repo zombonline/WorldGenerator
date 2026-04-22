@@ -90,29 +90,6 @@ public class World {
         return biomeGenerator.getBiome(x);
     }
 
-    public void addCaveInstance(CaveGeneratorType type) {
-        caveInstances.add(new CaveGeneratorInstance(type));
-    }
-
-    public void removeCaveInstance(CaveGeneratorInstance instance) {
-        caveInstances.remove(instance);
-    }
-
-    public void addDecorationInstance(DecorationInstance instance) {
-        decorationInstances.add(instance);
-    }
-
-    public void removeDecorationInstance(DecorationInstance instance) {
-        decorationInstances.remove(instance);
-    }
-
-    public void addSubstanceRule(SubstanceRule rule) {
-        substanceRules.add(rule);
-    }
-
-    public void removeSubstanceRule(SubstanceRule rule) {
-        substanceRules.remove(rule);
-    }
 
     public List<SubstanceRule> getSubstanceRules() {
         return substanceRules;
