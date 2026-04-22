@@ -66,11 +66,14 @@ public class DecorationInstanceUIComponent {
     private ComboBox<PlacementType> placementTypeDropdown;
 
     private Button removeButton;
+    private Runnable onRemove;
 
-    public DecorationInstanceUIComponent(DecorationInstance instance, VBox parent)
+
+    public DecorationInstanceUIComponent(DecorationInstance instance, VBox parent, Runnable onRemove)
     {
         this.instance = instance;
         this.parent = parent;
+        this.onRemove = onRemove;
         setUp();
     }
 
@@ -310,6 +313,7 @@ public class DecorationInstanceUIComponent {
         removeButton.setOnAction(e -> {
             world.getDecorationInstances().remove(instance);
             parent.getChildren().remove(this.get());
+            onRemove.run();
 
         });
     }

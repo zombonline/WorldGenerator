@@ -3,7 +3,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.canvas.Canvas?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="uk.bradleyjones.worldgenerator.WorldGeneratorController">
+            fx:controller="uk.bradleyjones.worldgenerator.WorldGeneratorController"
+            fx:id="root">
 
     <!-- Viewport -->
     <center>
@@ -14,30 +15,48 @@
 
     <!-- Left side panel -->
     <left>
-        <ScrollPane fitToWidth="true" prefWidth="220"
+
+        <VBox spacing="4" style="-fx-background-color: #1e1e1e; -fx-padding: 8;">
+        <VBox spacing="4" style="-fx-background-color: #1e1e1e; -fx-padding: 8;">
+            <Button fx:id="regenButton" text="Regenerate" maxWidth="Infinity" style="-fx-base:#32A82A; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; "/>
+        </VBox>
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" prefWidth="280"
                     style="-fx-background: #1e1e1e; -fx-background-color: #1e1e1e;">
             <VBox spacing="4" style="-fx-background-color: #1e1e1e; -fx-padding: 8;">
 
-                <!-- Regenerate button -->
-                <Button fx:id="regenButton" text="Regenerate" maxWidth="Infinity"/>
 
                 <!-- World section -->
-                <TitledPane text="World" animated="true" expanded="false">
-                    <VBox spacing="4" style="-fx-padding: 4;">
+                <TitledPane text="World" animated="true" expanded="false" style="-fx-base: #3D3D3D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <Label text="Seed"/>
                         <TextField fx:id="seedInput" promptText="Seed"/>
                         <Label text="Width"/>
                         <TextField fx:id="worldWidthInput" promptText="Width"/>
                         <Label text="Height"/>
                         <TextField fx:id="worldHeightInput" promptText="Height"/>
+                    </VBox>
+                </TitledPane>
+
+                <TitledPane text="Water" animated="true" expanded="false" style="-fx-base: #696969; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <VBox spacing="4" style="-fx-padding: 4;-fx-font-size: 14px; -fx-font-weight: normal;">
                         <Label text="Water Level"/>
                         <TextField fx:id="waterLevelInput" promptText="Water Level"/>
+                        <Label text="Lake Min Width"/>
+                        <TextField fx:id="lakeMinWidthInput" promptText="Lake Min Width"/>
+                        <Label text="Ocean Min Width"/>
+                        <TextField fx:id="oceanMinWidthInput" promptText="Ocean Min Width"/>
+                        <Label text="Pressure Per Depth"/>
+                        <TextField fx:id="pressurePerDepthInput" promptText="Pressure Per Depth"/>
+                        <Label text="Upward Cost"/>
+                        <TextField fx:id="upwardCostInput" promptText="Upward Cost"/>
+                        <Label text="Min Pressure To Flood"/>
+                        <TextField fx:id="minPressureToFloodInput" promptText="Min Pressure To Flood"/>
                     </VBox>
                 </TitledPane>
 
                 <!-- Terrain section -->
-                <TitledPane text="Terrain" animated="true" expanded="false">
-                    <VBox spacing="4" style="-fx-padding: 4;">
+                <TitledPane text="Terrain" animated="true" expanded="false" style="-fx-base: #3D3D3D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <Label text="Base Height"/>
                         <TextField fx:id="baseHeightInput" promptText="Base Height"/>
                         <Label text="Min Subsurface Depth"/>
@@ -49,22 +68,22 @@
                 </TitledPane>
 
                 <!-- Caves section -->
-                <TitledPane text="Caves" animated="true" expanded="false">
-                    <VBox spacing="4" style="-fx-padding: 4;">
+                <TitledPane text="Caves" animated="true" expanded="false" style="-fx-base: #696969; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <VBox fx:id="caveInstancesBox" spacing="4"/>
                     </VBox>
                 </TitledPane>
 
                 <!-- Decorations section -->
-                <TitledPane text="Decorations" animated="true" expanded="false">
-                    <VBox spacing="4" style="-fx-padding: 4;">
+                <TitledPane text="Decorations" animated="true" expanded="false" style="-fx-base: #3D3D3D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <VBox fx:id="decorationInstancesBox" spacing="4"/>
                     </VBox>
                 </TitledPane>
 
                 <!-- Biome Distribution section -->
-                <TitledPane text="Biome Distribution" animated="true" expanded="false">
-                    <VBox spacing="4" style="-fx-padding: 4;">
+                <TitledPane text="Biome Distribution" animated="true" expanded="false" style="-fx-base: #696969; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <Label text="Noise Scale"/>
                         <TextField fx:id="biomeNoiseScaleInput" promptText="Noise Scale"/>
                         <VBox fx:id="biomeWeightsBox" spacing="4"/>
@@ -72,8 +91,8 @@
                 </TitledPane>
 
                 <!-- Biome Overrides section -->
-                <TitledPane text="Biome Overrides" animated="true" expanded="false">
-                    <VBox spacing="4" style="-fx-padding: 4;">
+                <TitledPane text="Biome Overrides" animated="true" expanded="false" style="-fx-base: #3D3D3D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <Label text="Beach Width"/>
                         <TextField fx:id="beachWidthInput" promptText="Beach Width"/>
                         <Label text="Mountain Height"/>
@@ -84,14 +103,20 @@
                 </TitledPane>
 
                 <!-- Substances section -->
-                <TitledPane text="Substances" animated="true" expanded="false">
-                    <VBox spacing="4" style="-fx-padding: 4;">
+                <TitledPane text="Substances" animated="true" expanded="false" style="-fx-base: #696969; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <VBox fx:id="substanceRulesBox" spacing="4"/>
                     </VBox>
                 </TitledPane>
 
             </VBox>
         </ScrollPane>
+            <VBox spacing="4" style="-fx-background-color: #1e1e1e; -fx-padding: 8;">
+                <Button fx:id="saveButton" text="Save" maxWidth="Infinity" style="-fx-base: #05668D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" />
+                <Button fx:id="saveAsButton" text="Save As" maxWidth="Infinity" style="-fx-base: #05668D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <Button fx:id="loadButton" text="Load" maxWidth="Infinity" style="-fx-base: #05668D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+            </VBox>
+        </VBox>
     </left>
 
 </BorderPane>

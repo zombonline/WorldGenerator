@@ -2,6 +2,7 @@ package uk.bradleyjones.worldgenerator.ui;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import uk.bradleyjones.worldgenerator.world.substances.SubstanceRule;
 
@@ -11,6 +12,7 @@ public class SubstanceListUIComponent {
 
     private VBox instancesBox;
     private VBox root;
+    private int instanceCount = 0;
 
     public SubstanceListUIComponent() {
         setUp();
@@ -18,6 +20,25 @@ public class SubstanceListUIComponent {
 
     public VBox get() {
         return root;
+    }
+
+    private void addInstance(SubstanceRule rule) {
+        //24199C
+        String style = instanceCount % 2 == 0
+                ? "-fx-base: #696969;"
+                : "-fx-base: #3D3D3D;";
+        TitledPane pane = new SubstanceRuleUIComponent(rule, instancesBox, this::refresh).get();
+        pane.setStyle(style);
+        instancesBox.getChildren().add(pane);
+        instanceCount++;
+    }
+
+    public void refresh() {
+        instancesBox.getChildren().clear();
+        instanceCount = 0;
+        for (SubstanceRule rule : world.getSubstanceRules()) {
+            addInstance(rule);
+        }
     }
 
     private void setUp() {
@@ -29,12 +50,8 @@ public class SubstanceListUIComponent {
         addButton.setOnAction(e -> {
             SubstanceRule rule = new SubstanceRule();
             world.getSubstanceRules().add(rule);
-            instancesBox.getChildren().add(new SubstanceRuleUIComponent(rule, instancesBox).get());
+            addInstance(rule);
         });
-
-        for (SubstanceRule rule : world.getSubstanceRules()) {
-            instancesBox.getChildren().add(new SubstanceRuleUIComponent(rule, instancesBox).get());
-        }
 
         ComboBox<SubstanceRule> defaultsDropdown = new ComboBox<>();
         defaultsDropdown.getItems().addAll(SubstanceRule.defaults());
@@ -48,11 +65,14 @@ public class SubstanceListUIComponent {
             if (selected == null) return;
             SubstanceRule copy = new SubstanceRule(selected);
             world.getSubstanceRules().add(copy);
-            instancesBox.getChildren().add(new SubstanceRuleUIComponent(copy, instancesBox).get());
+            addInstance(copy);
             defaultsDropdown.setValue(null);
         });
 
-        root.getChildren().addAll(addButton, defaultsDropdown, instancesBox);
+        for (SubstanceRule rule : world.getSubstanceRules()) {
+            addInstance(rule);
+        }
 
+        root.getChildren().addAll(addButton, defaultsDropdown, instancesBox);
     }
 }

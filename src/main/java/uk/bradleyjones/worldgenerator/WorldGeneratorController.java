@@ -4,10 +4,12 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import uk.bradleyjones.worldgenerator.render.Camera;
 import uk.bradleyjones.worldgenerator.render.CameraListener;
@@ -23,10 +25,12 @@ import uk.bradleyjones.worldgenerator.world.biomes.BiomeEntry;
 public class WorldGeneratorController implements CameraListener {
 
     Stage stage;
-
+    @FXML BorderPane root;
     @FXML public TextField worldWidthInput;
     @FXML public TextField worldHeightInput;
-    @FXML public TextField waterLevelInput;
+
+
+    @FXML public TextField waterLevelInput, lakeMinWidthInput, oceanMinWidthInput, pressurePerDepthInput, upwardCostInput, minPressureToFloodInput;
 
     @FXML public TextField baseHeightInput;
     @FXML public TextField minSubsurfaceInput;
@@ -68,6 +72,11 @@ public class WorldGeneratorController implements CameraListener {
         camera = new Camera();
         camera.addListener(this);
 
+        //set fonts
+        root.setStyle("-fx-font-family: 'Jost';");
+
+
+
         worldCanvas.widthProperty().bind(canvasPane.widthProperty());
         worldCanvas.heightProperty().bind(canvasPane.heightProperty());
         worldCanvas.widthProperty().addListener((obs, oldVal, newVal) -> draw());
@@ -77,7 +86,13 @@ public class WorldGeneratorController implements CameraListener {
         seedInput.setText(String.valueOf(world.getWorldConfig().seed));
         worldWidthInput.setText(String.valueOf(world.getWorldConfig().width));
         worldHeightInput.setText(String.valueOf(world.getWorldConfig().height));
-        waterLevelInput.setText(String.valueOf(world.getWorldConfig().waterLevel));
+
+        waterLevelInput.setText(String.valueOf(world.getWaterConfig().waterLevel));
+        lakeMinWidthInput.setText(String.valueOf(world.getWaterConfig().lakeMinWidth));
+        oceanMinWidthInput.setText(String.valueOf(world.getWaterConfig().oceanMinWidth));
+        pressurePerDepthInput.setText(String.valueOf(world.getWaterConfig().pressurePerDepth));
+        upwardCostInput.setText(String.valueOf(world.getWaterConfig().upwardCost));
+        minPressureToFloodInput.setText(String.valueOf(world.getWaterConfig().minPressureToFlood));
 
         baseHeightInput.setText(String.valueOf(world.getHeightmapConfig().baseHeight));
         minSubsurfaceInput.setText(String.valueOf(world.getHeightmapConfig().minSubSurfaceDepth));
@@ -111,10 +126,17 @@ public class WorldGeneratorController implements CameraListener {
 
     public void handleInitializeWorld() {
         try {
-            world.getWorldConfig().seed = Integer.parseInt(seedInput.getText());
+            world.getWorldConfig().seed = Long.parseLong(seedInput.getText());
             world.getWorldConfig().width = Integer.parseInt(worldWidthInput.getText());
             world.getWorldConfig().height = Integer.parseInt(worldHeightInput.getText());
-            world.getWorldConfig().waterLevel = Integer.parseInt(waterLevelInput.getText());
+
+            world.getWaterConfig().waterLevel = Integer.parseInt(waterLevelInput.getText());
+            world.getWaterConfig().lakeMinWidth = Integer.parseInt(lakeMinWidthInput.getText());
+            world.getWaterConfig().oceanMinWidth = Integer.parseInt(oceanMinWidthInput.getText());
+            world.getWaterConfig().pressurePerDepth = Float.parseFloat(pressurePerDepthInput.getText());
+            world.getWaterConfig().upwardCost = Float.parseFloat(upwardCostInput.getText());
+            world.getWaterConfig().minPressureToFlood = Float.parseFloat(minPressureToFloodInput.getText());
+
 
             world.getHeightmapConfig().baseHeight = Integer.parseInt(baseHeightInput.getText());
             world.getHeightmapConfig().minSubSurfaceDepth = Integer.parseInt(minSubsurfaceInput.getText());
@@ -139,7 +161,7 @@ public class WorldGeneratorController implements CameraListener {
         HBox row = new HBox(4);
         row.setStyle("-fx-padding: 2;");
 
-        Label nameLabel = new Label(entry.type.name);
+        Label nameLabel = new Label(entry.biome.name);
         nameLabel.setPrefWidth(80);
 
         TextField weightField = new TextField(String.valueOf(entry.weight));

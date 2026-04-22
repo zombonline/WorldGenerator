@@ -102,7 +102,7 @@ public class HeightmapGeneratorInstanceUIComponent {
             try { instance.stepGenerator.setMaxStepGap(Integer.parseInt(n)); }
             catch (NumberFormatException ignored) {}
         });
-        Label maxGapLabel = new Label("Minimum Step Height");
+        Label maxGapLabel = new Label("Maximum Step Width");
         RandomizableField<Integer> maxGapField = new RandomizableField<>(instance.stepGenerator.getMaxStepGap(), 1, 10);
         maxGapField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.stepGenerator.setMaxStepGap(Integer.parseInt(n)); }

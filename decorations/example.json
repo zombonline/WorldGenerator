@@ -1,0 +1,107 @@
+{
+  "name": "",
+  "world": {
+    "seed": "",
+    "width":  "",
+    "height": ""
+  },
+  "water": {
+    "water_level": "",
+    "lake_min_width": "",
+    "ocean_min_width": "",
+    "pressure_per_depth": "",
+    "upward_cost": "",
+    "min_pressure_to_flood": ""
+  },
+  "heightmaps": {
+    "base_height": "",
+    "min_subsurface_depth": "",
+    "max_subsurface_depth": "",
+    "root_group":
+    {
+      "combine_mode": "",
+      "generators": [
+        {
+          "enabled": "",
+          "weight": "",
+          "noise_config": {
+            "scale": "",
+            "amplitude": "",
+            "power": "",
+            "clamp_to_positive": ""
+          },
+          "steps_config": {
+            "min_step_height": "",
+            "max_step_height": "",
+            "min_step_width": "",
+            "max_step_width": ""
+          }
+        }
+      ],
+      "groups": "//this would contain an object identical to the root_group object\n"
+    }
+  },
+  "caves": [
+    {
+      "desc": "",
+      "enabled": "",
+      "effects_surface": "",
+      "ca_config": {
+        "fill_percent": "",
+        "iterations": "",
+        "neighbor_threshold": ""
+      },
+      "noise_config": {
+        "scale_x": "",
+        "scale_y": "",
+        "lower_threshold": "",
+        "upper_threshold": ""
+      },
+      "drunkard_config": {
+        "walker_count": "",
+        "walker_steps": ""
+      }
+    }
+  ],
+  "decorations": [
+    {
+      "enabled": "",
+      "desc": "",
+      "ascii_rows":["",""],
+      "char_map": {
+        "T": "LOG",
+        "L": "LEAVES"
+      },
+      "allowed_biomes": ["",""],
+      "required_surface_tile": "",
+      "chance_to_spawn": "",
+      "placement_type": ""
+    }
+  ],
+  "biome_distribution": {
+    "noise_scale": "",
+    "desert": "",
+    "plains": "",
+    "forest": "",
+    "tundra": ""
+  },
+  "biome_overrides": {
+    "beach_width": "",
+    "mountain_height": "",
+    "peak_height": ""
+  },
+  "substances": [
+    {
+      "enabled": "",
+      "desc": "",
+      "output_tile": "",
+      "replaces": ["",""],
+      "noise_scale_x": "",
+      "noise_scale_y": "",
+      "noise_threshold": "",
+      "min_depth": "",
+      "max_depth": "",
+      "requires_near_water": ""
+    }
+  ]
+}

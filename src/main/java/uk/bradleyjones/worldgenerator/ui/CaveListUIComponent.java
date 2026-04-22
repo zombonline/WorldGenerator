@@ -2,6 +2,7 @@ package uk.bradleyjones.worldgenerator.ui;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorInstance;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorType;
@@ -14,6 +15,7 @@ public class CaveListUIComponent {
 
     private VBox instancesBox;
     private VBox root;
+    private int instanceCount = 0;
 
     public CaveListUIComponent() {
         setUp();
@@ -21,6 +23,24 @@ public class CaveListUIComponent {
 
     public VBox get() {
         return root;
+    }
+
+    private void addInstance(CaveGeneratorInstance instance) {
+        //CAVE BASE 7D9C19
+        String style = instanceCount % 2 == 0
+                ? "-fx-base: #696969;"
+                : "-fx-base: #3D3D3D;";
+        TitledPane pane = new CaveInstanceUIComponent(instance, instancesBox, this::refresh).get();
+        pane.setStyle(style);
+        instancesBox.getChildren().add(pane);
+        instanceCount++;
+    }
+    public void refresh() {
+        instancesBox.getChildren().clear();
+        instanceCount = 0;
+        for (CaveGeneratorInstance instance : world.getCaveInstances()) {
+            addInstance(instance);
+        }
     }
 
     private void setUp() {
@@ -32,7 +52,7 @@ public class CaveListUIComponent {
         addButton.setOnAction(e -> {
             CaveGeneratorInstance instance = new CaveGeneratorInstance("New CA Cave Generator", CaveGeneratorType.CA);
             world.getCaveInstances().add(instance);
-            instancesBox.getChildren().add(new CaveInstanceUIComponent(instance, instancesBox).get());
+            addInstance(instance);
         });
 
         ComboBox<CaveGeneratorInstance> defaultsDropdown = new ComboBox<>();
@@ -48,13 +68,12 @@ public class CaveListUIComponent {
             if (selected == null) return;
             CaveGeneratorInstance instance = new CaveGeneratorInstance(selected);
             world.getCaveInstances().add(instance);
-            instancesBox.getChildren().add(new CaveInstanceUIComponent(instance, instancesBox).get());
+            addInstance(instance);
             defaultsDropdown.setValue(null);
         });
 
-
         for (CaveGeneratorInstance instance : world.getCaveInstances()) {
-            instancesBox.getChildren().add(new CaveInstanceUIComponent(instance, instancesBox).get());
+            addInstance(instance);
         }
 
         root.getChildren().addAll(addButton, defaultsDropdown, instancesBox);

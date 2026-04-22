@@ -1,7 +1,6 @@
 package uk.bradleyjones.worldgenerator.world.biomes;
 
 import com.raylabz.opensimplex.OpenSimplexNoise;
-import uk.bradleyjones.worldgenerator.world.World;
 import uk.bradleyjones.worldgenerator.world.water.WaterBodyType;
 
 import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
@@ -35,18 +34,18 @@ public class BiomeGenerator {
         double normalized = (remapped + 1) / 2.0;
 
         // Get base biome from noise
-        Biome base = config.biomes.get(config.biomes.size() - 1).type;
+        Biome base = config.biomes.get(config.biomes.size() - 1).biome;
         float cursor = 0;
         for (BiomeEntry entry : config.biomes) {
             cursor += entry.weight / totalWeight;
             if (normalized < cursor) {
-                base = entry.type;
+                base = entry.biome;
                 break;
             }
         }
         int surfaceY = world.getSurfaceY(x);
         int baseHeight = world.getHeightmapConfig().baseHeight;
-        int waterLevel = world.getWorldConfig().waterLevel;
+        int waterLevel = world.getWaterConfig().waterLevel;
         // Apply override rules in priority order
         if (isMountainPeak(surfaceY, baseHeight)) return Biome.MOUNTAIN_PEAK;
         if (isMountain(surfaceY, baseHeight)) return Biome.MOUNTAIN;

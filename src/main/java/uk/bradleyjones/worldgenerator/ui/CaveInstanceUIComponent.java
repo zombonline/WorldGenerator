@@ -14,10 +14,12 @@ public class CaveInstanceUIComponent {
 
     private TitledPane pane;
     private VBox params;
+    private Runnable onRemove;
 
-    public CaveInstanceUIComponent(CaveGeneratorInstance instance, VBox parentContainer) {
+    public CaveInstanceUIComponent(CaveGeneratorInstance instance, VBox parentContainer, Runnable onRemove) {
         this.instance = instance;
         this.parentContainer = parentContainer;
+        this.onRemove = onRemove;
         setUp();
     }
 
@@ -75,9 +77,9 @@ public class CaveInstanceUIComponent {
             catch (NumberFormatException ignored) {}
         });
         Label threshLabel = new Label("Neighbour Threshold");
-        RandomizableField<Integer> threshField = new RandomizableField<>(instance.caConfig.neighbourThreshold,1, 9);
+        RandomizableField<Integer> threshField = new RandomizableField<>(instance.caConfig.neighborThreshold,1, 9);
         threshField.getField().textProperty().addListener((obs, o, n) -> {
-            try { instance.caConfig.neighbourThreshold = Integer.parseInt(n); }
+            try { instance.caConfig.neighborThreshold = Integer.parseInt(n); }
             catch (NumberFormatException ignored) {}
         });
         caParamsSection.getChildren().addAll(fillLabel, fillField.get(), iterLabel, iterField.get(), threshLabel, threshField.get());
@@ -157,6 +159,7 @@ public class CaveInstanceUIComponent {
         removeButton.setOnAction(e -> {
             world.getCaveInstances().remove(instance);
             parentContainer.getChildren().remove(pane);
+            onRemove.run();
         });
 
         params.getChildren().addAll(descLabel, descField, enabledBox, effectsSurfaceBox, typeDropdown,

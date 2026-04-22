@@ -41,7 +41,7 @@ public class CACaveGenerator extends CaveGenerator {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int stoneNeighbours = countStoneNeighbours(x, y);
-                newGrid[x][y] = stoneNeighbours >= config.neighbourThreshold;
+                newGrid[x][y] = stoneNeighbours >= config.neighborThreshold;
             }
         }
 

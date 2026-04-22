@@ -28,7 +28,7 @@ public class WaterGenerator {
 
     private void placeSurfaceWater() {
         int worldHeight = world.getWorldConfig().height;
-        int waterLevel = worldHeight - Math.min(world.getWorldConfig().waterLevel, worldHeight - 1);
+        int waterLevel = worldHeight - Math.min(world.getWaterConfig().waterLevel, worldHeight - 1);
 
         for (int x = 0; x < world.getWorldConfig().width; x++) {
             if (waterBodyMap[x] == WaterBodyType.NONE) continue;
@@ -44,7 +44,7 @@ public class WaterGenerator {
 
     private void findEntryPointsAndFlood() {
         int worldHeight = world.getWorldConfig().height;
-        int waterLevel = worldHeight - Math.min(world.getWorldConfig().waterLevel, worldHeight - 1);
+        int waterLevel = worldHeight - Math.min(world.getWaterConfig().waterLevel, worldHeight - 1);
 
         Deque<WaterNode> queue = new ArrayDeque<>();
 
@@ -120,7 +120,7 @@ public class WaterGenerator {
         int worldWidth = world.getWorldConfig().width;
         int worldHeight = world.getWorldConfig().height;
         WaterBodyType[] map = new WaterBodyType[worldWidth];
-        int waterLevel = worldHeight - Math.min(world.getWorldConfig().waterLevel , worldHeight - 1);
+        int waterLevel = worldHeight - Math.min(world.getWaterConfig().waterLevel , worldHeight - 1);
 
         int x = 0;
         while (x < worldWidth) {

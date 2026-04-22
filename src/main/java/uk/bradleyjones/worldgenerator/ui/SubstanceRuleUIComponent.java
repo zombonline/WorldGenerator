@@ -17,10 +17,12 @@ public class SubstanceRuleUIComponent {
 
     private TitledPane pane;
     private VBox params;
+    private Runnable onRemove;
 
-    public SubstanceRuleUIComponent(SubstanceRule rule, VBox parentContainer) {
+    public SubstanceRuleUIComponent(SubstanceRule rule, VBox parentContainer, Runnable onRemove) {
         this.rule = rule;
         this.parentContainer = parentContainer;
+        this.onRemove = onRemove;
         setUp();
     }
 
@@ -34,6 +36,12 @@ public class SubstanceRuleUIComponent {
         pane = new TitledPane("Substance Rule", params);
         pane.setAnimated(true);
         pane.setExpanded(false);
+
+        // Enabled
+        CheckBox enabledBox = new CheckBox("Enabled");
+        enabledBox.setSelected(rule.enabled);
+        enabledBox.selectedProperty().addListener((obs, o, n) -> rule.enabled = n);
+
 
         Label descLabel = new Label("Description");
         TextField descField = new TextField(rule.desc != null ? rule.desc : "");
@@ -128,9 +136,11 @@ public class SubstanceRuleUIComponent {
         removeButton.setOnAction(e -> {
             world.getSubstanceRules().remove(rule);
             parentContainer.getChildren().remove(pane);
+            onRemove.run();
         });
 
         params.getChildren().addAll(
+                enabledBox,
                 descLabel,descField,
                 outputLabel, outputDropdown,
                 replacesLabel, replacesList,
