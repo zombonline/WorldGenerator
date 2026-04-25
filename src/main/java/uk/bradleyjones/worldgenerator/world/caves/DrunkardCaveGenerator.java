@@ -43,7 +43,7 @@ public class DrunkardCaveGenerator extends CaveGenerator {
 
     @Override
     public boolean isCave(int x, int y) {
-        if(x > map.length || y > map[x].length)
+        if(x >= map.length || y >= map[x].length)
             return false;
         return map[x][y] && super.isCave(x,y);
     }

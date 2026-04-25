@@ -12,23 +12,27 @@ public class HeightmapGroupUIComponent {
     private final HeightmapGroup group;
     private final HeightmapGroup parentGroup; // null if root
     private final VBox parentContainer; // null if root
+    private final Runnable onRemove;
 
     private TitledPane pane;
     private VBox params;
     private VBox childrenBox;
 
+    private int instanceCount = 0;
+
     public HeightmapGroupUIComponent(HeightmapGroup group, HeightmapChild child,
-                                     HeightmapGroup parentGroup, VBox parentContainer) {
+                                     HeightmapGroup parentGroup, VBox parentContainer, Runnable onRemove) {
         this.group = group;
         this.child = child;
         this.parentGroup = parentGroup;
         this.parentContainer = parentContainer;
+        this.onRemove = onRemove;
         setUp();
     }
 
     // Constructor for root group (no parent)
     public HeightmapGroupUIComponent(HeightmapGroup group) {
-        this(group, null, null, null);
+        this(group, null, null, null, null);
     }
 
     public TitledPane get() {
@@ -100,9 +104,7 @@ public class HeightmapGroupUIComponent {
                     HeightmapGeneratorType.NOISE, world.getWorldConfig().seed
             );
             group.children.add(instance);
-            childrenBox.getChildren().add(
-                    new HeightmapGeneratorInstanceUIComponent(instance, group, childrenBox).get()
-            );
+            addChildUI(instance);
         });
 
         // Add sub-group button
@@ -112,18 +114,18 @@ public class HeightmapGroupUIComponent {
             HeightmapGroup subGroup = new HeightmapGroup(CombineMode.ADDITIVE, world.getWorldConfig().seed);
             HeightmapChild newChild = new HeightmapChild(subGroup);
             group.children.add(newChild);
-            childrenBox.getChildren().add(
-                    new HeightmapGroupUIComponent(subGroup, newChild, group, childrenBox).get()
-            );
+            addChildUI(newChild);
         });
 
         // Remove button (only for non-root sub-groups)
         if (parentGroup != null) {
             Button removeButton = new Button("Remove Group");
+            removeButton.setStyle("-fx-base:#A82A2A");
             removeButton.setMaxWidth(Double.MAX_VALUE);
             removeButton.setOnAction(e -> {
                 parentGroup.children.remove(child);
                 parentContainer.getChildren().remove(pane);
+                onRemove.run();
             });
             params.getChildren().add(removeButton);
         }
@@ -137,14 +139,28 @@ public class HeightmapGroupUIComponent {
     }
 
     private void addChildUI(HeightmapChild child) {
-        if (child instanceof HeightmapGeneratorInstance instance) {
-            childrenBox.getChildren().add(
-                    new HeightmapGeneratorInstanceUIComponent(instance, group, childrenBox).get()
-            );
-        } else if (child.node instanceof HeightmapGroup subGroup) {
-            childrenBox.getChildren().add(
-                    new HeightmapGroupUIComponent(subGroup, child, group, childrenBox).get()
-            );
+        String style = instanceCount % 2 == 0
+                ? "-fx-base: #696969;"
+                : "-fx-base: #3D3D3D;";
+        TitledPane newPane;
+        if (child instanceof HeightmapGeneratorInstance instance)
+            newPane = new HeightmapGeneratorInstanceUIComponent(instance, group, childrenBox, this::refresh).get();
+        else if (child.node instanceof HeightmapGroup subGroup)
+            newPane = new HeightmapGroupUIComponent(subGroup, child, group, childrenBox, this::refresh).get();
+        else return;
+
+        newPane.setStyle(style);
+        childrenBox.getChildren().add(newPane);
+        instanceCount++;
+    }
+
+    public void refresh(){
+        childrenBox.getChildren().clear();
+        if(parentGroup == null){
+            System.out.println("Refreshing root group, children count: " + group.children.size() + ", group combine mode: " + group.mode);
+        }
+        for(var child:group.children){
+            addChildUI(child);
         }
     }
 }

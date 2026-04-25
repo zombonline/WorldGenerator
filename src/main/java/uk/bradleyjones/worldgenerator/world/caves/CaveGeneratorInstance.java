@@ -1,8 +1,6 @@
 
 package uk.bradleyjones.worldgenerator.world.caves;
 
-import com.github.weisj.jsvg.attributes.Default;
-
 import java.util.List;
 
 public class CaveGeneratorInstance {

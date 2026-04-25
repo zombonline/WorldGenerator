@@ -132,6 +132,7 @@ public class SubstanceRuleUIComponent {
 
         // Remove button
         Button removeButton = new Button("Remove");
+        removeButton.setStyle("-fx-base:#A82A2A");
         removeButton.setMaxWidth(Double.MAX_VALUE);
         removeButton.setOnAction(e -> {
             world.getSubstanceRules().remove(rule);

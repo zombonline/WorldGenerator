@@ -2,6 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.canvas.Canvas?>
+<?import uk.bradleyjones.worldgenerator.ui.RandomizableField?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="uk.bradleyjones.worldgenerator.WorldGeneratorController"
             fx:id="root">
@@ -29,28 +30,28 @@
                 <TitledPane text="World" animated="true" expanded="false" style="-fx-base: #3D3D3D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
                     <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <Label text="Seed"/>
-                        <TextField fx:id="seedInput" promptText="Seed"/>
+                        <RandomizableField fx:id="seedInput" type="Long" min="-999999999" max="999999999"/>
                         <Label text="Width"/>
-                        <TextField fx:id="worldWidthInput" promptText="Width"/>
+                        <RandomizableField fx:id="worldWidthInput" type="Integer" min="100" max="2000"/>
                         <Label text="Height"/>
-                        <TextField fx:id="worldHeightInput" promptText="Height"/>
+                        <RandomizableField fx:id="worldHeightInput" type="Integer" min="100" max="2000"/>
                     </VBox>
                 </TitledPane>
 
                 <TitledPane text="Water" animated="true" expanded="false" style="-fx-base: #696969; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
                     <VBox spacing="4" style="-fx-padding: 4;-fx-font-size: 14px; -fx-font-weight: normal;">
                         <Label text="Water Level"/>
-                        <TextField fx:id="waterLevelInput" promptText="Water Level"/>
+                        <RandomizableField fx:id="waterLevelInput" type="Integer" min="0" max="200"/>
                         <Label text="Lake Min Width"/>
-                        <TextField fx:id="lakeMinWidthInput" promptText="Lake Min Width"/>
+                        <RandomizableField fx:id="lakeMinWidthInput" type="Integer" min="1" max="100"/>
                         <Label text="Ocean Min Width"/>
-                        <TextField fx:id="oceanMinWidthInput" promptText="Ocean Min Width"/>
+                        <RandomizableField fx:id="oceanMinWidthInput" type="Integer" min="1" max="200"/>
                         <Label text="Pressure Per Depth"/>
-                        <TextField fx:id="pressurePerDepthInput" promptText="Pressure Per Depth"/>
+                        <RandomizableField fx:id="pressurePerDepthInput" type="Float" min="0" max="10"/>
                         <Label text="Upward Cost"/>
-                        <TextField fx:id="upwardCostInput" promptText="Upward Cost"/>
+                        <RandomizableField fx:id="upwardCostInput" type="Float" min="0" max="10"/>
                         <Label text="Min Pressure To Flood"/>
-                        <TextField fx:id="minPressureToFloodInput" promptText="Min Pressure To Flood"/>
+                        <RandomizableField fx:id="minPressureToFloodInput" type="Float" min="0" max="100"/>
                     </VBox>
                 </TitledPane>
 
@@ -58,11 +59,11 @@
                 <TitledPane text="Terrain" animated="true" expanded="false" style="-fx-base: #3D3D3D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
                     <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <Label text="Base Height"/>
-                        <TextField fx:id="baseHeightInput" promptText="Base Height"/>
+                        <RandomizableField fx:id="baseHeightInput" type="Integer" min="0" max="200"/>
                         <Label text="Min Subsurface Depth"/>
-                        <TextField fx:id="minSubsurfaceInput" promptText="Min Subsurface Depth"/>
+                        <RandomizableField fx:id="minSubsurfaceInput" type="Integer" min="5" max="10"/>
                         <Label text="Max Subsurface Depth"/>
-                        <TextField fx:id="maxSubsurfaceInput" promptText="Max Subsurface Depth"/>
+                        <RandomizableField fx:id="maxSubsurfaceInput" type="Integer" min="10" max="30"/>
                         <VBox fx:id="heightmapInstancesBox" spacing="4"/>
                     </VBox>
                 </TitledPane>
@@ -85,7 +86,7 @@
                 <TitledPane text="Biome Distribution" animated="true" expanded="false" style="-fx-base: #696969; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
                     <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <Label text="Noise Scale"/>
-                        <TextField fx:id="biomeNoiseScaleInput" promptText="Noise Scale"/>
+                        <RandomizableField fx:id="biomeNoiseScaleInput" type="Float" min="0.0001" max="2"/>
                         <VBox fx:id="biomeWeightsBox" spacing="4"/>
                     </VBox>
                 </TitledPane>
@@ -94,11 +95,11 @@
                 <TitledPane text="Biome Overrides" animated="true" expanded="false" style="-fx-base: #3D3D3D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;">
                     <VBox spacing="4" style="-fx-padding: 4; -fx-font-size: 14px; -fx-font-weight: normal;">
                         <Label text="Beach Width"/>
-                        <TextField fx:id="beachWidthInput" promptText="Beach Width"/>
+                        <RandomizableField fx:id="beachWidthInput" type="Integer" min="4" max="20"/>
                         <Label text="Mountain Height"/>
-                        <TextField fx:id="mountainHeightInput" promptText="Mountain Height"/>
+                        <RandomizableField fx:id="mountainHeightInput" type="Integer" min="100" max="200"/>
                         <Label text="Peak Height"/>
-                        <TextField fx:id="peakHeightInput" promptText="Peak Height"/>
+                        <RandomizableField fx:id="peakHeightInput" type="Integer" min="100" max="200"/>
                     </VBox>
                 </TitledPane>
 
@@ -112,6 +113,7 @@
             </VBox>
         </ScrollPane>
             <VBox spacing="4" style="-fx-background-color: #1e1e1e; -fx-padding: 8;">
+                <Label fx:id="loadedFileName" style="-fx-text-fill: green;"/>
                 <Button fx:id="saveButton" text="Save" maxWidth="Infinity" style="-fx-base: #05668D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" />
                 <Button fx:id="saveAsButton" text="Save As" maxWidth="Infinity" style="-fx-base: #05668D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
                 <Button fx:id="loadButton" text="Load" maxWidth="Infinity" style="-fx-base: #05668D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>

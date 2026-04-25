@@ -9,15 +9,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import uk.bradleyjones.worldgenerator.render.Camera;
 import uk.bradleyjones.worldgenerator.render.CameraListener;
 import uk.bradleyjones.worldgenerator.render.WorldRenderer;
-import uk.bradleyjones.worldgenerator.ui.CaveListUIComponent;
-import uk.bradleyjones.worldgenerator.ui.DecorationListUIComponent;
-import uk.bradleyjones.worldgenerator.ui.HeightmapGroupUIComponent;
-import uk.bradleyjones.worldgenerator.ui.SubstanceListUIComponent;
+import uk.bradleyjones.worldgenerator.saving.WorldFileManager;
+import uk.bradleyjones.worldgenerator.ui.*;
 import uk.bradleyjones.worldgenerator.world.World;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeEntry;
 
@@ -26,33 +23,52 @@ public class WorldGeneratorController implements CameraListener {
 
     Stage stage;
     @FXML BorderPane root;
-    @FXML public TextField worldWidthInput;
-    @FXML public TextField worldHeightInput;
 
-
-    @FXML public TextField waterLevelInput, lakeMinWidthInput, oceanMinWidthInput, pressurePerDepthInput, upwardCostInput, minPressureToFloodInput;
-
-    @FXML public TextField baseHeightInput;
-    @FXML public TextField minSubsurfaceInput;
-    @FXML public TextField maxSubsurfaceInput;
-
+    //WORLD CONFIG
+    @FXML public RandomizableField seedInput;
+    @FXML public RandomizableField worldWidthInput;
+    @FXML public RandomizableField worldHeightInput;
+    //WATER CONFIG
+    @FXML public RandomizableField waterLevelInput;
+    @FXML public RandomizableField lakeMinWidthInput;
+    @FXML public RandomizableField oceanMinWidthInput;
+    @FXML public RandomizableField pressurePerDepthInput;
+    @FXML public RandomizableField upwardCostInput;
+    @FXML public RandomizableField minPressureToFloodInput;
+    //HEIGHTMAP CONFIG
+    @FXML public RandomizableField baseHeightInput;
+    @FXML public RandomizableField minSubsurfaceInput;
+    @FXML public RandomizableField maxSubsurfaceInput;
     @FXML public VBox heightmapInstancesBox;
 
     @FXML private Pane canvasPane;
     @FXML private Canvas worldCanvas;
-    @FXML private TextField seedInput;
     @FXML private Button regenButton;
 
     @FXML public VBox caveInstancesBox;
 
     @FXML public VBox decorationInstancesBox;
 
-    @FXML public TextField biomeNoiseScaleInput;
-    @FXML public TextField beachWidthInput;
-    @FXML public TextField mountainHeightInput;
-    @FXML public TextField peakHeightInput;
+    //BIOME DISTRIBUTIO CONFIG
+    @FXML public RandomizableField biomeNoiseScaleInput;
     @FXML public VBox biomeWeightsBox;
+
+    //BIOME OVERRIDE CONFIG
+    @FXML public RandomizableField beachWidthInput;
+    @FXML public RandomizableField mountainHeightInput;
+    @FXML public RandomizableField peakHeightInput;
+
     @FXML public VBox substanceRulesBox;
+
+    @FXML public Button saveAsButton;
+    @FXML public Button saveButton;
+    @FXML public Button loadButton;
+    @FXML public Label loadedFileName;
+
+    private HeightmapGroupUIComponent heightmapGroupUIComponent;
+    private CaveListUIComponent caveListUIComponent;
+    private DecorationListUIComponent decorationListUIComponent;
+    private SubstanceListUIComponent substanceListUIComponent;
 
     public static World world;
     public static WorldRenderer renderer;
@@ -75,45 +91,44 @@ public class WorldGeneratorController implements CameraListener {
         //set fonts
         root.setStyle("-fx-font-family: 'Jost';");
 
-
-
         worldCanvas.widthProperty().bind(canvasPane.widthProperty());
         worldCanvas.heightProperty().bind(canvasPane.heightProperty());
         worldCanvas.widthProperty().addListener((obs, oldVal, newVal) -> draw());
         worldCanvas.heightProperty().addListener((obs, oldVal, newVal) -> draw());
 
-        // Populate fields from config objects
-        seedInput.setText(String.valueOf(world.getWorldConfig().seed));
-        worldWidthInput.setText(String.valueOf(world.getWorldConfig().width));
-        worldHeightInput.setText(String.valueOf(world.getWorldConfig().height));
+        //Create list ui components
+        heightmapGroupUIComponent = new HeightmapGroupUIComponent(world.getHeightmapConfig().heightmapGroup);
+        caveListUIComponent = new CaveListUIComponent();
+        decorationListUIComponent = new DecorationListUIComponent();
+        substanceListUIComponent = new SubstanceListUIComponent();
 
-        waterLevelInput.setText(String.valueOf(world.getWaterConfig().waterLevel));
-        lakeMinWidthInput.setText(String.valueOf(world.getWaterConfig().lakeMinWidth));
-        oceanMinWidthInput.setText(String.valueOf(world.getWaterConfig().oceanMinWidth));
-        pressurePerDepthInput.setText(String.valueOf(world.getWaterConfig().pressurePerDepth));
-        upwardCostInput.setText(String.valueOf(world.getWaterConfig().upwardCost));
-        minPressureToFloodInput.setText(String.valueOf(world.getWaterConfig().minPressureToFlood));
+        heightmapInstancesBox.getChildren().add(heightmapGroupUIComponent.get());
+        caveInstancesBox.getChildren().add(caveListUIComponent.get());
+        decorationInstancesBox.getChildren().add(decorationListUIComponent.get());
+        substanceRulesBox.getChildren().add(substanceListUIComponent.get());
 
-        baseHeightInput.setText(String.valueOf(world.getHeightmapConfig().baseHeight));
-        minSubsurfaceInput.setText(String.valueOf(world.getHeightmapConfig().minSubSurfaceDepth));
-        maxSubsurfaceInput.setText(String.valueOf(world.getHeightmapConfig().maxSubSurfaceDepth));
-        
-        heightmapInstancesBox.getChildren().add(new HeightmapGroupUIComponent(world.getHeightmapConfig().heightmapGroup).get());
-        caveInstancesBox.getChildren().add(new CaveListUIComponent().get());
-        decorationInstancesBox.getChildren().add(new DecorationListUIComponent().get());
-        substanceRulesBox.getChildren().add(new SubstanceListUIComponent().get());
 
-// Populate biome distribution
-        biomeNoiseScaleInput.setText(String.valueOf(world.getBiomeGeneratorConfig().noiseScale));
-        for (BiomeEntry entry : world.getBiomeGeneratorConfig().biomes) {
-            addBiomeWeightUI(entry);
-        }
-
-// Populate biome overrides
-        beachWidthInput.setText(String.valueOf(world.getBiomeOverrideConfig().beachWidth));
-        mountainHeightInput.setText(String.valueOf(world.getBiomeOverrideConfig().mountainHeight));
-        peakHeightInput.setText(String.valueOf(world.getBiomeOverrideConfig().peakHeight));
+        //Hook up buttons
         regenButton.setOnAction(e -> handleInitializeWorld());
+        saveAsButton.setOnAction(e -> {
+            handleInitializeWorld();
+            WorldFileManager.saveAs(stage, world);
+            loadedFileName.setText("Loaded: " + WorldFileManager.getCurrentName() + ".world");
+        });
+        saveButton.setOnAction(e ->{
+            handleInitializeWorld();
+            WorldFileManager.save(stage, world);
+        });
+        loadButton.setOnAction(e -> {
+            WorldFileManager.load(stage, world);
+            refreshUI();
+            handleInitializeWorld();
+            loadedFileName.setText("Loaded: " + WorldFileManager.getCurrentName() + ".world");
+        });
+
+        //refresh valyes
+        refreshUI();
+
         draw();
     }
 
@@ -126,27 +141,29 @@ public class WorldGeneratorController implements CameraListener {
 
     public void handleInitializeWorld() {
         try {
-            world.getWorldConfig().seed = Long.parseLong(seedInput.getText());
-            world.getWorldConfig().width = Integer.parseInt(worldWidthInput.getText());
-            world.getWorldConfig().height = Integer.parseInt(worldHeightInput.getText());
+            world.getWorldConfig().seed = Long.parseLong(seedInput.getValue());
+            world.getWorldConfig().width = Integer.parseInt(worldWidthInput.getValue());
+            world.getWorldConfig().height = Integer.parseInt(worldHeightInput.getValue());
 
-            world.getWaterConfig().waterLevel = Integer.parseInt(waterLevelInput.getText());
-            world.getWaterConfig().lakeMinWidth = Integer.parseInt(lakeMinWidthInput.getText());
-            world.getWaterConfig().oceanMinWidth = Integer.parseInt(oceanMinWidthInput.getText());
-            world.getWaterConfig().pressurePerDepth = Float.parseFloat(pressurePerDepthInput.getText());
-            world.getWaterConfig().upwardCost = Float.parseFloat(upwardCostInput.getText());
-            world.getWaterConfig().minPressureToFlood = Float.parseFloat(minPressureToFloodInput.getText());
-
-
-            world.getHeightmapConfig().baseHeight = Integer.parseInt(baseHeightInput.getText());
-            world.getHeightmapConfig().minSubSurfaceDepth = Integer.parseInt(minSubsurfaceInput.getText());
-            world.getHeightmapConfig().maxSubSurfaceDepth = Integer.parseInt(maxSubsurfaceInput.getText());
+            world.getWaterConfig().waterLevel = Integer.parseInt(waterLevelInput.getValue());
+            world.getWaterConfig().lakeMinWidth = Integer.parseInt(lakeMinWidthInput.getValue());
+            world.getWaterConfig().oceanMinWidth = Integer.parseInt(oceanMinWidthInput.getValue());
+            world.getWaterConfig().pressurePerDepth = Float.parseFloat(pressurePerDepthInput.getValue());
+            world.getWaterConfig().upwardCost = Float.parseFloat(upwardCostInput.getValue());
+            world.getWaterConfig().minPressureToFlood = Float.parseFloat(minPressureToFloodInput.getValue());
 
 
-            world.getBiomeGeneratorConfig().noiseScale = Float.parseFloat(biomeNoiseScaleInput.getText());
-            world.getBiomeOverrideConfig().beachWidth = Integer.parseInt(beachWidthInput.getText());
-            world.getBiomeOverrideConfig().mountainHeight = Integer.parseInt(mountainHeightInput.getText());
-            world.getBiomeOverrideConfig().peakHeight = Integer.parseInt(peakHeightInput.getText());
+            world.getHeightmapConfig().baseHeight = Integer.parseInt(baseHeightInput.getValue());
+            world.getHeightmapConfig().minSubSurfaceDepth = Integer.parseInt(minSubsurfaceInput.getValue());
+            world.getHeightmapConfig().maxSubSurfaceDepth = Integer.parseInt(maxSubsurfaceInput.getValue());
+
+
+            world.getBiomeGeneratorConfig().noiseScale = Float.parseFloat(biomeNoiseScaleInput.getValue());
+
+
+            world.getBiomeOverrideConfig().beachWidth = Integer.parseInt(beachWidthInput.getValue());
+            world.getBiomeOverrideConfig().mountainHeight = Integer.parseInt(mountainHeightInput.getValue());
+            world.getBiomeOverrideConfig().peakHeight = Integer.parseInt(peakHeightInput.getValue());
 
             world.regenerate();
             renderer.buildWorldImageAsync();
@@ -177,5 +194,48 @@ public class WorldGeneratorController implements CameraListener {
     @Override
     public void onCameraUpdated(Camera camera) {
         draw();
+    }
+
+    public void refreshUI(){
+        //WORLD CONFIG
+        seedInput.setValue(String.valueOf(world.getWorldConfig().seed));
+        worldWidthInput.setValue(String.valueOf(world.getWorldConfig().width));
+        worldHeightInput.setValue(String.valueOf(world.getWorldConfig().height));
+
+        //WATER CONFIG
+        waterLevelInput.setValue(String.valueOf(world.getWaterConfig().waterLevel));
+        lakeMinWidthInput.setValue(String.valueOf(world.getWaterConfig().lakeMinWidth));
+        oceanMinWidthInput.setValue(String.valueOf(world.getWaterConfig().oceanMinWidth));
+        pressurePerDepthInput.setValue(String.valueOf(world.getWaterConfig().pressurePerDepth));
+        upwardCostInput.setValue(String.valueOf(world.getWaterConfig().upwardCost));
+        minPressureToFloodInput.setValue(String.valueOf(world.getWaterConfig().minPressureToFlood));
+
+        //HEIGHTMAP CONFIG
+        baseHeightInput.setValue(String.valueOf(world.getHeightmapConfig().baseHeight));
+        minSubsurfaceInput.setValue(String.valueOf(world.getHeightmapConfig().minSubSurfaceDepth));
+        maxSubsurfaceInput.setValue(String.valueOf(world.getHeightmapConfig().maxSubSurfaceDepth));
+
+        //We have to create a new isntance of heightmapgroup ui component as loading a save replaces the heightmap group object in World's heightmap config
+        heightmapInstancesBox.getChildren().clear();
+        heightmapGroupUIComponent = new HeightmapGroupUIComponent(world.getHeightmapConfig().heightmapGroup);
+        heightmapInstancesBox.getChildren().add(heightmapGroupUIComponent.get());
+
+
+        caveListUIComponent.refresh();
+        decorationListUIComponent.refresh();
+        substanceListUIComponent.refresh();
+
+        //BIOME DISTRIBUTION  CONFIG
+        biomeNoiseScaleInput.setValue(String.valueOf(world.getBiomeGeneratorConfig().noiseScale));
+        biomeWeightsBox.getChildren().clear();
+        for (BiomeEntry entry : world.getBiomeGeneratorConfig().biomes) {
+            addBiomeWeightUI(entry);
+        }
+
+        //BIOME OVERRIDE CONFIG
+        beachWidthInput.setValue(String.valueOf(world.getBiomeOverrideConfig().beachWidth));
+        mountainHeightInput.setValue(String.valueOf(world.getBiomeOverrideConfig().mountainHeight));
+        peakHeightInput.setValue(String.valueOf(world.getBiomeOverrideConfig().peakHeight));
+
     }
 }

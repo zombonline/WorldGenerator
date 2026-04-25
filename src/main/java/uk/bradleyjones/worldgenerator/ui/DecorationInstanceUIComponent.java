@@ -204,6 +204,7 @@ public class DecorationInstanceUIComponent {
     private void initTileKeyEditor() {
         tileKeyLabel = new Label("Tile Key");
         tileKeyBox = new VBox(4);
+        updateTileKeyBox();
     }
 
     private void syncMapWithAscii() {
@@ -309,6 +310,7 @@ public class DecorationInstanceUIComponent {
 
     private void initRemoveButton() {
         removeButton = new Button("Remove");
+        removeButton.setStyle("-fx-base:#A82A2A");
         removeButton.setMaxWidth(Double.MAX_VALUE);
         removeButton.setOnAction(e -> {
             world.getDecorationInstances().remove(instance);

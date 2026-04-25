@@ -65,69 +65,105 @@ public class CaveInstanceUIComponent {
         // CA params
         VBox caParamsSection = new VBox(4);
         Label fillLabel = new Label("Fill Percent");
-        RandomizableField<Integer> fillField = new RandomizableField<>(instance.caConfig.fillPercent, 1, 100);
+        RandomizableField fillField = new RandomizableField();
+        fillField.setType("Integer");
+        fillField.setMin(1);
+        fillField.setMax(100);
+        fillField.setValue(String.valueOf(instance.caConfig.fillPercent));
         fillField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.caConfig.fillPercent = Integer.parseInt(n); }
             catch (NumberFormatException ignored) {}
         });
         Label iterLabel = new Label("Iterations");
-        RandomizableField<Integer> iterField = new RandomizableField<>(instance.caConfig.iterations,1, 10);
+        RandomizableField iterField = new RandomizableField();
+        iterField.setType("Integer");
+        iterField.setMin(1);
+        iterField.setMax(10);
+        iterField.setValue(String.valueOf(instance.caConfig.iterations));
         iterField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.caConfig.iterations = Integer.parseInt(n); }
             catch (NumberFormatException ignored) {}
         });
         Label threshLabel = new Label("Neighbour Threshold");
-        RandomizableField<Integer> threshField = new RandomizableField<>(instance.caConfig.neighborThreshold,1, 9);
+        RandomizableField threshField = new RandomizableField();
+        threshField.setType("Integer");
+        threshField.setMin(1);
+        threshField.setMax(9);
+        threshField.setValue(String.valueOf(instance.caConfig.neighborThreshold));
         threshField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.caConfig.neighborThreshold = Integer.parseInt(n); }
             catch (NumberFormatException ignored) {}
         });
-        caParamsSection.getChildren().addAll(fillLabel, fillField.get(), iterLabel, iterField.get(), threshLabel, threshField.get());
+        caParamsSection.getChildren().addAll(fillLabel, fillField, iterLabel, iterField, threshLabel, threshField);
 
         // Noise params
         VBox noiseParamsSection = new VBox(4);
         Label scaleXLabel = new Label("Scale X");
-        RandomizableField<Float> scaleXField = new RandomizableField<>(instance.noiseConfig.scaleX, 0.5f, 4f);
+        RandomizableField scaleXField = new RandomizableField();
+        scaleXField.setType("Float");
+        scaleXField.setMin(0.5);
+        scaleXField.setMax(4);
+        scaleXField.setValue(String.valueOf(instance.noiseConfig.scaleX));
         scaleXField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.noiseConfig.scaleX = Float.parseFloat(n); }
             catch (NumberFormatException ignored) {}
         });
         Label scaleYLabel = new Label("Scale Y");
-        RandomizableField<Float> scaleYField = new RandomizableField<>(instance.noiseConfig.scaleY, 0.5f, 4f);
+        RandomizableField scaleYField = new RandomizableField();
+        scaleYField.setType("Float");
+        scaleYField.setMin(0.5);
+        scaleYField.setMax(4);
+        scaleYField.setValue(String.valueOf(instance.noiseConfig.scaleY));
         scaleYField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.noiseConfig.scaleY = Float.parseFloat(n); }
             catch (NumberFormatException ignored) {}
         });
         Label lowThreshLabel = new Label("Lower Threshold");
-        RandomizableField<Float> lowThreshField = new RandomizableField<>(instance.noiseConfig.lowerThreshold, -1f, 1f);
+        RandomizableField lowThreshField = new RandomizableField();
+        lowThreshField.setType("Float");
+        lowThreshField.setMin(-1);
+        lowThreshField.setMax(1);
+        lowThreshField.setValue(String.valueOf(instance.noiseConfig.lowerThreshold));
         lowThreshField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.noiseConfig.lowerThreshold = Float.parseFloat(n); }
             catch (NumberFormatException ignored) {}
         });
         Label uppThreshLabel = new Label("Upper Threshold");
-        RandomizableField<Float> uppThreshField = new RandomizableField<>(instance.noiseConfig.upperThreshold, -1f, 1f);
+        RandomizableField uppThreshField = new RandomizableField();
+        uppThreshField.setType("Float");
+        uppThreshField.setMin(-1);
+        uppThreshField.setMax(1);
+        uppThreshField.setValue(String.valueOf(instance.noiseConfig.upperThreshold));
         uppThreshField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.noiseConfig.upperThreshold = Float.parseFloat(n); }
             catch (NumberFormatException ignored) {}
         });
-        noiseParamsSection.getChildren().addAll(scaleXLabel, scaleXField.get(), scaleYLabel, scaleYField.get(),
-                lowThreshLabel, lowThreshField.get(), uppThreshLabel, uppThreshField.get());
+        noiseParamsSection.getChildren().addAll(scaleXLabel, scaleXField, scaleYLabel, scaleYField,
+                lowThreshLabel, lowThreshField, uppThreshLabel, uppThreshField);
 
         // Drunkard params
         VBox drunkardParamsSection = new VBox(4);
         Label walkerCountLabel = new Label("Walker Count");
-        RandomizableField<Integer> walkerCountField = new RandomizableField<>(instance.drunkardConfig.walkerCount,100, 800);
+        RandomizableField walkerCountField = new RandomizableField();
+        walkerCountField.setType("Integer");
+        walkerCountField.setMin(100);
+        walkerCountField.setMax(800);
+        walkerCountField.setValue(String.valueOf(instance.drunkardConfig.walkerCount));
         walkerCountField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.drunkardConfig.walkerCount = Integer.parseInt(n); }
             catch (NumberFormatException ignored) {}
         });
         Label stepsLabel = new Label("Walker Steps");
-        RandomizableField<Integer> stepsField = new RandomizableField<>(instance.drunkardConfig.steps,10, 250);
+        RandomizableField stepsField = new RandomizableField();
+        stepsField.setType("Integer");
+        stepsField.setMin(10);
+        stepsField.setMax(250);
+        stepsField.setValue(String.valueOf(instance.drunkardConfig.steps));
         stepsField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.drunkardConfig.steps = Integer.parseInt(n); }
             catch (NumberFormatException ignored) {}
         });
-        drunkardParamsSection.getChildren().addAll(walkerCountLabel, walkerCountField.get(), stepsLabel, stepsField.get());
+        drunkardParamsSection.getChildren().addAll(walkerCountLabel, walkerCountField, stepsLabel, stepsField);
 
         // Set initial visibility
         caParamsSection.setVisible(instance.type == CaveGeneratorType.CA);
@@ -155,6 +191,7 @@ public class CaveInstanceUIComponent {
 
         // Remove button
         Button removeButton = new Button("Remove");
+        removeButton.setStyle("-fx-base:#A82A2A");
         removeButton.setMaxWidth(Double.MAX_VALUE);
         removeButton.setOnAction(e -> {
             world.getCaveInstances().remove(instance);

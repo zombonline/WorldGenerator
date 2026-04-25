@@ -1,50 +1,67 @@
 package uk.bradleyjones.worldgenerator.ui;
-import javafx.util.converter.*;
+
+import javafx.beans.property.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.HBox;
-
+import javafx.scene.layout.Priority;
+import javafx.util.converter.*;
 
 import java.util.Random;
 
-public class RandomizableField<T extends Number> {
-    private final TextField field;
-    private final Button randomButton;
-    private final HBox root;
+public class RandomizableField extends HBox {
+
+    private final TextField field = new TextField();
+    private final Button randomButton = new Button("🎲");
     private final Random random = new Random(System.nanoTime());
 
-    public RandomizableField(T initial, T min, T max) {
-        field = new TextField(initial.toString());
-        randomButton = new Button("🎲");
-        randomButton.setOnAction(e -> field.setText(randomize(min, max)));
+    private double min = 0;
+    private double max = 100;
+    private String type = "Integer";
 
-        if (initial instanceof Integer)
-            field.setTextFormatter(new TextFormatter<>(new IntegerStringConverter()));
-        else if (initial instanceof Double)
-            field.setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
-        else if (initial instanceof Float)
-            field.setTextFormatter(new TextFormatter<>(new FloatStringConverter()));
-        else if (initial instanceof Long)
-            field.setTextFormatter(new TextFormatter<>(new LongStringConverter()));
-        field.textProperty().setValue(String.valueOf(initial));
-
-
-        root = new HBox(4, field, randomButton);
+    public RandomizableField() {
+        setSpacing(4);
+        setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(field, Priority.ALWAYS);
+        getChildren().addAll(field, randomButton);
+        randomButton.setOnAction(e -> field.setText(randomize()));
+        applyFormatter();
     }
 
-    private String randomize(T min, T max) {
-        if (min instanceof Integer)
-            return String.valueOf(random.nextInt(max.intValue() - min.intValue()) + min.intValue());
-        if (min instanceof Double)
-            return String.valueOf(min.doubleValue() + random.nextDouble() * (max.doubleValue() - min.doubleValue()));
-        if (min instanceof Float)
-            return String.valueOf(min.floatValue() + random.nextFloat() * (max.floatValue() - min.floatValue()));
-        if (min instanceof Long)
-            return String.valueOf(random.nextLong(max.longValue() - min.longValue()) + min.longValue());
-        return field.getText();
-    }
+    // FXML properties
+    public void setMin(double min) { this.min = min; }
+    public double getMin() { return min; }
 
-    public HBox get() { return root; }
+    public void setMax(double max) { this.max = max; }
+    public double getMax() { return max; }
+
+    public void setType(String type) {
+        this.type = type;
+        applyFormatter();
+    }
+    public String getType() { return type; }
+
+    public void setValue(String value) { field.setText(value); }
+    public String getValue() { return field.getText(); }
+
     public TextField getField() { return field; }
+
+    private void applyFormatter() {
+        field.setTextFormatter(switch (type) {
+            case "Double" -> new TextFormatter<>(new DoubleStringConverter());
+            case "Float" -> new TextFormatter<>(new FloatStringConverter());
+            case "Long" -> new TextFormatter<>(new LongStringConverter());
+            default -> new TextFormatter<>(new IntegerStringConverter());
+        });
+    }
+
+    private String randomize() {
+        return switch (type) {
+            case "Double" -> String.valueOf(min + random.nextDouble() * (max - min));
+            case "Float" -> String.valueOf((float)(min + random.nextFloat() * (max - min)));
+            case "Long" -> String.valueOf((long)(min + random.nextLong((long)(max - min))));
+            default -> String.valueOf((int)(min + random.nextInt((int)(max - min))));
+        };
+    }
 }

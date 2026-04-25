@@ -83,6 +83,7 @@ public class WorldSave {
         public int fill_percent;
         public int iterations;
         public int neighbor_threshold;
+        public boolean effectsSurface;
     }
 
     public static class NoiseCaveData {
@@ -90,11 +91,13 @@ public class WorldSave {
         public float scale_y;
         public float lower_threshold;
         public float upper_threshold;
+        public boolean effectsSurface;
     }
 
     public static class DrunkardCaveData {
         public int walker_count;
         public int walker_steps;
+        public boolean effectsSurface;
     }
 
     public static class DecorationData {

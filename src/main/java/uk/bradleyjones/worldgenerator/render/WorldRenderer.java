@@ -37,13 +37,13 @@ public class WorldRenderer {
                     .getResourceAsStream(path)) {
 
                 if (stream == null) {
-                    System.err.println("Not found: " + path);
+//                    System.err.println("Not found: " + path);
                     continue;
                 }
 
                 Image image = new Image(stream);
                 tileTypeImageMap.put(tileType, image);
-                System.out.println("Loaded: " + name);
+//                System.out.println("Loaded: " + name);
 
             } catch (Exception e) {
                 System.err.println("Error loading: " + name);

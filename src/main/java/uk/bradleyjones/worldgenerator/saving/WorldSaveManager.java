@@ -3,6 +3,7 @@ package uk.bradleyjones.worldgenerator.saving;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import uk.bradleyjones.worldgenerator.world.World;
+import uk.bradleyjones.worldgenerator.world.biomes.Biome;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeEntry;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorInstance;
 import uk.bradleyjones.worldgenerator.world.decorations.Decoration;
@@ -124,18 +125,23 @@ public class WorldSaveManager {
             ca.fill_percent = inst.caConfig.fillPercent;
             ca.iterations = inst.caConfig.iterations;
             ca.neighbor_threshold = inst.caConfig.neighborThreshold;
+            ca.effectsSurface = inst.caConfig.effectsSurface;
             d.ca_config = ca;
             WorldSave.NoiseCaveData noise = new WorldSave.NoiseCaveData();
             noise.scale_x = inst.noiseConfig.scaleX;
             noise.scale_y = inst.noiseConfig.scaleY;
             noise.lower_threshold = inst.noiseConfig.lowerThreshold;
             noise.upper_threshold = inst.noiseConfig.upperThreshold;
+            noise.effectsSurface = inst.noiseConfig.effectsSurface;
             d.noise_config = noise;
             WorldSave.DrunkardCaveData drunkard = new WorldSave.DrunkardCaveData();
             drunkard.walker_count = inst.drunkardConfig.walkerCount;
             drunkard.walker_steps = inst.drunkardConfig.steps;
+            drunkard.effectsSurface = inst.drunkardConfig.effectsSurface;
             d.drunkard_config = drunkard;
+            System.out.println("Saving Cave Data:" + String.join(", ", d.desc, String.valueOf(d.enabled), String.valueOf(d.type), String.valueOf(noise.scale_x), String.valueOf(noise.scale_y), String.valueOf(noise.lower_threshold)));
             list.add(d);
+
         }
         return list;
     }
@@ -202,7 +208,7 @@ public class WorldSaveManager {
 
     private static void fromSave(World world, WorldSave save) {
         // World
-        world.getWorldConfig().seed = save.world.seed;
+        world.getWorldConfig().seed = save.world.seed; //205
         world.getWorldConfig().width = save.world.width;
         world.getWorldConfig().height = save.world.height;
 
@@ -229,12 +235,15 @@ public class WorldSaveManager {
             inst.caConfig.fillPercent = cd.ca_config.fill_percent;
             inst.caConfig.iterations = cd.ca_config.iterations;
             inst.caConfig.neighborThreshold = cd.ca_config.neighbor_threshold;
+            inst.caConfig.effectsSurface = cd.ca_config.effectsSurface;
             inst.noiseConfig.scaleX = cd.noise_config.scale_x;
             inst.noiseConfig.scaleY = cd.noise_config.scale_y;
             inst.noiseConfig.lowerThreshold = cd.noise_config.lower_threshold;
             inst.noiseConfig.upperThreshold = cd.noise_config.upper_threshold;
+            inst.noiseConfig.effectsSurface = cd.noise_config.effectsSurface;
             inst.drunkardConfig.walkerCount = cd.drunkard_config.walker_count;
             inst.drunkardConfig.steps = cd.drunkard_config.walker_steps;
+            inst.drunkardConfig.effectsSurface = cd.drunkard_config.effectsSurface;
             world.getCaveInstances().add(inst);
         }
 
@@ -250,7 +259,7 @@ public class WorldSaveManager {
         world.getBiomeGeneratorConfig().noiseScale = save.biome_distribution.noise_scale;
         world.getBiomeGeneratorConfig().biomes.clear();
         for (WorldSave.BiomeEntryData bed : save.biome_distribution.biomes) {
-            var biome = uk.bradleyjones.worldgenerator.world.biomes.Biome.getById(bed.id);
+            var biome = Biome.getById(bed.id);
             if (biome != null)
                 world.getBiomeGeneratorConfig().biomes.add(new BiomeEntry(biome, bed.weight));
         }
@@ -274,17 +283,27 @@ public class WorldSaveManager {
         HeightmapGroup group = new HeightmapGroup(data.combine_mode, 0);
         group.noiseScale = data.noise_scale;
         for (WorldSave.HeightmapChildData cd : data.children) {
-            HeightmapNode node = switch (cd.type) {
-                case "NOISE" -> new NoiseHeightmapGenerator(
-                        cd.noise_config.scale, cd.noise_config.amplitude,
-                        cd.noise_config.power, cd.noise_config.clamp_to_positive);
-                case "STEP" -> new StepHeightmapGenerator(
-                        cd.step_config.min_step_height, cd.step_config.max_step_height,
-                        cd.step_config.min_step_gap, cd.step_config.max_step_gap);
-                case "GROUP" -> loadGroup(cd.group);
+            HeightmapChild child = switch (cd.type) {
+                case "NOISE" -> {
+                    HeightmapGeneratorInstance inst = new HeightmapGeneratorInstance(HeightmapGeneratorType.NOISE, 0);
+                    inst.noiseGenerator = new NoiseHeightmapGenerator(
+                            cd.noise_config.scale, cd.noise_config.amplitude,
+                            cd.noise_config.power, cd.noise_config.clamp_to_positive);
+                    inst.node = inst.noiseGenerator;
+                    yield inst;
+                }
+                case "STEP" -> {
+                    HeightmapGeneratorInstance inst = new HeightmapGeneratorInstance(HeightmapGeneratorType.STEPS, 0);
+                    inst.stepGenerator = new StepHeightmapGenerator(
+                            cd.step_config.min_step_height, cd.step_config.max_step_height,
+                            cd.step_config.min_step_gap, cd.step_config.max_step_gap);
+                    inst.node = inst.stepGenerator;
+                    yield inst;
+                }
+                case "GROUP" -> new HeightmapChild(loadGroup(cd.group), cd.weight);
                 default -> throw new IllegalArgumentException("Unknown heightmap node type: " + cd.type);
             };
-            HeightmapChild child = new HeightmapChild(node, cd.weight);
+            child.weight = cd.weight;
             child.enabled = cd.enabled;
             group.children.add(child);
         }
