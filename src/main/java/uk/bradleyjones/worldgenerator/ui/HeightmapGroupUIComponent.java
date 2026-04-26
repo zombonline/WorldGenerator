@@ -26,7 +26,7 @@ public class HeightmapGroupUIComponent implements Commitable {
     private int instanceCount = 0;
 
     private CheckBox enabledBox;
-    private RandomizableField weightField, noiseScaleField;
+    private RandomizableField weightField, noiseScaleField, blendSharpnessField;
     private ComboBox<CombineMode> modeDropdown;
     private final List<HeightmapChild> pendingChildren = new ArrayList<>();
 
@@ -91,6 +91,13 @@ public class HeightmapGroupUIComponent implements Commitable {
         noiseScaleField.setMax(2f);
         noiseScaleField.setValue(String.valueOf(group.noiseScale));
 
+        Label blendSharpnessLabel = new Label("Blend Sharpness");
+        blendSharpnessField = new RandomizableField();
+        blendSharpnessField.setType("Float");
+        blendSharpnessField.setMin(.001f);
+        blendSharpnessField.setMax(1f);
+        blendSharpnessField.setValue(String.valueOf(group.blendSharpness));
+
 
         noiseScaleLabel.setVisible(group.mode == CombineMode.NOISE_BLEND);
         noiseScaleLabel.setManaged(group.mode == CombineMode.NOISE_BLEND);
@@ -101,6 +108,11 @@ public class HeightmapGroupUIComponent implements Commitable {
             noiseScaleLabel.setManaged(n == CombineMode.NOISE_BLEND);
             noiseScaleField.setVisible(n == CombineMode.NOISE_BLEND);
             noiseScaleField.setManaged(n == CombineMode.NOISE_BLEND);
+            blendSharpnessLabel.setVisible(n == CombineMode.NOISE_BLEND);
+            blendSharpnessLabel.setManaged(n == CombineMode.NOISE_BLEND);
+            blendSharpnessField.setVisible(n == CombineMode.NOISE_BLEND);
+            blendSharpnessField.setManaged(n == CombineMode.NOISE_BLEND);
+
         });
 
         // Children box
@@ -147,6 +159,7 @@ public class HeightmapGroupUIComponent implements Commitable {
         params.getChildren().addAll(
                 modeLabel, modeDropdown,
                 noiseScaleLabel, noiseScaleField,
+                blendSharpnessLabel, blendSharpnessField,
                 childrenBox,
                 addGeneratorButton, addGroupButton
         );
@@ -207,6 +220,9 @@ public class HeightmapGroupUIComponent implements Commitable {
 
         try {
             group.noiseScale = Float.parseFloat(noiseScaleField.getValue());
+        } catch (NumberFormatException ignored) {}
+        try {
+            group.blendSharpness = Float.parseFloat(blendSharpnessField.getValue());
         } catch (NumberFormatException ignored) {}
     }
 }
