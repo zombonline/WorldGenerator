@@ -10,13 +10,18 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import uk.bradleyjones.worldgenerator.input.InputHandler;
 import uk.bradleyjones.worldgenerator.render.Camera;
 import uk.bradleyjones.worldgenerator.render.CameraListener;
 import uk.bradleyjones.worldgenerator.render.WorldRenderer;
 import uk.bradleyjones.worldgenerator.saving.WorldFileManager;
 import uk.bradleyjones.worldgenerator.ui.*;
+import uk.bradleyjones.worldgenerator.ui.commitables.CommitRegistry;
 import uk.bradleyjones.worldgenerator.world.World;
+import uk.bradleyjones.worldgenerator.world.biomes.Biome;
 import uk.bradleyjones.worldgenerator.world.biomes.BiomeEntry;
+
+import java.util.HashMap;
 
 
 public class WorldGeneratorController implements CameraListener {
@@ -28,6 +33,9 @@ public class WorldGeneratorController implements CameraListener {
     @FXML public RandomizableField seedInput;
     @FXML public RandomizableField worldWidthInput;
     @FXML public RandomizableField worldHeightInput;
+    @FXML public RandomizableField bedrockHeightInput;
+    @FXML public RandomizableField bedrockNoiseScaleInput;
+
     //WATER CONFIG
     @FXML public RandomizableField waterLevelInput;
     @FXML public RandomizableField lakeMinWidthInput;
@@ -65,6 +73,8 @@ public class WorldGeneratorController implements CameraListener {
     @FXML public Button loadButton;
     @FXML public Label loadedFileName;
 
+    public HashMap<BiomeEntry, RandomizableField> biomeEntryRandomizableFieldHashMap = new HashMap<>();
+
     private HeightmapGroupUIComponent heightmapGroupUIComponent;
     private CaveListUIComponent caveListUIComponent;
     private DecorationListUIComponent decorationListUIComponent;
@@ -76,6 +86,10 @@ public class WorldGeneratorController implements CameraListener {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+        InputHandler inputHandler = new InputHandler(canvasPane);
+        stage.getScene().setOnKeyPressed(inputHandler::handleKeyPressed);
+        stage.getScene().setOnKeyReleased(inputHandler::handleKeyReleased);
+        stage.getScene().setOnScroll(inputHandler::handleScroll);
     }
 
     @FXML
@@ -87,6 +101,7 @@ public class WorldGeneratorController implements CameraListener {
         renderer.buildWorldImageAsync();
         camera = new Camera();
         camera.addListener(this);
+
 
         //set fonts
         root.setStyle("-fx-font-family: 'Jost';");
@@ -141,9 +156,12 @@ public class WorldGeneratorController implements CameraListener {
 
     public void handleInitializeWorld() {
         try {
+            CommitRegistry.commitAll();
             world.getWorldConfig().seed = Long.parseLong(seedInput.getValue());
             world.getWorldConfig().width = Integer.parseInt(worldWidthInput.getValue());
             world.getWorldConfig().height = Integer.parseInt(worldHeightInput.getValue());
+            world.getWorldConfig().bedrockHeight = Integer.parseInt(bedrockHeightInput.getValue());
+            world.getWorldConfig().bedrockNoiseScale = Float.parseFloat(bedrockNoiseScaleInput.getValue());
 
             world.getWaterConfig().waterLevel = Integer.parseInt(waterLevelInput.getValue());
             world.getWaterConfig().lakeMinWidth = Integer.parseInt(lakeMinWidthInput.getValue());
@@ -159,6 +177,9 @@ public class WorldGeneratorController implements CameraListener {
 
 
             world.getBiomeGeneratorConfig().noiseScale = Float.parseFloat(biomeNoiseScaleInput.getValue());
+            for(var kvp:biomeEntryRandomizableFieldHashMap.entrySet()) {
+                kvp.getKey().weight = Float.parseFloat(kvp.getValue().getValue());
+            }
 
 
             world.getBiomeOverrideConfig().beachWidth = Integer.parseInt(beachWidthInput.getValue());
@@ -178,14 +199,16 @@ public class WorldGeneratorController implements CameraListener {
         HBox row = new HBox(4);
         row.setStyle("-fx-padding: 2;");
 
-        Label nameLabel = new Label(entry.biome.name);
+        Label nameLabel = new Label(entry.biome.getName());
         nameLabel.setPrefWidth(80);
 
-        TextField weightField = new TextField(String.valueOf(entry.weight));
-        weightField.textProperty().addListener((obs, o, n) -> {
-            try { entry.weight = Float.parseFloat(n); }
-            catch (NumberFormatException ignored) {}
-        });
+        RandomizableField weightField = new RandomizableField();
+        weightField.setType("Float");
+        weightField.setMin(0);
+        weightField.setMax(1);
+        weightField.setValue(String.valueOf(entry.weight));
+        weightField.setMaxWidth(Double.MAX_VALUE);
+        biomeEntryRandomizableFieldHashMap.put(entry, weightField);
 
         row.getChildren().addAll(nameLabel, weightField);
         biomeWeightsBox.getChildren().add(row);
@@ -201,6 +224,8 @@ public class WorldGeneratorController implements CameraListener {
         seedInput.setValue(String.valueOf(world.getWorldConfig().seed));
         worldWidthInput.setValue(String.valueOf(world.getWorldConfig().width));
         worldHeightInput.setValue(String.valueOf(world.getWorldConfig().height));
+        bedrockHeightInput.setValue(String.valueOf(world.getWorldConfig().bedrockHeight));
+        bedrockNoiseScaleInput.setValue(String.valueOf(world.getWorldConfig().bedrockNoiseScale));
 
         //WATER CONFIG
         waterLevelInput.setValue(String.valueOf(world.getWaterConfig().waterLevel));
@@ -228,6 +253,7 @@ public class WorldGeneratorController implements CameraListener {
         //BIOME DISTRIBUTION  CONFIG
         biomeNoiseScaleInput.setValue(String.valueOf(world.getBiomeGeneratorConfig().noiseScale));
         biomeWeightsBox.getChildren().clear();
+        biomeEntryRandomizableFieldHashMap.clear();
         for (BiomeEntry entry : world.getBiomeGeneratorConfig().biomes) {
             addBiomeWeightUI(entry);
         }

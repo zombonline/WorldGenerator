@@ -35,6 +35,10 @@
                         <RandomizableField fx:id="worldWidthInput" type="Integer" min="100" max="2000"/>
                         <Label text="Height"/>
                         <RandomizableField fx:id="worldHeightInput" type="Integer" min="100" max="2000"/>
+                        <Label text="Bedrock Height"/>
+                        <RandomizableField fx:id="bedrockHeightInput" type="Integer" min="1" max="8"/>
+                        <Label text="Bedrock Noise Scale"/>
+                        <RandomizableField fx:id="bedrockNoiseScaleInput" type="Float" min="2" max="10"/>
                     </VBox>
                 </TitledPane>
 

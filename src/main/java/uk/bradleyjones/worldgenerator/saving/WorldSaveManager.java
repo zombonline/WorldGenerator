@@ -169,7 +169,7 @@ public class WorldSaveManager {
         d.biomes = new ArrayList<>();
         for (BiomeEntry entry : world.getBiomeGeneratorConfig().biomes) {
             WorldSave.BiomeEntryData bed = new WorldSave.BiomeEntryData();
-            bed.id = entry.biome.id;
+            bed.id = entry.biome.getId();
             bed.weight = entry.weight;
             d.biomes.add(bed);
         }

@@ -7,6 +7,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import org.apache.commons.lang3.StringUtils;
+import uk.bradleyjones.worldgenerator.ui.commitables.CommitRegistry;
+import uk.bradleyjones.worldgenerator.ui.commitables.Commitable;
 import uk.bradleyjones.worldgenerator.world.TileType;
 import uk.bradleyjones.worldgenerator.world.biomes.Biome;
 import uk.bradleyjones.worldgenerator.world.decorations.DecorationInstance;
@@ -19,7 +21,7 @@ import java.util.List;
 
 import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
 
-public class DecorationInstanceUIComponent {
+public class DecorationInstanceUIComponent implements Commitable {
 
     DecorationInstance instance;
 
@@ -59,7 +61,7 @@ public class DecorationInstanceUIComponent {
 
     // Spawn chance
     private Label chanceLabel;
-    private TextField chanceField;
+    private RandomizableField chanceField;
 
     // Placement type
     private Label placementTypeLabel;
@@ -75,6 +77,7 @@ public class DecorationInstanceUIComponent {
         this.parent = parent;
         this.onRemove = onRemove;
         setUp();
+        CommitRegistry.register(this);
     }
 
     public TitledPane get() {
@@ -135,14 +138,14 @@ public class DecorationInstanceUIComponent {
     private void initEnabledCheckbox() {
         enabledBox = new CheckBox("Enabled");
         enabledBox.setSelected(instance.enabled);
-        enabledBox.selectedProperty().addListener((obs, o, n) -> instance.enabled = n);
     }
 
     private void initDescField() {
         descLabel = new Label("Description");
         descField = new TextField(String.valueOf(instance.decoration.desc));
-        descField.textProperty().addListener((obs, o, n) -> {
-            instance.decoration.desc = n;
+
+        descField.textProperty().addListener((obs, oldVal, newVal) -> {
+            instance.decoration.desc = newVal;
             updateTitleLabel();
         });
     }
@@ -166,9 +169,6 @@ public class DecorationInstanceUIComponent {
                 asciiRowsField.setText(n.replace(" ", "."));
                 return;
             }
-            String cleaned = n.replace("·", " ");
-            var split = cleaned.split("\\n");
-            instance.decoration.asciiRows = List.of(split);
             setAsciiTextSizeLabelValue(n);
             if(n.indexOf(DecorationParser.ROOT_CHARACTER)==-1) {
                 asciiRowsField.setTooltip(errorTooltip);
@@ -209,22 +209,17 @@ public class DecorationInstanceUIComponent {
 
     private void syncMapWithAscii() {
         var map = instance.decoration.charMap;
+        String cleaned = asciiRowsField.getText().replace("·", " ");
+        String[] rows = cleaned.split("\\n");
 
-        // Collect all chars currently used
         HashMap<Character, Boolean> used = new HashMap<>();
-
-        for (String row : instance.decoration.asciiRows) {
+        for (String row : rows) {
             for (char c : row.toCharArray()) {
-                if(!Character.isAlphabetic(c))
-                    continue;
+                if (!Character.isAlphabetic(c)) continue;
                 used.put(c, true);
-
-                // Add missing entries
                 map.putIfAbsent(c, TileType.NONE);
             }
         }
-
-        // Remove unused entries
         map.keySet().removeIf(c -> !used.containsKey(c));
     }
 
@@ -277,7 +272,6 @@ public class DecorationInstanceUIComponent {
             } else {
                 biomesTooltip.setText(null);
                 biomesField.setStyle("");
-                instance.decoration.allowedBiomes = List.of(items);
             }
         });
     }
@@ -288,15 +282,15 @@ public class DecorationInstanceUIComponent {
         requiredSurfaceTileDropdown.getItems().addAll(TileType.values());
         requiredSurfaceTileDropdown.setValue(instance.decoration.requiredSurface);
         requiredSurfaceTileDropdown.setMaxWidth(Double.MAX_VALUE);
-        requiredSurfaceTileDropdown.valueProperty().addListener((obs, o, n) -> instance.decoration.requiredSurface = n);
     }
 
     private void initChanceField() {
         chanceLabel = new Label("Chance to spawn");
-        chanceField = new TextField(String.valueOf(instance.decoration.chance));
-        chanceField.textProperty().addListener((obs, o, n) -> {
-            instance.decoration.chance = Float.parseFloat(n);
-        });
+        chanceField = new RandomizableField();
+        chanceField.setType("Float");
+        chanceField.setValue(String.valueOf(instance.decoration.chance));
+        chanceField.setMin(0);
+        chanceField.setMax(1);
     }
 
     private void initPlacementTypeField() {
@@ -305,7 +299,6 @@ public class DecorationInstanceUIComponent {
         placementTypeDropdown.getItems().addAll(PlacementType.values());
         placementTypeDropdown.setValue(instance.decoration.placementType);
         placementTypeDropdown.setMaxWidth(Double.MAX_VALUE);
-        placementTypeDropdown.valueProperty().addListener((obs, o, n) -> instance.decoration.placementType = n);
     }
 
     private void initRemoveButton() {
@@ -316,7 +309,26 @@ public class DecorationInstanceUIComponent {
             world.getDecorationInstances().remove(instance);
             parent.getChildren().remove(this.get());
             onRemove.run();
-
+            CommitRegistry.unregister(this);
         });
+    }
+
+    @Override
+    public void commit() {
+        instance.enabled = enabledBox.isSelected();
+
+        String cleaned = asciiRowsField.getText().replace("·", " ");
+        instance.decoration.asciiRows = List.of(cleaned.split("\\n"));
+        instance.decoration.invalidate();
+        String[] biomeItems = biomesField.getText().split("\\s*,\\s*");
+        boolean allValid = true;
+        for (String s : biomeItems)
+            if (Biome.getById(s) == null) { allValid = false; break; }
+        if (allValid)
+            instance.decoration.allowedBiomes = List.of(biomeItems);
+
+        instance.decoration.requiredSurface = requiredSurfaceTileDropdown.getValue();
+        instance.decoration.chance = Float.parseFloat(chanceField.getValue());
+        instance.decoration.placementType = placementTypeDropdown.getValue();
     }
 }

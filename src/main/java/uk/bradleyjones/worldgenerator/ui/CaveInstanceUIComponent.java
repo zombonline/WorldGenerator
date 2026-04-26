@@ -2,12 +2,14 @@ package uk.bradleyjones.worldgenerator.ui;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import uk.bradleyjones.worldgenerator.ui.commitables.CommitRegistry;
+import uk.bradleyjones.worldgenerator.ui.commitables.Commitable;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorInstance;
 import uk.bradleyjones.worldgenerator.world.caves.CaveGeneratorType;
 
 import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
 
-public class CaveInstanceUIComponent {
+public class CaveInstanceUIComponent implements Commitable {
 
     private final CaveGeneratorInstance instance;
     private final VBox parentContainer;
@@ -16,11 +18,19 @@ public class CaveInstanceUIComponent {
     private VBox params;
     private Runnable onRemove;
 
+    private RandomizableField fillField, iterField, threshField;
+    private RandomizableField scaleXField, scaleYField, lowThreshField, uppThreshField;
+    private RandomizableField walkerCountField, stepsField;
+    private CheckBox enabledBox;
+    private ComboBox<CaveGeneratorType> typeDropdown;
+    private CheckBox effectsSurfaceBox;
+
     public CaveInstanceUIComponent(CaveGeneratorInstance instance, VBox parentContainer, Runnable onRemove) {
         this.instance = instance;
         this.parentContainer = parentContainer;
         this.onRemove = onRemove;
         setUp();
+        CommitRegistry.register(this);
     }
 
     public TitledPane get() {
@@ -43,18 +53,18 @@ public class CaveInstanceUIComponent {
         });
 
         // Type dropdown
-        ComboBox<CaveGeneratorType> typeDropdown = new ComboBox<>();
+        typeDropdown = new ComboBox<>();
         typeDropdown.getItems().addAll(CaveGeneratorType.CA, CaveGeneratorType.NOISE, CaveGeneratorType.DRUNKARD);
         typeDropdown.setValue(instance.type);
         typeDropdown.setMaxWidth(Double.MAX_VALUE);
 
         // Enabled checkbox
-        CheckBox enabledBox = new CheckBox("Enabled");
+        enabledBox = new CheckBox("Enabled");
         enabledBox.setSelected(instance.enabled);
         enabledBox.selectedProperty().addListener((obs, o, n) -> instance.enabled = n);
 
         // Effects surface checkbox
-        CheckBox effectsSurfaceBox = new CheckBox("Effects Surface");
+        effectsSurfaceBox = new CheckBox("Effects Surface");
         effectsSurfaceBox.setSelected(instance.getConfig().effectsSurface);
         effectsSurfaceBox.selectedProperty().addListener((obs, o, n) -> {
             instance.caConfig.effectsSurface = n;
@@ -65,7 +75,7 @@ public class CaveInstanceUIComponent {
         // CA params
         VBox caParamsSection = new VBox(4);
         Label fillLabel = new Label("Fill Percent");
-        RandomizableField fillField = new RandomizableField();
+        fillField = new RandomizableField();
         fillField.setType("Integer");
         fillField.setMin(1);
         fillField.setMax(100);
@@ -75,7 +85,7 @@ public class CaveInstanceUIComponent {
             catch (NumberFormatException ignored) {}
         });
         Label iterLabel = new Label("Iterations");
-        RandomizableField iterField = new RandomizableField();
+        iterField = new RandomizableField();
         iterField.setType("Integer");
         iterField.setMin(1);
         iterField.setMax(10);
@@ -85,7 +95,7 @@ public class CaveInstanceUIComponent {
             catch (NumberFormatException ignored) {}
         });
         Label threshLabel = new Label("Neighbour Threshold");
-        RandomizableField threshField = new RandomizableField();
+        threshField = new RandomizableField();
         threshField.setType("Integer");
         threshField.setMin(1);
         threshField.setMax(9);
@@ -99,7 +109,7 @@ public class CaveInstanceUIComponent {
         // Noise params
         VBox noiseParamsSection = new VBox(4);
         Label scaleXLabel = new Label("Scale X");
-        RandomizableField scaleXField = new RandomizableField();
+        scaleXField = new RandomizableField();
         scaleXField.setType("Float");
         scaleXField.setMin(0.5);
         scaleXField.setMax(4);
@@ -109,7 +119,7 @@ public class CaveInstanceUIComponent {
             catch (NumberFormatException ignored) {}
         });
         Label scaleYLabel = new Label("Scale Y");
-        RandomizableField scaleYField = new RandomizableField();
+        scaleYField = new RandomizableField();
         scaleYField.setType("Float");
         scaleYField.setMin(0.5);
         scaleYField.setMax(4);
@@ -119,7 +129,7 @@ public class CaveInstanceUIComponent {
             catch (NumberFormatException ignored) {}
         });
         Label lowThreshLabel = new Label("Lower Threshold");
-        RandomizableField lowThreshField = new RandomizableField();
+        lowThreshField = new RandomizableField();
         lowThreshField.setType("Float");
         lowThreshField.setMin(-1);
         lowThreshField.setMax(1);
@@ -129,7 +139,7 @@ public class CaveInstanceUIComponent {
             catch (NumberFormatException ignored) {}
         });
         Label uppThreshLabel = new Label("Upper Threshold");
-        RandomizableField uppThreshField = new RandomizableField();
+        uppThreshField = new RandomizableField();
         uppThreshField.setType("Float");
         uppThreshField.setMin(-1);
         uppThreshField.setMax(1);
@@ -144,7 +154,7 @@ public class CaveInstanceUIComponent {
         // Drunkard params
         VBox drunkardParamsSection = new VBox(4);
         Label walkerCountLabel = new Label("Walker Count");
-        RandomizableField walkerCountField = new RandomizableField();
+        walkerCountField = new RandomizableField();
         walkerCountField.setType("Integer");
         walkerCountField.setMin(100);
         walkerCountField.setMax(800);
@@ -154,15 +164,12 @@ public class CaveInstanceUIComponent {
             catch (NumberFormatException ignored) {}
         });
         Label stepsLabel = new Label("Walker Steps");
-        RandomizableField stepsField = new RandomizableField();
+        stepsField = new RandomizableField();
         stepsField.setType("Integer");
         stepsField.setMin(10);
         stepsField.setMax(250);
         stepsField.setValue(String.valueOf(instance.drunkardConfig.steps));
-        stepsField.getField().textProperty().addListener((obs, o, n) -> {
-            try { instance.drunkardConfig.steps = Integer.parseInt(n); }
-            catch (NumberFormatException ignored) {}
-        });
+
         drunkardParamsSection.getChildren().addAll(walkerCountLabel, walkerCountField, stepsLabel, stepsField);
 
         // Set initial visibility
@@ -197,9 +204,40 @@ public class CaveInstanceUIComponent {
             world.getCaveInstances().remove(instance);
             parentContainer.getChildren().remove(pane);
             onRemove.run();
+            CommitRegistry.unregister(this);
         });
 
         params.getChildren().addAll(descLabel, descField, enabledBox, effectsSurfaceBox, typeDropdown,
                 caParamsSection, noiseParamsSection, drunkardParamsSection, removeButton);
+    }
+
+    @Override
+    public void commit() {
+        try { instance.caConfig.fillPercent = Integer.parseInt(fillField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { instance.caConfig.iterations = Integer.parseInt(iterField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { instance.caConfig.neighborThreshold = Integer.parseInt(threshField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { instance.noiseConfig.scaleX = Float.parseFloat(scaleXField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { instance.noiseConfig.scaleY = Float.parseFloat(scaleYField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { instance.noiseConfig.lowerThreshold = Float.parseFloat(lowThreshField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { instance.noiseConfig.upperThreshold = Float.parseFloat(uppThreshField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { instance.drunkardConfig.walkerCount = Integer.parseInt(walkerCountField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { instance.drunkardConfig.steps = Integer.parseInt(stepsField.getValue()); }
+        catch (NumberFormatException ignored) {}
     }
 }

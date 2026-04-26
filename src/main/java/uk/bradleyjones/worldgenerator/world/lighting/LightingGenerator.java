@@ -125,7 +125,7 @@ public class LightingGenerator {
 
         // Sunlight (above ground air or water surface)
         if (tile == TileType.AIR && world.getDepthOfPosition(x, y) < 0) {
-            return new Light(maxLightingLevel, Color.LIGHTBLUE);
+            return new Light(maxLightingLevel, world.getSkyColor(x, y));
         }
 
         // Water gets tinted sunlight
@@ -134,7 +134,7 @@ public class LightingGenerator {
         }
 
         // Mushroom glow
-        if (world.getTile(x, y, GenerationPassTypeSets.NO_DECOR) == TileType.PINK_MUSHROOM) {
+        if (world.getTile(x, y, GenerationPassTypeSets.ALL) == TileType.PINK_MUSHROOM) {
             return new Light(maxLightingLevel * 0.14, Color.PINK);
         }
 

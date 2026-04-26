@@ -25,5 +25,7 @@ module uk.bradleyjones.worldgenerator {
     exports uk.bradleyjones.worldgenerator.world.biomes to com.google.gson;
     exports uk.bradleyjones.worldgenerator.world.heightmap to com.google.gson;
     exports uk.bradleyjones.worldgenerator.world.water to com.google.gson;
+    exports uk.bradleyjones.worldgenerator.ui.commitables to javafx.fxml;
+    opens uk.bradleyjones.worldgenerator.ui.commitables to javafx.fxml;
 
 }

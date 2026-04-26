@@ -71,7 +71,7 @@ public class DecorationGenerator {
                         if (d.requiredSurface != surface) continue;
                     }
 
-                    if (!d.allowedBiomes.contains(biome.id) && !d.allowedBiomes.isEmpty()) continue;
+                    if (!d.allowedBiomes.contains(biome.getId()) && !d.allowedBiomes.isEmpty()) continue;
                     eligible.add(d);
                 }
 

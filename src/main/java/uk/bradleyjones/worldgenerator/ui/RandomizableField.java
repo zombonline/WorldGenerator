@@ -6,6 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.util.converter.*;
 
 import java.util.Random;
@@ -24,6 +25,8 @@ public class RandomizableField extends HBox {
         setSpacing(4);
         setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(field, Priority.ALWAYS);
+        randomButton.setMinWidth(Region.USE_PREF_SIZE);
+        randomButton.setPrefWidth(32);
         getChildren().addAll(field, randomButton);
         randomButton.setOnAction(e -> field.setText(randomize()));
         applyFormatter();

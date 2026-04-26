@@ -14,18 +14,11 @@ public class WorldGeneratorApp extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(WorldGeneratorApp.class.getResource("worldgenerator-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1820, 980);
-
-        InputHandler inputHandler = new InputHandler();
-
         Font.loadFont(WorldGeneratorApp.class.getResourceAsStream("uk/bradleyjones/worldgenerator/fonts/Roboto-Bold.ttf"), 14);
         Font.loadFont(WorldGeneratorApp.class.getResourceAsStream("uk/bradleyjones/worldgenerator/fonts/Roboto-Regular.ttf"), 14);
-
         WorldGeneratorController controller = fxmlLoader.getController();
-        controller.setStage(stage);
-        scene.setOnKeyPressed(inputHandler::handleKeyPressed);
-        scene.setOnKeyReleased(inputHandler::handleKeyReleased);
-        scene.setOnScroll(inputHandler::handleScroll);
         stage.setScene(scene);
+        controller.setStage(stage);
         stage.show();
     }
 

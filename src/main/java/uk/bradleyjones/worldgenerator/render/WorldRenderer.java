@@ -195,6 +195,9 @@ public class WorldRenderer {
 
 
     private Color colorFor(TileType tile, int x, int y) {
+        TileType bg = tile.getBackground();
+        if (bg != tile) return colorFor(bg, x, y);
+
         return switch (tile) {
             case GRASS -> Color.FORESTGREEN;
             case SAND -> Color.SANDYBROWN;
@@ -203,20 +206,24 @@ public class WorldRenderer {
                     world.getExposedLevel(x, y).normalizedIntensity
             );
             case STONE -> Color.GRAY;
-            case AIR -> Color.BLACK.interpolate(world.getExposedLevel(x,y).color, world.getExposedLevel(x, y).normalizedIntensity);
-            case DIRT -> Color.BROWN;
+            case AIR -> {
+                if (world.getDepthOfPosition(x, y) < 0) {
+                    yield world.getSkyColor(x, y);
+                }
+                yield Color.BLACK.interpolate(world.getExposedLevel(x, y).color, world.getExposedLevel(x, y).normalizedIntensity);
+            }            case DIRT -> Color.BROWN;
             case GRAVEL -> Color.LIGHTGRAY;
             case SNOW -> Color.WHITE;
             case LEAVES -> Color.DARKGREEN;
             case LOG -> Color.SADDLEBROWN;
             case CACTUS -> Color.LIMEGREEN;
             case COAL_ORE -> Color.DARKSLATEGRAY;
-            case DIAMOND_ORE -> colorFor(TileType.STONE,x,y);
             case COPPER_ORE -> Color.rgb(184, 115, 51);   // warm orange-brown
             case LAPIS_ORE  -> Color.rgb(30, 60, 180);    // deep royal blue
             case AMETHYST_ORE -> Color.rgb(153, 50, 204); // rich purple
             case RED_CLAY   -> Color.rgb(180, 80, 60);    // terracotta rust
             case QUARTZ     -> Color.rgb(220, 215, 210);  // off-white cream
+            case BEDROCK -> Color.rgb(20, 18, 24);
             default -> Color.HOTPINK;
         };
     }

@@ -3,6 +3,7 @@ package uk.bradleyjones.worldgenerator.world;
 public enum TileType {
     NONE,
     AIR,
+    BEDROCK,
     GRASS,
     DIRT,
     STONE,
@@ -28,5 +29,14 @@ public enum TileType {
     QUARTZ,
     AMETHYST_ORE,
     LAPIS_ORE,
-    RED_CLAY
+    RED_CLAY;
+
+    public TileType getBackground() {
+        return switch (this) {
+            case PINK_MUSHROOM, RED_MUSHROOM, FLOWER, CACTUS, HANGING_MOSS, HANGING_RED_MOSS -> AIR;
+            case SEAWEED, SEAWEED_BOTTOM -> WATER;
+            case DIAMOND_ORE -> STONE;
+            default -> this;
+        };
+    }
 }

@@ -5,12 +5,14 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import uk.bradleyjones.worldgenerator.ui.commitables.CommitRegistry;
+import uk.bradleyjones.worldgenerator.ui.commitables.Commitable;
 import uk.bradleyjones.worldgenerator.world.TileType;
 import uk.bradleyjones.worldgenerator.world.substances.SubstanceRule;
 
 import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
 
-public class SubstanceRuleUIComponent {
+public class SubstanceRuleUIComponent implements Commitable {
 
     private final SubstanceRule rule;
     private final VBox parentContainer;
@@ -19,11 +21,18 @@ public class SubstanceRuleUIComponent {
     private VBox params;
     private Runnable onRemove;
 
+    private CheckBox enabledBox, nearWaterBox;
+    private TextField descField;
+    private RandomizableField scaleXField, scaleYField, thresholdField, minDepthField, maxDepthField;
+    private ComboBox<TileType> outputDropdown;
+    private ListView<TileType> replacesList;
+
     public SubstanceRuleUIComponent(SubstanceRule rule, VBox parentContainer, Runnable onRemove) {
         this.rule = rule;
         this.parentContainer = parentContainer;
         this.onRemove = onRemove;
         setUp();
+        CommitRegistry.register(this);
     }
 
     public TitledPane get() {
@@ -38,13 +47,13 @@ public class SubstanceRuleUIComponent {
         pane.setExpanded(false);
 
         // Enabled
-        CheckBox enabledBox = new CheckBox("Enabled");
+        enabledBox = new CheckBox("Enabled");
         enabledBox.setSelected(rule.enabled);
         enabledBox.selectedProperty().addListener((obs, o, n) -> rule.enabled = n);
 
 
         Label descLabel = new Label("Description");
-        TextField descField = new TextField(rule.desc != null ? rule.desc : "");
+        descField = new TextField(rule.desc != null ? rule.desc : "");
         descField.textProperty().addListener((obs, o, n) -> {
             rule.desc = n;
             pane.setText(n.isBlank() ? "Substance Rule" : n);
@@ -53,19 +62,14 @@ public class SubstanceRuleUIComponent {
 
         // Output tile type
         Label outputLabel = new Label("Output Tile");
-        ComboBox<TileType> outputDropdown = new ComboBox<>();
+        outputDropdown = new ComboBox<>();
         outputDropdown.getItems().addAll(TileType.values());
         outputDropdown.setValue(rule.output);
         outputDropdown.setMaxWidth(Double.MAX_VALUE);
-        outputDropdown.valueProperty().addListener((obs, o, n) -> {
-            rule.output = n;
-            pane.setText(n != null ? n.toString() : "Substance Rule");
-        });
 
 
-        // Replaces — multi-select ListView
         Label replacesLabel = new Label("Replaces");
-        ListView<TileType> replacesList = new ListView<>(FXCollections.observableArrayList(TileType.values()));
+        replacesList = new ListView<>(FXCollections.observableArrayList(TileType.values()));
         Label selectedCountLabel = new Label(String.valueOf((long) replacesList.getSelectionModel().getSelectedItems().size()));
         HBox selectedCountBox = new HBox(selectedCountLabel);
         selectedCountLabel.setAlignment(Pos.CENTER_RIGHT);
@@ -78,57 +82,55 @@ public class SubstanceRuleUIComponent {
             }
             selectedCountLabel.setText(String.valueOf((long) replacesList.getSelectionModel().getSelectedItems().size()));
         }
-        replacesList.getSelectionModel().getSelectedItems().addListener(
-                (javafx.collections.ListChangeListener<TileType>) c -> {
-                    rule.replaces = new java.util.ArrayList<>(replacesList.getSelectionModel().getSelectedItems());
-                    selectedCountLabel.setText(String.valueOf((long) replacesList.getSelectionModel().getSelectedItems().size()));
-                }
-        );
 
         // Noise scale X
         Label scaleXLabel = new Label("Noise Scale X");
-        TextField scaleXField = new TextField(String.valueOf(rule.noiseScaleX));
-        scaleXField.textProperty().addListener((obs, o, n) -> {
-            try { rule.noiseScaleX = Double.parseDouble(n); }
-            catch (NumberFormatException ignored) {}
-        });
+        scaleXField = new RandomizableField();
+        scaleXField.setType("Double");
+        scaleXField.setMin(0.001d);
+        scaleXField.setMax(2d);
+        scaleXField.setValue(String.valueOf(rule.noiseScaleX));
+
+
 
         // Noise scale Y
         Label scaleYLabel = new Label("Noise Scale Y");
-        TextField scaleYField = new TextField(String.valueOf(rule.noiseScaleY));
-        scaleYField.textProperty().addListener((obs, o, n) -> {
-            try { rule.noiseScaleY = Double.parseDouble(n); }
-            catch (NumberFormatException ignored) {}
-        });
+        scaleYField = new RandomizableField();
+        scaleYField.setType("Double");
+        scaleYField.setMin(0.001d);
+        scaleYField.setMax(2d);
+        scaleYField.setValue(String.valueOf(rule.noiseScaleY));
 
         // Noise threshold
         Label thresholdLabel = new Label("Noise Threshold");
-        TextField thresholdField = new TextField(String.valueOf(rule.noiseThreshold));
-        thresholdField.textProperty().addListener((obs, o, n) -> {
-            try { rule.noiseThreshold = Double.parseDouble(n); }
-            catch (NumberFormatException ignored) {}
-        });
+        thresholdField = new RandomizableField();
+        thresholdField.setType("Double");
+        thresholdField.setMin(0d);
+        thresholdField.setMax(1d);
+        thresholdField.setValue(String.valueOf(rule.noiseThreshold));
+
 
         // Min depth
         Label minDepthLabel = new Label("Min Depth");
-        TextField minDepthField = new TextField(String.valueOf(rule.minDepth));
-        minDepthField.textProperty().addListener((obs, o, n) -> {
-            try { rule.minDepth = Integer.parseInt(n); }
-            catch (NumberFormatException ignored) {}
-        });
+        minDepthField = new RandomizableField();
+        minDepthField.setType("Integer");
+        minDepthField.setMin(0);
+        minDepthField.setMax(500);
+        minDepthField.setValue(String.valueOf(rule.minDepth));
+
 
         // Max depth
         Label maxDepthLabel = new Label("Max Depth");
-        TextField maxDepthField = new TextField(String.valueOf(rule.maxDepth));
-        maxDepthField.textProperty().addListener((obs, o, n) -> {
-            try { rule.maxDepth = Integer.parseInt(n); }
-            catch (NumberFormatException ignored) {}
-        });
+        maxDepthField = new RandomizableField();
+        maxDepthField.setType("Integer");
+        maxDepthField.setMin(100);
+        maxDepthField.setMax(800);
+        maxDepthField.setValue(String.valueOf(rule.maxDepth));
+
 
         // Requires near water
-        CheckBox nearWaterBox = new CheckBox("Requires Near Water");
+        nearWaterBox = new CheckBox("Requires Near Water");
         nearWaterBox.setSelected(rule.requiresNearWater);
-        nearWaterBox.selectedProperty().addListener((obs, o, n) -> rule.requiresNearWater = n);
 
         // Remove button
         Button removeButton = new Button("Remove");
@@ -138,6 +140,7 @@ public class SubstanceRuleUIComponent {
             world.getSubstanceRules().remove(rule);
             parentContainer.getChildren().remove(pane);
             onRemove.run();
+            CommitRegistry.unregister(this);
         });
 
         params.getChildren().addAll(
@@ -154,5 +157,28 @@ public class SubstanceRuleUIComponent {
                 nearWaterBox,
                 removeButton
         );
+    }
+
+    @Override
+    public void commit() {
+        rule.enabled = enabledBox.isSelected();
+        rule.desc = descField.getText();
+        rule.output = outputDropdown.getValue();
+        rule.requiresNearWater = nearWaterBox.isSelected();
+
+        try { rule.noiseScaleX = Double.parseDouble(scaleXField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { rule.noiseScaleY = Double.parseDouble(scaleYField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { rule.noiseThreshold = Double.parseDouble(thresholdField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { rule.minDepth = Integer.parseInt(minDepthField.getValue()); }
+        catch (NumberFormatException ignored) {}
+
+        try { rule.maxDepth = Integer.parseInt(maxDepthField.getValue()); }
+        catch (NumberFormatException ignored) {}
     }
 }

@@ -6,10 +6,27 @@ import java.util.List;
 
 public class Biome {
 
-    public final String id;   // stable identifier
-    public final String name;
-    public final TileType surfaceTile;
-    public final TileType subsurfaceTile;
+    private final String id;
+    private final String name;
+    private final TileType surfaceTile;
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public TileType getSurfaceTile() {
+        return surfaceTile;
+    }
+
+    public TileType getSubsurfaceTile() {
+        return subsurfaceTile;
+    }
+
+    private final TileType subsurfaceTile;
 
     public Biome(String id, String name, TileType surfaceTile, TileType subsurfaceTile) {
         this.id = id;

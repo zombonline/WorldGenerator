@@ -1,10 +1,8 @@
 package uk.bradleyjones.worldgenerator.world;
 
 import com.raylabz.opensimplex.OpenSimplexNoise;
-import uk.bradleyjones.worldgenerator.world.biomes.Biome;
-import uk.bradleyjones.worldgenerator.world.biomes.BiomeGenerator;
-import uk.bradleyjones.worldgenerator.world.biomes.BiomeGeneratorConfig;
-import uk.bradleyjones.worldgenerator.world.biomes.BiomeOverrideConfig;
+import javafx.scene.paint.Color;
+import uk.bradleyjones.worldgenerator.world.biomes.*;
 import uk.bradleyjones.worldgenerator.world.caves.*;
 import uk.bradleyjones.worldgenerator.world.decorations.Decoration;
 import uk.bradleyjones.worldgenerator.world.decorations.DecorationGenerator;
@@ -39,8 +37,10 @@ public class World {
     private DecorationGenerator decorationGenerator;
     private LightingGenerator lightingGenerator;
     private List<Decoration> activeDecorations = new ArrayList<>();
-    private OpenSimplexNoise noise;
     private SubstanceGenerator substanceGenerator;
+
+    private OpenSimplexNoise noise;
+
 
 
 
@@ -51,6 +51,16 @@ public class World {
     public TileType getTile(int x, int y, EnumSet<GenerationPassType> passes) {
         if (x < 0 || x >= worldConfig.width || y < 0 || y >= worldConfig.height) {
             return TileType.AIR;
+        }
+
+        if(y == worldConfig.height-1) {
+            return TileType.BEDROCK;
+        }
+        if(y > worldConfig.height- worldConfig.bedrockHeight) {
+            var bedrock = noise.getNoise2D(x* worldConfig.bedrockNoiseScale,y* worldConfig.bedrockNoiseScale).getValue();
+            if(bedrock > 0){
+                return TileType.BEDROCK;
+            }
         }
 
         if (passes.contains(GenerationPassType.DECORATIONS)) {
@@ -72,8 +82,8 @@ public class World {
         boolean useBiome = passes.contains(GenerationPassType.BIOME);
         boolean useSubstance = passes.contains(GenerationPassType.SUBSTANCE);
 
-        TileType surface = useBiome ? biomeGenerator.getBiome(x).surfaceTile : TileType.GRASS;
-        TileType subsurface = useBiome ? biomeGenerator.getBiome(x).subsurfaceTile : TileType.DIRT;
+        TileType surface = useBiome ? biomeGenerator.getBiome(x).getSurfaceTile() : TileType.GRASS;
+        TileType subsurface = useBiome ? biomeGenerator.getBiome(x).getSubsurfaceTile() : TileType.DIRT;
         TileType base = TileType.STONE;
 
         TileType raw = depth == 0 ? surface
@@ -132,6 +142,14 @@ public class World {
         return y - getSurfaceY(x);
     }
 
+    public int getDepthOfPositionBase(int x, int y){
+        return y - getBaseSurfaceY(x);
+    }
+
+    public int getBaseSurfaceY(int x){
+        return worldConfig.height - Math.min(heightmapConfig.baseHeight, worldConfig.height - 1);
+    }
+
     public int getSurfaceY(int x) {
         int clampedBase = worldConfig.height - Math.min(heightmapConfig.baseHeight, worldConfig.height - 1);
         return clampedBase + heightmapConfig.heightmapGroup.getHeight(x);
@@ -164,6 +182,15 @@ public class World {
         return subsurfaceY;
     }
 
+    public Color getSkyColor(int x, int y) {
+        int skySpace = worldConfig.height - heightmapConfig.baseHeight;
+        double baseDepth = (double) (-getDepthOfPositionBase(x, y)) / skySpace;
+        double noiseOffset = noise.getNoise2D(x*.7, 0).getValue() * .008;
+        double skyDepth = Math.clamp(baseDepth + noiseOffset, 0.0, 1.0);
+        Color skyTop = Color.rgb(30, 60, 120);
+        Color skyHorizon = Color.rgb(135, 206, 235);
+        return skyHorizon.interpolate(skyTop, skyDepth);
+    }
     //GET CONFIGS, should only be used by UI/Controller
 
     public List<DecorationInstance> getDecorationInstances() {

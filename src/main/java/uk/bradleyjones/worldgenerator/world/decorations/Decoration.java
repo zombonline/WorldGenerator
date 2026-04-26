@@ -54,6 +54,9 @@ public class Decoration {
             cells = parser.parse(asciiRows, charMap);
         return cells;
     }
+    public void invalidate() {
+        cells = null;
+    }
 
     public static final Decoration FLOWER = new Decoration(
             "Flower",

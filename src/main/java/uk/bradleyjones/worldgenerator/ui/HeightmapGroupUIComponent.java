@@ -2,11 +2,16 @@ package uk.bradleyjones.worldgenerator.ui;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import uk.bradleyjones.worldgenerator.ui.commitables.CommitRegistry;
+import uk.bradleyjones.worldgenerator.ui.commitables.Commitable;
 import uk.bradleyjones.worldgenerator.world.heightmap.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static uk.bradleyjones.worldgenerator.WorldGeneratorController.world;
 
-public class HeightmapGroupUIComponent {
+public class HeightmapGroupUIComponent implements Commitable {
 
     private final HeightmapChild child; // null if this is the root group
     private final HeightmapGroup group;
@@ -20,6 +25,12 @@ public class HeightmapGroupUIComponent {
 
     private int instanceCount = 0;
 
+    private CheckBox enabledBox;
+    private RandomizableField weightField, noiseScaleField;
+    private ComboBox<CombineMode> modeDropdown;
+    private final List<HeightmapChild> pendingChildren = new ArrayList<>();
+
+
     public HeightmapGroupUIComponent(HeightmapGroup group, HeightmapChild child,
                                      HeightmapGroup parentGroup, VBox parentContainer, Runnable onRemove) {
         this.group = group;
@@ -28,6 +39,7 @@ public class HeightmapGroupUIComponent {
         this.parentContainer = parentContainer;
         this.onRemove = onRemove;
         setUp();
+        CommitRegistry.register(this);
     }
 
     // Constructor for root group (no parent)
@@ -50,35 +62,36 @@ public class HeightmapGroupUIComponent {
 
         // Enabled + weight (only for non-root sub-groups)
         if (child != null) {
-            CheckBox enabledBox = new CheckBox("Enabled");
+            enabledBox = new CheckBox("Enabled");
             enabledBox.setSelected(child.enabled);
-            enabledBox.selectedProperty().addListener((obs, o, n) -> child.enabled = n);
 
             Label weightLabel = new Label("Weight");
-            TextField weightField = new TextField(String.valueOf(child.weight));
-            weightField.textProperty().addListener((obs, o, n) -> {
-                try { child.weight = Float.parseFloat(n); }
-                catch (NumberFormatException ignored) {}
-            });
+            weightField = new RandomizableField();
+            weightField.setType("Float");
+            weightField.setMin(0);
+            weightField.setMax(1);
+            weightField.setValue(String.valueOf(child.weight));
+
 
             params.getChildren().addAll(enabledBox, weightLabel, weightField);
         }
 
         // Combine mode
         Label modeLabel = new Label("Combine Mode");
-        ComboBox<CombineMode> modeDropdown = new ComboBox<>();
+        modeDropdown = new ComboBox<>();
         modeDropdown.getItems().addAll(CombineMode.values());
         modeDropdown.setValue(group.mode);
         modeDropdown.setMaxWidth(Double.MAX_VALUE);
-        modeDropdown.valueProperty().addListener((obs, o, n) -> group.mode = n);
 
         // Noise scale (for NOISE_BLEND)
         Label noiseScaleLabel = new Label("Blend Noise Scale");
-        TextField noiseScaleField = new TextField(String.valueOf(group.noiseScale));
-        noiseScaleField.textProperty().addListener((obs, o, n) -> {
-            try { group.noiseScale = Float.parseFloat(n); }
-            catch (NumberFormatException ignored) {}
-        });
+        noiseScaleField = new RandomizableField();
+        noiseScaleField.setType("Float");
+        noiseScaleField.setMin(.001f);
+        noiseScaleField.setMax(2f);
+        noiseScaleField.setValue(String.valueOf(group.noiseScale));
+
+
         noiseScaleLabel.setVisible(group.mode == CombineMode.NOISE_BLEND);
         noiseScaleLabel.setManaged(group.mode == CombineMode.NOISE_BLEND);
         noiseScaleField.setVisible(group.mode == CombineMode.NOISE_BLEND);
@@ -103,7 +116,7 @@ public class HeightmapGroupUIComponent {
             HeightmapGeneratorInstance instance = new HeightmapGeneratorInstance(
                     HeightmapGeneratorType.NOISE, world.getWorldConfig().seed
             );
-            group.children.add(instance);
+            pendingChildren.add(instance);
             addChildUI(instance);
         });
 
@@ -113,7 +126,7 @@ public class HeightmapGroupUIComponent {
         addGroupButton.setOnAction(e -> {
             HeightmapGroup subGroup = new HeightmapGroup(CombineMode.ADDITIVE, world.getWorldConfig().seed);
             HeightmapChild newChild = new HeightmapChild(subGroup);
-            group.children.add(newChild);
+            pendingChildren.add(newChild);
             addChildUI(newChild);
         });
 
@@ -126,6 +139,7 @@ public class HeightmapGroupUIComponent {
                 parentGroup.children.remove(child);
                 parentContainer.getChildren().remove(pane);
                 onRemove.run();
+                CommitRegistry.unregister(this);
             });
             params.getChildren().add(removeButton);
         }
@@ -144,9 +158,15 @@ public class HeightmapGroupUIComponent {
                 : "-fx-base: #3D3D3D;";
         TitledPane newPane;
         if (child instanceof HeightmapGeneratorInstance instance)
-            newPane = new HeightmapGeneratorInstanceUIComponent(instance, group, childrenBox, this::refresh).get();
+            newPane = new HeightmapGeneratorInstanceUIComponent(instance, group, childrenBox, () -> {
+                pendingChildren.remove(child);
+                refresh();
+            }).get();
         else if (child.node instanceof HeightmapGroup subGroup)
-            newPane = new HeightmapGroupUIComponent(subGroup, child, group, childrenBox, this::refresh).get();
+            newPane = new HeightmapGroupUIComponent(subGroup, child, group, childrenBox, () -> {
+                pendingChildren.remove(child);
+                refresh();
+            }).get();
         else return;
 
         newPane.setStyle(style);
@@ -162,5 +182,32 @@ public class HeightmapGroupUIComponent {
         for(var child:group.children){
             addChildUI(child);
         }
+        for(var child:pendingChildren){
+            addChildUI(child);
+        }
+    }
+
+
+    @Override
+    public void commit() {
+        group.children.addAll(pendingChildren);
+        pendingChildren.clear();
+
+        // Child-specific fields (non-root only)
+        if (child != null) {
+            child.enabled = enabledBox.isSelected();
+
+            try {
+                child.weight = Float.parseFloat(weightField.getValue());
+            } catch (NumberFormatException ignored) {}
+        }
+
+        // Group fields
+        group.mode = modeDropdown.getValue();
+
+        try {
+            group.noiseScale = Float.parseFloat(noiseScaleField.getValue());
+        } catch (NumberFormatException ignored) {}
     }
 }
+
