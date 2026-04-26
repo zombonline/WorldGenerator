@@ -80,7 +80,6 @@ public class WaterGenerator {
             pressureMap[x][y] = pressure;
             waterGrid[x][y] = true;
 
-            // Spread down — no pressure cost
             queue.addFirst(new WaterNode(x, y + 1, pressure));
 
             boolean tileUnder = !world.isCave(x,y+1);
@@ -101,7 +100,6 @@ public class WaterGenerator {
             queue.addLast(new WaterNode(x + 1, y, sidewaysPressure));
             queue.addLast(new WaterNode(x - 1, y, sidewaysPressure));
 
-            // Spread up — costs upwardCost, only if enough pressure
             if (pressure - world.getWaterConfig().upwardCost > world.getWaterConfig().minPressureToFlood) {
                 queue.addLast(new WaterNode(x, y - 1, pressure - world.getWaterConfig().upwardCost));
             }

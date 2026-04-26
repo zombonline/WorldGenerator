@@ -20,6 +20,7 @@
         <VBox spacing="4" style="-fx-background-color: #1e1e1e; -fx-padding: 8;">
         <VBox spacing="4" style="-fx-background-color: #1e1e1e; -fx-padding: 8;">
             <Button fx:id="regenButton" text="Regenerate" maxWidth="Infinity" style="-fx-base:#32A82A; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; "/>
+            <ProgressBar fx:id="regenProgress" maxWidth="Infinity" visible="false"/>
         </VBox>
         <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" prefWidth="280"
                     style="-fx-background: #1e1e1e; -fx-background-color: #1e1e1e;">

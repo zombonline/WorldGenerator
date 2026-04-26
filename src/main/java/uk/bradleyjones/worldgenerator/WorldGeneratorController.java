@@ -1,5 +1,6 @@
 package uk.bradleyjones.worldgenerator;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -52,6 +53,7 @@ public class WorldGeneratorController implements CameraListener {
     @FXML private Pane canvasPane;
     @FXML private Canvas worldCanvas;
     @FXML private Button regenButton;
+    @FXML private ProgressBar regenProgress;
 
     @FXML public VBox caveInstancesBox;
 
@@ -154,45 +156,58 @@ public class WorldGeneratorController implements CameraListener {
         renderer.render(gc, camera, worldCanvas.getWidth(), worldCanvas.getHeight());
     }
 
+
     public void handleInitializeWorld() {
-        try {
-            CommitRegistry.commitAll();
-            world.getWorldConfig().seed = Long.parseLong(seedInput.getValue());
-            world.getWorldConfig().width = Integer.parseInt(worldWidthInput.getValue());
-            world.getWorldConfig().height = Integer.parseInt(worldHeightInput.getValue());
-            world.getWorldConfig().bedrockHeight = Integer.parseInt(bedrockHeightInput.getValue());
-            world.getWorldConfig().bedrockNoiseScale = Float.parseFloat(bedrockNoiseScaleInput.getValue());
+        regenProgress.setVisible(true);
+        regenButton.setDisable(true);
 
-            world.getWaterConfig().waterLevel = Integer.parseInt(waterLevelInput.getValue());
-            world.getWaterConfig().lakeMinWidth = Integer.parseInt(lakeMinWidthInput.getValue());
-            world.getWaterConfig().oceanMinWidth = Integer.parseInt(oceanMinWidthInput.getValue());
-            world.getWaterConfig().pressurePerDepth = Float.parseFloat(pressurePerDepthInput.getValue());
-            world.getWaterConfig().upwardCost = Float.parseFloat(upwardCostInput.getValue());
-            world.getWaterConfig().minPressureToFlood = Float.parseFloat(minPressureToFloodInput.getValue());
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                try {
+                    CommitRegistry.commitAll();
+                    world.getWorldConfig().seed = Long.parseLong(seedInput.getValue());
+                    world.getWorldConfig().width = Integer.parseInt(worldWidthInput.getValue());
+                    world.getWorldConfig().height = Integer.parseInt(worldHeightInput.getValue());
+                    world.getWorldConfig().bedrockHeight = Integer.parseInt(bedrockHeightInput.getValue());
+                    world.getWorldConfig().bedrockNoiseScale = Float.parseFloat(bedrockNoiseScaleInput.getValue());
 
+                    world.getWaterConfig().waterLevel = Integer.parseInt(waterLevelInput.getValue());
+                    world.getWaterConfig().lakeMinWidth = Integer.parseInt(lakeMinWidthInput.getValue());
+                    world.getWaterConfig().oceanMinWidth = Integer.parseInt(oceanMinWidthInput.getValue());
+                    world.getWaterConfig().pressurePerDepth = Float.parseFloat(pressurePerDepthInput.getValue());
+                    world.getWaterConfig().upwardCost = Float.parseFloat(upwardCostInput.getValue());
+                    world.getWaterConfig().minPressureToFlood = Float.parseFloat(minPressureToFloodInput.getValue());
 
-            world.getHeightmapConfig().baseHeight = Integer.parseInt(baseHeightInput.getValue());
-            world.getHeightmapConfig().minSubSurfaceDepth = Integer.parseInt(minSubsurfaceInput.getValue());
-            world.getHeightmapConfig().maxSubSurfaceDepth = Integer.parseInt(maxSubsurfaceInput.getValue());
+                    world.getHeightmapConfig().baseHeight = Integer.parseInt(baseHeightInput.getValue());
+                    world.getHeightmapConfig().minSubSurfaceDepth = Integer.parseInt(minSubsurfaceInput.getValue());
+                    world.getHeightmapConfig().maxSubSurfaceDepth = Integer.parseInt(maxSubsurfaceInput.getValue());
 
+                    world.getBiomeGeneratorConfig().noiseScale = Float.parseFloat(biomeNoiseScaleInput.getValue());
+                    for (var kvp : biomeEntryRandomizableFieldHashMap.entrySet()) {
+                        kvp.getKey().weight = Float.parseFloat(kvp.getValue().getValue());
+                    }
 
-            world.getBiomeGeneratorConfig().noiseScale = Float.parseFloat(biomeNoiseScaleInput.getValue());
-            for(var kvp:biomeEntryRandomizableFieldHashMap.entrySet()) {
-                kvp.getKey().weight = Float.parseFloat(kvp.getValue().getValue());
+                    world.getBiomeOverrideConfig().beachWidth = Integer.parseInt(beachWidthInput.getValue());
+                    world.getBiomeOverrideConfig().mountainHeight = Integer.parseInt(mountainHeightInput.getValue());
+                    world.getBiomeOverrideConfig().peakHeight = Integer.parseInt(peakHeightInput.getValue());
+
+                    world.regenerate();
+                } catch (NumberFormatException e) {
+                    System.out.println("NumberFormatException: " + e.getMessage());
+                }
+                return null;
             }
+        };
 
-
-            world.getBiomeOverrideConfig().beachWidth = Integer.parseInt(beachWidthInput.getValue());
-            world.getBiomeOverrideConfig().mountainHeight = Integer.parseInt(mountainHeightInput.getValue());
-            world.getBiomeOverrideConfig().peakHeight = Integer.parseInt(peakHeightInput.getValue());
-
-            world.regenerate();
+        task.setOnSucceeded(ev -> {
+            regenProgress.setVisible(false);
+            regenButton.setDisable(false);
             renderer.buildWorldImageAsync();
             draw();
-            draw();
-        } catch (NumberFormatException e) {
-            System.out.println("NumberFormatException: " + e.getMessage());
-        }
+        });
+
+        new Thread(task).start();
     }
 
     private void addBiomeWeightUI(BiomeEntry entry) {
