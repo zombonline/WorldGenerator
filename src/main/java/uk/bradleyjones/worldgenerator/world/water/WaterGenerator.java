@@ -80,6 +80,7 @@ public class WaterGenerator {
             pressureMap[x][y] = pressure;
             waterGrid[x][y] = true;
 
+            // addFirst so downward movement is always processed before sideways/upward movement
             queue.addFirst(new WaterNode(x, y + 1, pressure));
 
             boolean tileUnder = !world.isCave(x,y+1);

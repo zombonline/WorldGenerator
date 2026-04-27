@@ -147,9 +147,7 @@ public class WorldGeneratorController implements CameraListener {
             renderer.saveScreenshot(stage);
         });
 
-        //refresh valyes
         refreshUI();
-
         draw();
     }
 
@@ -197,8 +195,7 @@ public class WorldGeneratorController implements CameraListener {
                     world.getBiomeOverrideConfig().peakHeight = Integer.parseInt(peakHeightInput.getValue());
 
                     world.regenerate();
-                } catch (NumberFormatException e) {
-                    System.out.println("NumberFormatException: " + e.getMessage());
+                } catch (NumberFormatException ignored) {
                 }
                 return null;
             }

@@ -5,20 +5,23 @@ A procedural 2D world generation tool built with JavaFX, developed as a final pr
 Generate pixel-art worlds with configurable terrain, biomes, caves, water, decorations, and ore deposits, all driven by a seed value for reproducibility. A real-time interactive viewport lets you pan and zoom around the generated world, and configurations can be saved and loaded as `.world` files.
 
 ![WorldGenerator screenshot](screenshot.png)
+---
 
+## Video Demo
+A video emo can be found here: https://drive.google.com/file/d/1Kx5bQ1Z3vTRwiLuJWWwsclX4o_JzZLi5/view?usp=sharing
 
 ---
 
 ## Features
 
-- **Procedural terrain** — layered heightmap system where multiple generators (currently noise and stepped) can be combined using additive, average, highest, lowest, or noise-blend modes; extensible with new generator types
-- **Biomes** — Plains, Desert, Forest, Tundra, Beach, Ocean, Lake, Mountain, and Mountain Peak, assigned by noise with height-based overrides
-- **Cave generation** — three algorithms that can be use in combination: Cellular Automata, Simplex Noise, and Drunkard's Walk.
-- **Water simulation** — pressure-based flood fill that naturally fills caves below the water level; bodies classified as lakes or oceans by width
-- **Decorations** — trees, flowers, mushrooms, houses, seaweed, and more, placed probabilistically with biome and surface constraints, the program also allows users to create their own decoration objects with custom shapes.
-- **Ores & substances** — Coal, Diamond, Copper, Lapis, Amethyst, Gravel, Clay, Quartz, and Red Clay distributed by depth and noise thresholds. The program also allows users to generate their own rule for placing down different tile types similar to how ores are distributed.
-- **Save / Load** — world configurations serialised to JSON `.world` files for sharing and reproducibility
-- **Interactive viewport** — WASD / middle-mouse pan, scroll to zoom, with a chunk-based renderer at high zoom and a cached full-world image at low zoom
+- **Procedural terrain**: layered heightmap system where multiple generators (currently noise and stepped) can be combined using additive, average, highest, lowest, or noise-blend modes; extensible with new generator types
+- **Biomes**: Plains, Desert, Forest, Tundra, Beach, Ocean, Lake, Mountain, and Mountain Peak, assigned by noise with height-based overrides
+- **Cave generation**: three algorithms that can be use in combination: Cellular Automata, Simplex Noise, and Drunkard's Walk.
+- **Water simulation**: pressure-based flood fill that naturally fills caves below the water level; bodies classified as lakes or oceans by width
+- **Decorations**: trees, flowers, mushrooms, houses, seaweed, and more, placed probabilistically with biome and surface constraints, the program also allows users to create their own decoration objects with custom shapes.
+- **Ores & substances**: Coal, Diamond, Copper, Lapis, Amethyst, Gravel, Clay, Quartz, and Red Clay distributed by depth and noise thresholds. The program also allows users to generate their own rule for placing down different tile types similar to how ores are distributed.
+- **Save / Load**: world configurations serialised to JSON `.world` files for sharing and reproducibility
+- **Interactive viewport**: WASD / middle-mouse pan, scroll to zoom, with a chunk-based renderer at high zoom and a cached full-world image at low zoom
 
 ---
 
@@ -92,4 +95,4 @@ Each tile's final type is resolved lazily by `World.getTile()`, which applies th
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License: see [LICENSE](LICENSE) for details.

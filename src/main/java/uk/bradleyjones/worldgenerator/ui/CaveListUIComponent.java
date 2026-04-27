@@ -34,7 +34,6 @@ public class CaveListUIComponent implements Commitable {
     }
 
     private void addInstanceUI(CaveGeneratorInstance instance) {
-        //CAVE BASE 7D9C19
         String style = instanceCount % 2 == 0
                 ? "-fx-base: #696969;"
                 : "-fx-base: #3D3D3D;";

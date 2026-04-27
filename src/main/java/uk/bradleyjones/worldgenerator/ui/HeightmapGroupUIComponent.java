@@ -42,7 +42,6 @@ public class HeightmapGroupUIComponent implements Commitable {
         CommitRegistry.register(this);
     }
 
-    // Constructor for root group (no parent)
     public HeightmapGroupUIComponent(HeightmapGroup group) {
         this(group, null, null, null, null);
     }
@@ -60,7 +59,6 @@ public class HeightmapGroupUIComponent implements Commitable {
         pane.setAnimated(true);
         pane.setExpanded(true);
 
-        // Enabled + weight (only for non-root sub-groups)
         if (child != null) {
             enabledBox = new CheckBox("Enabled");
             enabledBox.setSelected(child.enabled);
@@ -76,7 +74,6 @@ public class HeightmapGroupUIComponent implements Commitable {
             params.getChildren().addAll(enabledBox, weightLabel, weightField);
         }
 
-        // Combine mode
         Label modeLabel = new Label("Combine Mode");
         modeDropdown = new ComboBox<>();
         modeDropdown.getItems().addAll(CombineMode.values());
@@ -103,6 +100,10 @@ public class HeightmapGroupUIComponent implements Commitable {
         noiseScaleLabel.setManaged(group.mode == CombineMode.NOISE_BLEND);
         noiseScaleField.setVisible(group.mode == CombineMode.NOISE_BLEND);
         noiseScaleField.setManaged(group.mode == CombineMode.NOISE_BLEND);
+        blendSharpnessLabel.setVisible(group.mode == CombineMode.NOISE_BLEND);
+        blendSharpnessLabel.setManaged(group.mode == CombineMode.NOISE_BLEND);
+        blendSharpnessField.setVisible(group.mode == CombineMode.NOISE_BLEND);
+        blendSharpnessField.setManaged(group.mode == CombineMode.NOISE_BLEND);
         modeDropdown.valueProperty().addListener((obs, o, n) -> {
             noiseScaleLabel.setVisible(n == CombineMode.NOISE_BLEND);
             noiseScaleLabel.setManaged(n == CombineMode.NOISE_BLEND);
@@ -189,9 +190,6 @@ public class HeightmapGroupUIComponent implements Commitable {
 
     public void refresh(){
         childrenBox.getChildren().clear();
-        if(parentGroup == null){
-            System.out.println("Refreshing root group, children count: " + group.children.size() + ", group combine mode: " + group.mode);
-        }
         for(var child:group.children){
             addChildUI(child);
         }

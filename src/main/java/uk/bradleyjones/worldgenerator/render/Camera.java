@@ -50,7 +50,6 @@ public class Camera {
         notifyUpdated();
     }
 
-    // ---- listener management ----
 
     public void addListener(CameraListener listener) {
         listeners.add(listener);

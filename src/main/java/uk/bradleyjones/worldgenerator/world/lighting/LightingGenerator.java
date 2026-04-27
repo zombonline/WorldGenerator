@@ -66,7 +66,7 @@ public class LightingGenerator {
 
                 double newLight = currentLight - 1;
 
-                // diagonal path check
+                // diagonal path check, prevent moving diagonal if a hard tile exists at the two cardinal dirs
                 if (Math.abs(dx + dy) != 1) {
                     if(world.getTile(x, ny, GenerationPassTypeSets.NO_DECOR)!=TileType.AIR || world.getTile(nx, y, GenerationPassTypeSets.NO_DECOR)!= TileType.AIR) {
                         continue;

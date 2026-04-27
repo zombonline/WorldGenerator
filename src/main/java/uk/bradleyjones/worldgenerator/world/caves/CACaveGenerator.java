@@ -29,7 +29,6 @@ public class CACaveGenerator extends CaveGenerator {
             }
         }
 
-        // Step 2 - run CA iterations
         for (int i = 0; i < config.iterations; i++) {
             applyRule();
         }
@@ -45,7 +44,6 @@ public class CACaveGenerator extends CaveGenerator {
             }
         }
 
-        // Copy new grid into caveGrid
         for (int x = 0; x < width; x++) {
             System.arraycopy(newGrid[x], 0, caveGrid[x], 0, height);
         }
@@ -60,7 +58,6 @@ public class CACaveGenerator extends CaveGenerator {
                 int nx = x + dx;
                 int ny = y + dy;
 
-                // Treat out of bounds as stone - this keeps cave edges solid
                 if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
                     count++;
                 } else if (caveGrid[nx][ny]) {

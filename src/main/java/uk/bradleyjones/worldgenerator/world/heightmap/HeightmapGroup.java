@@ -51,15 +51,16 @@ public class HeightmapGroup implements HeightmapNode {
                 for (HeightmapChild child : active) sum += child.node.getHeight(x);
                 yield sum;
             }
+            // This looks inverted but javafx is set up that larger y means lower on the screen
             case LOWEST -> {
-                int max = Integer.MIN_VALUE;
-                for (HeightmapChild child : active) max = Math.max(max, child.node.getHeight(x));
-                yield max;
+                int min = Integer.MIN_VALUE;
+                for (HeightmapChild child : active) min = Math.max(min, child.node.getHeight(x));
+                yield min;
             }
             case HIGHEST -> {
-                int min = Integer.MAX_VALUE;
-                for (HeightmapChild child : active) min = Math.min(min, child.node.getHeight(x));
-                yield min;
+                int max = Integer.MAX_VALUE;
+                for (HeightmapChild child : active) max = Math.min(max, child.node.getHeight(x));
+                yield max;
             }
             case AVERAGE -> {
                 int sum = 0;
@@ -72,6 +73,7 @@ public class HeightmapGroup implements HeightmapNode {
                 float totalWeight = 0;
                 for (HeightmapChild child : active) totalWeight += child.weight;
 
+                // blendsharpness of 1 gives a complete linear blend, lower value means a more harsh cut closer to the edges.
                 float cursor = 0;
                 for (int i = 0; i < active.size() - 1; i++) {
                     float segStart = cursor / totalWeight;

@@ -27,7 +27,7 @@ public class BiomeGenerator {
     public Biome getBiome(int x) {
         double value = noise.getNoise2D(x * config.noiseScale, 0).getValue();
 
-        // Remap noise to flatten distribution away from centre
+        // sqrt remap preserves sign but pushes values toward 1, sharpening biome edges
         double remapped = Math.signum(value) * Math.pow(Math.abs(value), 0.5);
 
         // Normalise to 0..1
@@ -78,7 +78,7 @@ public class BiomeGenerator {
         // Only beach if adjacent to an actual water body
         for (int i = x - overrideConfig.beachWidth; i <= x + overrideConfig.beachWidth; i++) {
             if (i < 0 || i >= world.getWorldConfig().width) continue;
-            if (world.getWaterBodyType(x) != WaterBodyType.NONE) {
+            if (world.getWaterBodyType(i) != WaterBodyType.NONE) {
                 return true;
             }
         }

@@ -48,7 +48,6 @@ public class WorldRenderer {
                     .getResourceAsStream(path)) {
 
                 if (stream == null) {
-//                    System.err.println("Not found: " + path);
                     continue;
                 }
 
@@ -64,7 +63,6 @@ public class WorldRenderer {
                     }
                 }
                 spritePixelCache.put(tileType, pixels);
-//                System.out.println("Loaded: " + name);
 
             } catch (Exception e) {
                 System.err.println("Error loading: " + name);
@@ -159,7 +157,6 @@ public class WorldRenderer {
         int minCY = (int) Math.floor(topLeftWorldY / CHUNK_SIZE);
         int maxCX = (int) Math.ceil((topLeftWorldX + canvasWidth / scale) / CHUNK_SIZE);
         int maxCY = (int) Math.ceil((topLeftWorldY + canvasHeight / scale) / CHUNK_SIZE);
-        System.out.println("chunks: " + chunkImages.size() + " zoom: " + camera.getZoom() + " cx range: " + minCX + "-" + maxCX + " cy range: " + minCY + "-" + maxCY);
 
         for (int cy = minCY; cy <= maxCY; cy++) {
             for (int cx = minCX; cx <= maxCX; cx++) {
@@ -170,7 +167,7 @@ public class WorldRenderer {
                 double dstH = (chunk.getHeight() / TILE_SIZE) * scale;
                 double dstX = (cx * CHUNK_SIZE - topLeftWorldX) * scale;
                 double dstY = (cy * CHUNK_SIZE - topLeftWorldY) * scale;
-                System.out.println("chunk w: " + chunk.getWidth() + " dstW: " + dstW + " scale: " + scale + " chunkScale: " + chunkScale);
+
 
                 gc.drawImage(chunk, dstX, dstY, dstW, dstH);
             }
@@ -303,36 +300,31 @@ public class WorldRenderer {
     public void renderFromImage(GraphicsContext gc, Camera camera, double canvasWidth, double canvasHeight) {
         if (worldImage == null) return;
 
-        // Fill background black for out of bounds areas
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, canvasWidth, canvasHeight);
 
         double scaledTileSize = camera.getZoom();
 
-        // Camera position in tile space
         double camX = camera.getX();
         double camY = camera.getY();
 
-        // Visible region in tile space
-        double visibleTilesX = canvasWidth / (scaledTileSize * 8);
-        double visibleTilesY = canvasHeight / (scaledTileSize * 8);
+        double visibleTilesX = canvasWidth / (scaledTileSize * TILE_SIZE);
+        double visibleTilesY = canvasHeight / (scaledTileSize * TILE_SIZE);
 
         double srcX = camX - visibleTilesX / 2;
         double srcY = camY - visibleTilesY / 2;
         double srcW = visibleTilesX;
         double srcH = visibleTilesY;
 
-        // Clamp source rect to image bounds
         double clampedSrcX = Math.max(0, srcX);
         double clampedSrcY = Math.max(0, srcY);
         double clampedSrcW = Math.min(srcW, imageWidth - clampedSrcX);
         double clampedSrcH = Math.min(srcH, imageHeight - clampedSrcY);
 
-        // Adjust destination to account for clamping
-        double dstX = (clampedSrcX - srcX) * scaledTileSize * 8;
-        double dstY = (clampedSrcY - srcY) * scaledTileSize * 8;
-        double dstW = clampedSrcW * scaledTileSize * 8;
-        double dstH = clampedSrcH * scaledTileSize * 8;
+        double dstX = (clampedSrcX - srcX) * scaledTileSize * TILE_SIZE;
+        double dstY = (clampedSrcY - srcY) * scaledTileSize * TILE_SIZE;
+        double dstW = clampedSrcW * scaledTileSize * TILE_SIZE;
+        double dstH = clampedSrcH * scaledTileSize * TILE_SIZE;
 
         gc.drawImage(worldImage,
                 clampedSrcX, clampedSrcY, clampedSrcW, clampedSrcH,
@@ -364,11 +356,11 @@ public class WorldRenderer {
             case LOG -> Color.SADDLEBROWN;
             case CACTUS -> Color.LIMEGREEN;
             case COAL_ORE -> Color.DARKSLATEGRAY;
-            case COPPER_ORE -> Color.rgb(184, 115, 51);   // warm orange-brown
-            case LAPIS_ORE  -> Color.rgb(30, 60, 180);    // deep royal blue
-            case AMETHYST_ORE -> Color.rgb(153, 50, 204); // rich purple
-            case RED_CLAY   -> Color.rgb(180, 80, 60);    // terracotta rust
-            case QUARTZ     -> Color.rgb(220, 215, 210);  // off-white cream
+            case COPPER_ORE -> Color.rgb(184, 115, 51);
+            case LAPIS_ORE  -> Color.rgb(30, 60, 180);
+            case AMETHYST_ORE -> Color.rgb(153, 50, 204);
+            case RED_CLAY   -> Color.rgb(180, 80, 60);
+            case QUARTZ     -> Color.rgb(220, 215, 210);
             case BEDROCK -> Color.rgb(20, 18, 24);
             default -> Color.HOTPINK;
         };

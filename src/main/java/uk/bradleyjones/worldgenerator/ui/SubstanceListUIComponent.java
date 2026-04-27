@@ -33,7 +33,6 @@ public class SubstanceListUIComponent implements Commitable {
     }
 
     private void addInstance(SubstanceRule rule) {
-        //24199C
         String style = instanceCount % 2 == 0
                 ? "-fx-base: #696969;"
                 : "-fx-base: #3D3D3D;";

@@ -139,8 +139,7 @@ public class WorldSaveManager {
             drunkard.walker_steps = inst.drunkardConfig.steps;
             drunkard.effectsSurface = inst.drunkardConfig.effectsSurface;
             d.drunkard_config = drunkard;
-            System.out.println("Saving Cave Data:" + String.join(", ", d.desc, String.valueOf(d.enabled), String.valueOf(d.type), String.valueOf(noise.scale_x), String.valueOf(noise.scale_y), String.valueOf(noise.lower_threshold)));
-            list.add(d);
+
 
         }
         return list;

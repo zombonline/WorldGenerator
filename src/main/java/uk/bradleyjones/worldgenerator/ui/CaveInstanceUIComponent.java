@@ -19,7 +19,7 @@ public class CaveInstanceUIComponent implements Commitable {
     private Runnable onRemove;
 
     private RandomizableField fillField, iterField, threshField;
-    private RandomizableField scaleXField, scaleYField, lowThreshField, uppThreshField;
+    private RandomizableField scaleXField, scaleYField, lowThreshField, upperThreshField;
     private RandomizableField walkerCountField, stepsField;
     private CheckBox enabledBox;
     private ComboBox<CaveGeneratorType> typeDropdown;
@@ -138,18 +138,18 @@ public class CaveInstanceUIComponent implements Commitable {
             try { instance.noiseConfig.lowerThreshold = Float.parseFloat(n); }
             catch (NumberFormatException ignored) {}
         });
-        Label uppThreshLabel = new Label("Upper Threshold");
-        uppThreshField = new RandomizableField();
-        uppThreshField.setType("Float");
-        uppThreshField.setMin(-1);
-        uppThreshField.setMax(1);
-        uppThreshField.setValue(String.valueOf(instance.noiseConfig.upperThreshold));
-        uppThreshField.getField().textProperty().addListener((obs, o, n) -> {
+        Label upperThreshLabel = new Label("Upper Threshold");
+        upperThreshField = new RandomizableField();
+        upperThreshField.setType("Float");
+        upperThreshField.setMin(-1);
+        upperThreshField.setMax(1);
+        upperThreshField.setValue(String.valueOf(instance.noiseConfig.upperThreshold));
+        upperThreshField.getField().textProperty().addListener((obs, o, n) -> {
             try { instance.noiseConfig.upperThreshold = Float.parseFloat(n); }
             catch (NumberFormatException ignored) {}
         });
         noiseParamsSection.getChildren().addAll(scaleXLabel, scaleXField, scaleYLabel, scaleYField,
-                lowThreshLabel, lowThreshField, uppThreshLabel, uppThreshField);
+                lowThreshLabel, lowThreshField, upperThreshLabel, upperThreshField);
 
         // Drunkard params
         VBox drunkardParamsSection = new VBox(4);
@@ -231,7 +231,7 @@ public class CaveInstanceUIComponent implements Commitable {
         try { instance.noiseConfig.lowerThreshold = Float.parseFloat(lowThreshField.getValue()); }
         catch (NumberFormatException ignored) {}
 
-        try { instance.noiseConfig.upperThreshold = Float.parseFloat(uppThreshField.getValue()); }
+        try { instance.noiseConfig.upperThreshold = Float.parseFloat(upperThreshField.getValue()); }
         catch (NumberFormatException ignored) {}
 
         try { instance.drunkardConfig.walkerCount = Integer.parseInt(walkerCountField.getValue()); }
