@@ -3,9 +3,9 @@ package uk.bradleyjones.worldgenerator;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import uk.bradleyjones.worldgenerator.input.InputHandler;
 
 import java.io.IOException;
 
@@ -18,6 +18,8 @@ public class WorldGeneratorApp extends Application {
         Font.loadFont(WorldGeneratorApp.class.getResourceAsStream("uk/bradleyjones/worldgenerator/fonts/Roboto-Regular.ttf"), 14);
         WorldGeneratorController controller = fxmlLoader.getController();
         stage.setScene(scene);
+        stage.getIcons().add(new Image(WorldGeneratorApp.class.getResourceAsStream("/uk/bradleyjones/worldgenerator/icon.png")));
+        stage.setTitle("World Generator");
         controller.setStage(stage);
         stage.show();
     }

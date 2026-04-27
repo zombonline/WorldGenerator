@@ -70,10 +70,11 @@ public class WorldGeneratorController implements CameraListener {
 
     @FXML public VBox substanceRulesBox;
 
+    @FXML public Label loadedFileName;
     @FXML public Button saveAsButton;
     @FXML public Button saveButton;
     @FXML public Button loadButton;
-    @FXML public Label loadedFileName;
+    @FXML public Button screenshotButton;
 
     public HashMap<BiomeEntry, RandomizableField> biomeEntryRandomizableFieldHashMap = new HashMap<>();
 
@@ -141,6 +142,9 @@ public class WorldGeneratorController implements CameraListener {
             refreshUI();
             handleInitializeWorld();
             loadedFileName.setText("Loaded: " + WorldFileManager.getCurrentName() + ".world");
+        });
+        screenshotButton.setOnAction(event -> {
+            renderer.saveScreenshot(stage);
         });
 
         //refresh valyes

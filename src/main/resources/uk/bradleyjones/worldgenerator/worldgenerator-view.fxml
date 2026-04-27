@@ -122,6 +122,7 @@
                 <Button fx:id="saveButton" text="Save" maxWidth="Infinity" style="-fx-base: #05668D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;" />
                 <Button fx:id="saveAsButton" text="Save As" maxWidth="Infinity" style="-fx-base: #05668D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
                 <Button fx:id="loadButton" text="Load" maxWidth="Infinity" style="-fx-base: #05668D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <Button fx:id="screenshotButton" text="Save Screenshot" maxWidth="Infinity" style="-fx-base: #05668D; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
             </VBox>
         </VBox>
     </left>

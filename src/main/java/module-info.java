@@ -5,8 +5,8 @@ module uk.bradleyjones.worldgenerator {
     requires com.dlsc.gemsfx;
     requires org.apache.commons.lang3;
     requires com.github.weisj.jsvg;
-    requires jdk.unsupported.desktop;
     requires commons.validator;
+    requires javafx.swing;
 
     opens uk.bradleyjones.worldgenerator to javafx.fxml;
     opens uk.bradleyjones.worldgenerator.images;

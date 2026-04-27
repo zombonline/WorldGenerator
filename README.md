@@ -5,7 +5,7 @@ A procedural 2D world generation tool built with JavaFX, developed as a final pr
 Generate pixel-art worlds with configurable terrain, biomes, caves, water, decorations, and ore deposits, all driven by a seed value for reproducibility. A real-time interactive viewport lets you pan and zoom around the generated world, and configurations can be saved and loaded as `.world` files.
 
 ![WorldGenerator screenshot](screenshot.png)
-> _Screenshot placeholder — replace with an actual screenshot of the application._
+
 
 ---
 
@@ -51,6 +51,10 @@ mvn clean javafx:run
 
 ---
 
+## Testing
+
+The repo contains a sample .world file that can be loaded and viewed.
+
 ## Architecture
 
 World generation runs as six sequential passes:
@@ -67,6 +71,12 @@ World generation runs as six sequential passes:
 Each tile's final type is resolved lazily by `World.getTile()`, which applies the enabled passes in order.
 
 ---
+
+## Known Limitations
+
+- World generation is single-threaded per pass; large worlds (>1000 tiles wide) may take several seconds to regenerate
+- No undo/redo for parameter changes, regenerating with different settings is the only way to revert
+
 
 ## Tech Stack
 

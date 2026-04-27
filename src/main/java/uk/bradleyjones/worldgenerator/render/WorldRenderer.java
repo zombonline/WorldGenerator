@@ -1,16 +1,22 @@
 package uk.bradleyjones.worldgenerator.render;
 
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import uk.bradleyjones.worldgenerator.world.GenerationPassType;
 import uk.bradleyjones.worldgenerator.world.GenerationPassTypeSets;
 import uk.bradleyjones.worldgenerator.world.TileType;
 
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -203,6 +209,24 @@ public class WorldRenderer {
         thread.start();
 
         buildChunkImagesAsync();
+
+    }
+
+    public void saveScreenshot(Stage stage) {
+        if (worldImage == null) return;
+
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save Screenshot");
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Image", "*.png"));
+        chooser.setInitialFileName("world.png");
+        File file = chooser.showSaveDialog(stage);
+        if (file == null) return;
+
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(worldImage, null), "png", file);
+        } catch (IOException e) {
+            System.err.println("Failed to save screenshot: " + e.getMessage());
+        }
     }
 
     public void render(GraphicsContext gc, Camera camera, double canvasWidth, double canvasHeight) {
