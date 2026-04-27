@@ -56,7 +56,7 @@ mvn clean javafx:run
 
 ## Testing
 
-The repo contains a sample .world file that can be loaded and viewed.
+The repo contains a sample `.world` file at `example.world` in the root of the repository. Load it via the **Load** button in the application to view a pre-configured world.
 
 ## Architecture
 

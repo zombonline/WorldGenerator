@@ -130,7 +130,7 @@ public class LightingGenerator {
 
         // Water gets tinted sunlight
         if (tile == TileType.WATER && world.getDepthOfPosition(x, y) < 0) {
-            return new Light(maxLightingLevel, Color.CYAN);
+            return new Light(maxLightingLevel, world.getWaterColor(x, y));
         }
 
         // Mushroom glow

@@ -1,0 +1,302 @@
+{
+  "name": "cool2",
+  "world": {
+    "seed": 179938246,
+    "width": 1500,
+    "height": 700
+  },
+  "water": {
+    "water_level": 350,
+    "lake_min_width": 10,
+    "ocean_min_width": 60,
+    "pressure_per_depth": 0.8,
+    "upward_cost": 2.0,
+    "min_pressure_to_flood": 0.1
+  },
+  "heightmaps": {
+    "base_height": 350,
+    "min_subsurface_depth": 10,
+    "max_subsurface_depth": 50,
+    "root_group": {
+      "combine_mode": "ADDITIVE",
+      "noise_scale": 0.005,
+      "children": [
+        {
+          "weight": 1.0,
+          "enabled": true,
+          "type": "GROUP",
+          "group": {
+            "combine_mode": "ADDITIVE",
+            "noise_scale": 0.005,
+            "children": [
+              {
+                "weight": 1.0,
+                "enabled": true,
+                "type": "NOISE",
+                "noise_config": {
+                  "scale": 0.1,
+                  "amplitude": 64.0,
+                  "power": 1.0,
+                  "clamp_to_positive": false
+                }
+              },
+              {
+                "weight": 1.0,
+                "enabled": true,
+                "type": "NOISE",
+                "noise_config": {
+                  "scale": 0.4,
+                  "amplitude": 32.0,
+                  "power": 1.0,
+                  "clamp_to_positive": false
+                }
+              },
+              {
+                "weight": 1.0,
+                "enabled": true,
+                "type": "NOISE",
+                "noise_config": {
+                  "scale": 0.1,
+                  "amplitude": -4000.0,
+                  "power": 4.0,
+                  "clamp_to_positive": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "caves": [
+    {
+      "desc": "Spaghetti",
+      "enabled": true,
+      "type": "NOISE",
+      "ca_config": {
+        "fill_percent": 77,
+        "iterations": 5,
+        "neighbor_threshold": 6,
+        "effectsSurface": true
+      },
+      "noise_config": {
+        "scale_x": 1.0,
+        "scale_y": 1.0,
+        "lower_threshold": -0.05,
+        "upper_threshold": 0.05,
+        "effectsSurface": true
+      },
+      "drunkard_config": {
+        "walker_count": 0,
+        "walker_steps": 0,
+        "effectsSurface": true
+      }
+    },
+    {
+      "desc": "BIG NOISE",
+      "enabled": true,
+      "type": "NOISE",
+      "ca_config": {
+        "fill_percent": 75,
+        "iterations": 3,
+        "neighbor_threshold": 6,
+        "effectsSurface": false
+      },
+      "noise_config": {
+        "scale_x": 0.5,
+        "scale_y": 0.75,
+        "lower_threshold": 0.35,
+        "upper_threshold": 0.94,
+        "effectsSurface": false
+      },
+      "drunkard_config": {
+        "walker_count": 0,
+        "walker_steps": 0,
+        "effectsSurface": false
+      }
+    },
+    {
+      "desc": "New CA Cave Generator",
+      "enabled": true,
+      "type": "DRUNKARD",
+      "ca_config": {
+        "fill_percent": 77,
+        "iterations": 5,
+        "neighbor_threshold": 6,
+        "effectsSurface": false
+      },
+      "noise_config": {
+        "scale_x": 1.0,
+        "scale_y": 1.0,
+        "lower_threshold": 0.2,
+        "upper_threshold": 0.6,
+        "effectsSurface": false
+      },
+      "drunkard_config": {
+        "walker_count": 400,
+        "walker_steps": 500,
+        "effectsSurface": false
+      }
+    }
+  ],
+  "decorations": [
+    {
+      "enabled": true,
+      "desc": "Tree",
+      "ascii_rows": [
+        ".L.",
+        "LLL",
+        "LLL",
+        ".T.",
+        ".T.",
+        ".T.",
+        ".*."
+      ],
+      "char_map": {
+        "T": "LOG",
+        "L": "LEAVES"
+      },
+      "allowed_biomes": [
+        "forest"
+      ],
+      "required_surface_tile": "GRASS",
+      "chance_to_spawn": 0.5,
+      "placement_type": "FLOOR"
+    },
+    {
+      "enabled": true,
+      "desc": "Pink Mushroom",
+      "ascii_rows": [
+        "M",
+        "*"
+      ],
+      "char_map": {
+        "M": "PINK_MUSHROOM"
+      },
+      "allowed_biomes": [
+        "plains",
+        "forest",
+        "desert"
+      ],
+      "required_surface_tile": "STONE",
+      "chance_to_spawn": 0.03,
+      "placement_type": "FLOOR"
+    },
+    {
+      "enabled": true,
+      "desc": "House",
+      "ascii_rows": [
+        ".......L.......",
+        "......LLL......",
+        "....LLLLLLL....",
+        "..LLLLLLLLLLL..",
+        "LLLLLLLLLLLLLLL",
+        "SSSSSSSSSSSSSSS",
+        "SS....SSS....SS",
+        "SSSSSSSSSSSSSSS",
+        "SS..SSSSS....SS",
+        "SS..SSSSSSSSSSS",
+        ".......*......."
+      ],
+      "char_map": {
+        "L": "LOG",
+        "S": "STONE"
+      },
+      "allowed_biomes": [
+        "plains"
+      ],
+      "required_surface_tile": "GRASS",
+      "chance_to_spawn": 0.12,
+      "placement_type": "FLOOR"
+    },
+    {
+      "enabled": true,
+      "desc": "Cactus",
+      "ascii_rows": [
+        "C",
+        "C",
+        "*"
+      ],
+      "char_map": {
+        "C": "CACTUS"
+      },
+      "allowed_biomes": [
+        "desert"
+      ],
+      "required_surface_tile": "SAND",
+      "chance_to_spawn": 0.05,
+      "placement_type": "FLOOR"
+    }
+  ],
+  "biome_distribution": {
+    "noise_scale": 0.05,
+    "biomes": [
+      {
+        "id": "desert",
+        "weight": 1.0
+      },
+      {
+        "id": "plains",
+        "weight": 1.0
+      },
+      {
+        "id": "forest",
+        "weight": 1.5
+      },
+      {
+        "id": "tundra",
+        "weight": 1.0
+      }
+    ]
+  },
+  "biome_overrides": {
+    "beach_width": 3,
+    "mountain_height": 170,
+    "peak_height": 230
+  },
+  "substances": [
+    {
+      "enabled": true,
+      "desc": "Amethyst",
+      "output_tile": "AMETHYST_ORE",
+      "replaces": [
+        "STONE"
+      ],
+      "noise_scale_x": 2.5,
+      "noise_scale_y": 2.5,
+      "noise_threshold": 0.58,
+      "min_depth": 80,
+      "max_depth": 600,
+      "requires_near_water": false
+    },
+    {
+      "enabled": true,
+      "desc": "Copper",
+      "output_tile": "COPPER_ORE",
+      "replaces": [
+        "STONE"
+      ],
+      "noise_scale_x": 3.5,
+      "noise_scale_y": 3.5,
+      "noise_threshold": 0.45,
+      "min_depth": 8,
+      "max_depth": 100,
+      "requires_near_water": false
+    },
+    {
+      "enabled": true,
+      "desc": "Gravel",
+      "output_tile": "GRAVEL",
+      "replaces": [
+        "STONE",
+        "DIRT"
+      ],
+      "noise_scale_x": 2.0,
+      "noise_scale_y": 2.0,
+      "noise_threshold": 0.45,
+      "min_depth": 2,
+      "max_depth": 2147483647,
+      "requires_near_water": false
+    }
+  ]
+}

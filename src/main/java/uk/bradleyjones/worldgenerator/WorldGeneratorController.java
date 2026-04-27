@@ -1,5 +1,6 @@
 package uk.bradleyjones.worldgenerator;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -101,7 +102,7 @@ public class WorldGeneratorController implements CameraListener {
         world.regenerate();
         renderer = new WorldRenderer();
         renderer.loadImageMap();
-        renderer.buildWorldImageAsync();
+        renderer.buildAsync(this::draw);
         camera = new Camera();
         camera.addListener(this);
 
@@ -160,8 +161,10 @@ public class WorldGeneratorController implements CameraListener {
 
 
     public void handleInitializeWorld() {
-        regenProgress.setVisible(true);
-        regenButton.setDisable(true);
+        Platform.runLater(() -> {
+            regenProgress.setVisible(true);
+            regenButton.setDisable(true);
+        });
 
         Task<Void> task = new Task<>() {
             @Override
@@ -204,8 +207,8 @@ public class WorldGeneratorController implements CameraListener {
         task.setOnSucceeded(ev -> {
             regenProgress.setVisible(false);
             regenButton.setDisable(false);
-            renderer.buildWorldImageAsync();
             draw();
+            renderer.buildAsync(this::draw);
         });
 
         new Thread(task).start();
